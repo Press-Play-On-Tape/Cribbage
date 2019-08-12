@@ -71,20 +71,20 @@ void SplashScreenState::render(StateMachine & machine) {
 
 	auto & arduboy = machine.getContext().arduboy;
 
-  Sprites::drawOverwrite(47, 17, Images::Ppot_Buttons, 0);
-  Sprites::drawOverwrite(43, 26, Images::Ppot_ButtonUp, 0);
-  Sprites::drawOverwrite(73, 26, Images::Ppot_ButtonUp, 0);
+  SpritesB::drawOverwrite(47, 17, Images::Ppot_Buttons, 0);
+  SpritesB::drawOverwrite(43, 26, Images::Ppot_ButtonUp, 0);
+  SpritesB::drawOverwrite(73, 26, Images::Ppot_ButtonUp, 0);
 
   if (counter == 0) {
 
-    Sprites::drawOverwrite(58, 26, Images::Ppot_ButtonUp, 0);
-    Sprites::drawOverwrite(26, 46, Images::Ppot_Caption, 0);
+    SpritesB::drawOverwrite(58, 26, Images::Ppot_ButtonUp, 0);
+    SpritesB::drawOverwrite(26, 46, Images::Ppot_Caption, 0);
 
   }
   else {
 
-    Sprites::drawOverwrite(58, 26, Images::Ppot_ButtonDown, 0);
-    Sprites::drawOverwrite(44, 46, Images::Ppot_Loading, 0);
+    SpritesB::drawOverwrite(58, 26, Images::Ppot_ButtonDown, 0);
+    SpritesB::drawOverwrite(44, 46, Images::Ppot_Loading, 0);
 
     uint8_t i = (counter / 15) % 4;
 

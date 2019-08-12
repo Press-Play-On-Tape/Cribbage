@@ -1,4 +1,5 @@
 #include "DisplayScoreState.h"
+
 #include "../images/Images.h"
 #include "../utils/Constants.h"
 
@@ -361,7 +362,7 @@ void DisplayScoreState::update(StateMachine & machine) {
 //  Render the state .. 
 //
 void DisplayScoreState::render(StateMachine & machine) {
-Serial.println("sdfsdf");
+
 	auto & arduboy = machine.getContext().arduboy;
 	auto & gameStats = machine.getContext().gameStats;
 	
@@ -376,23 +377,23 @@ Serial.println("sdfsdf");
 
 void DisplayScoreState::drawBoard(int8_t xOffset, int8_t yOffset) {
 
-  Sprites::drawSelfMasked(xOffset, yOffset + Constants::Board_Row_1_Y, Images::Board_Start, 0);
-  Sprites::drawSelfMasked(xOffset, yOffset + Constants::Board_Row_2_Y, Images::Board_SmallRadius, 0);
+  SpritesB::drawSelfMasked(xOffset, yOffset + Constants::Board_Row_1_Y, Images::Board_Start, 0);
+  SpritesB::drawSelfMasked(xOffset, yOffset + Constants::Board_Row_2_Y, Images::Board_SmallRadius, 0);
 
   for (uint8_t x = 0; x < 7; x++) {
-    Sprites::drawSelfMasked(xOffset + Constants::Board_Start_Width + (x * Constants::Board_Tile_Width), yOffset + Constants::Board_Row_1_Y, Images::Board_Tile, 0);
-    Sprites::drawSelfMasked(xOffset + Constants::Board_Start_Width + (x * Constants::Board_Tile_Width), yOffset + Constants::Board_Row_2_Y, Images::Board_Tile, 0);
-    Sprites::drawSelfMasked(xOffset + Constants::Board_Start_Width + (x * Constants::Board_Tile_Width), yOffset + Constants::Board_Row_3_Y, Images::Board_Tile, 0);
+    SpritesB::drawSelfMasked(xOffset + Constants::Board_Start_Width + (x * Constants::Board_Tile_Width), yOffset + Constants::Board_Row_1_Y, Images::Board_Tile, 0);
+    SpritesB::drawSelfMasked(xOffset + Constants::Board_Start_Width + (x * Constants::Board_Tile_Width), yOffset + Constants::Board_Row_2_Y, Images::Board_Tile, 0);
+    SpritesB::drawSelfMasked(xOffset + Constants::Board_Start_Width + (x * Constants::Board_Tile_Width), yOffset + Constants::Board_Row_3_Y, Images::Board_Tile, 0);
   }
 
-  Sprites::drawSelfMasked(xOffset + Constants::Board_Start_Width + (7 * Constants::Board_Tile_Width), yOffset + Constants::Board_Row_1_Y, Images::Board_LargeRadius, 0);
+  SpritesB::drawSelfMasked(xOffset + Constants::Board_Start_Width + (7 * Constants::Board_Tile_Width), yOffset + Constants::Board_Row_1_Y, Images::Board_LargeRadius, 0);
 
 }
 
 
 void DisplayScoreState::drawPlayer_1(int8_t xOffset, int8_t yOffset, uint8_t position, PlayerTile playerTile) {
 
-  Sprites::drawExternalMask(xOffset + pgm_read_byte(&Board_Positions_Player_2[position * 2]), 
+  SpritesB::drawExternalMask(xOffset + pgm_read_byte(&Board_Positions_Player_2[position * 2]), 
                             yOffset + pgm_read_byte(&Board_Positions_Player_2[(position * 2) + 1]),
                             Images::Player_Tiles, Images::Player_Mask, static_cast<uint8_t>(playerTile), 0);
 

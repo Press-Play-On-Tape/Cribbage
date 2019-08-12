@@ -55,8 +55,6 @@ void TitleScreenState::update(StateMachine & machine) {
 //
 void TitleScreenState::render(StateMachine & machine) {
 
-	auto & arduboy = machine.getContext().arduboy;
-
-	SpritesB::drawOverwrite(12, 0, Images::Title, 0);
+	SpritesB::drawOverwrite(0, 0, Images::Title, 0);
 
 }

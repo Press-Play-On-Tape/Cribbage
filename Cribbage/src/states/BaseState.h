@@ -15,6 +15,8 @@ class BaseState : public GameState<GameContext, GameStateType> {
 
     void renderScore(StateMachine & machine, int16_t score, uint8_t x, uint8_t y);
  
+    void drawMessageBox(StateMachine & machine, String message, uint8_t lines, Alignment alignment);
+    void drawMessageBox(StateMachine & machine, String message, uint8_t lines, uint8_t width, Alignment alignment);
 
 	private:
    

@@ -1,6 +1,9 @@
 #pragma once
 
 #define _DEBUG
+#ifdef DEBUG
+  #define COMPUTER_DISCARDS
+#endif
 
 #define EEPROM_START                  100
 #define EEPROM_START_C1               101
@@ -24,5 +27,11 @@ namespace Constants {
   constexpr uint8_t Board_Row_1_Y = 0;
   constexpr uint8_t Board_Row_2_Y = 18;
   constexpr uint8_t Board_Row_3_Y = 37;
+
+  constexpr uint8_t NoCard = 255;
+  constexpr uint8_t NumberOfCards = 52;
+
+  constexpr uint8_t PlayerHandScores = 10;
+
 
 }
