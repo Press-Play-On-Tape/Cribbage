@@ -296,9 +296,9 @@ void PlayGameState::drawPlay(StateMachine & machine) {
 
     bool leftAlign = !(x == 8 || x == playIdx - 1);
 
-    if (this->play[x] != Constants::NoCard) {
+    if (this->playedCards[x] != Constants::NoCard) {
 
-      drawSmallCard(machine, xLeft + (x * 10), 13, this->play[x], leftAlign);
+      drawSmallCard(machine, xLeft + (x * 10), 13, this->playedCards[x], leftAlign);
 
     }
 

@@ -508,6 +508,8 @@ Serial.println("Royal Pair");
 
           }
 
+        }
+
       }
 
     }
@@ -539,6 +541,8 @@ Serial.println("Double Royal Pair");
             }
 
           }
+
+        }
 
       }
 
@@ -584,14 +588,12 @@ Serial.println("15 or 31");
           uint8_t cardVal = CardUtils::getCardValue(this->hand[y], true);
 
           if (pointsToDate + cardVal <= 31 &&
-              (card1 != card2 && card1 != card3 && card2 != card3) &&
-              absT(card1 - card2) <= 2 && absT(card1 - card3) <=2) {
-  Serial.println("Run of three");
-              card = removeFromHand(y);
-              points = 3;
-              return;
-
-            }
+            (card1 != card2 && card1 != card3 && card2 != card3) &&
+            absT(card1 - card2) <= 2 && absT(card1 - card3) <=2) {
+Serial.println("Run of three");
+            card = removeFromHand(y);
+            points = 3;
+            return;
 
           }
 
@@ -617,14 +619,12 @@ Serial.println("15 or 31");
           uint8_t cardVal = CardUtils::getCardValue(this->hand[x], true);
 
           if (pointsToDate + cardVal <= 31 &&
-              (card1 != card2 && card1 != card3 && card1 != card4 && card2 != card3 && card2 != card4 && card3 != card4) &&
-              absT(card1 - card2) <= 3 && absT(card1 - card3) <=3 && absT(card1 - card4) <=3 && absT(card2 - card3) <=3 && absT(card2 - card4) <=3 && absT(card3 - card4) <=3) {
-  Serial.println("Run of four");
-              card = removeFromHand(x);
-              points = 4;
-              return;
-
-            }
+            (card1 != card2 && card1 != card3 && card1 != card4 && card2 != card3 && card2 != card4 && card3 != card4) &&
+            absT(card1 - card2) <= 3 && absT(card1 - card3) <=3 && absT(card1 - card4) <=3 && absT(card2 - card3) <=3 && absT(card2 - card4) <=3 && absT(card3 - card4) <=3) {
+Serial.println("Run of four");
+            card = removeFromHand(x);
+            points = 4;
+            return;
 
           }
 

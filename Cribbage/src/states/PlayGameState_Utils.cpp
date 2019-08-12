@@ -1,6 +1,7 @@
 #include "PlayGameState.h"
 #include "../images/Images.h"
 #include "../utils/CardUtils.h"
+#include "../utils/Utils.h"
 
 
 void PlayGameState::resetHand(StateMachine & machine) {
@@ -16,7 +17,7 @@ void PlayGameState::resetHand(StateMachine & machine) {
 
 	for (uint8_t x = 0; x < 8; x++) {
 
-		this->play[x] = Constants::NoCard;
+		this->playedCards[x] = Constants::NoCard;
 
 	}
 
@@ -40,20 +41,128 @@ void PlayGameState::saveMessage(String message, uint8_t lines, uint8_t width, Al
 
 }
 
-uint8_t PlayGameState::playValue() {
+uint8_t PlayGameState::getPlayValue() {
 
 	uint8_t value = 0;
 
 	for (uint8_t x = 0; x < 8; x++) {
 
-		if (this->play[x] != Constants::NoCard) {
+		if (this->playedCards[x] != Constants::NoCard) {
 
-			value = value + CardUtils::getCardValue(this->play[x], true);
+			value = value + CardUtils::getCardValue(this->playedCards[x], true);
 
 		}
 
 	}
 
 	return value;
+
+}
+
+
+uint8_t PlayGameState::getScore() {
+	
+	uint8_t score = 0;
+
+	// A pair ?
+
+	if (playIdx >= 2) {
+	
+		uint8_t card1 = CardUtils::getCardValue(playedCards[playIdx - 2], false);
+		uint8_t card2 = CardUtils::getCardValue(playedCards[playIdx - 1], false);
+
+		if (card1 == card2) {
+	
+			score += 2;
+
+		}
+
+	}
+	
+
+	// Royal pair ?
+
+	if (playIdx >= 3) {
+	
+		uint8_t card1 = CardUtils::getCardValue(playedCards[playIdx - 3], false);
+		uint8_t card2 = CardUtils::getCardValue(playedCards[playIdx - 2], false);
+		uint8_t card3 = CardUtils::getCardValue(playedCards[playIdx - 1], false);
+
+		if (card1 == card2 && card2== card3) {
+
+			score += 4;
+
+		}
+
+	}
+
+
+
+	// Double Royal pair ?
+
+	if (playIdx >= 4) {
+	
+		uint8_t card1 = CardUtils::getCardValue(playedCards[playIdx - 4], false);
+		uint8_t card2 = CardUtils::getCardValue(playedCards[playIdx - 3], false);
+		uint8_t card3 = CardUtils::getCardValue(playedCards[playIdx - 2], false);
+		uint8_t card4 = CardUtils::getCardValue(playedCards[playIdx - 1], false);
+
+		if (card1 == card2 && card1 == card3 && card3 == card4) {
+	
+			score += 6;
+
+		}
+
+	}
+
+
+	// Check for 15 or 31 ..
+
+	uint8_t playValue = getPlayValue();
+
+	if (playValue == 15 || playValue == 31) {
+
+		score += 2;
+
+	}
+
+
+	// Check for run of three ..
+
+	if (playIdx >= 3) {
+
+		uint8_t card1 = CardUtils::getCardValue(playedCards[playIdx - 3], false);
+		uint8_t card2 = CardUtils::getCardValue(playedCards[playIdx - 2], false);
+		uint8_t card3 = CardUtils::getCardValue(playedCards[playIdx - 1], false);
+
+		if ((card1 != card2 && card1 != card3 && card2 != card3) &&
+			absT(card1 - card2) <= 2 && absT(card1 - card3) <=2) {
+
+			score += 3;
+
+		}
+
+	}
+
+
+	// Check for run of four ..
+
+	if (playIdx >= 4) {
+
+		uint8_t card1 = CardUtils::getCardValue(playedCards[playIdx - 4], false);
+		uint8_t card2 = CardUtils::getCardValue(playedCards[playIdx - 3], false);
+		uint8_t card3 = CardUtils::getCardValue(playedCards[playIdx - 2], false);
+		uint8_t card4 = CardUtils::getCardValue(playedCards[playIdx - 1], false);
+
+		if ((card1 != card2 && card1 != card3 && card1 != card4 && card2 != card3 && card2 != card4 && card3 != card4) &&
+			absT(card1 - card2) <= 3 && absT(card1 - card3) <=3 && absT(card1 - card4) <=3 && absT(card2 - card3) <=3 && absT(card2 - card4) <=3 && absT(card3 - card4) <=3) {
+
+			score += 1;
+
+		}
+
+	}
+	
+	return score;
 
 }

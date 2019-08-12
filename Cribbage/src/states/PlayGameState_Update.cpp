@@ -86,9 +86,12 @@ void PlayGameState::update(StateMachine & machine) {
 
 		case ViewState::DiscardCribComputer:
 
+				this->counter++;
+
 				switch (this->counter) {
 
 					case 0 ... 45:
+						if (justPressed & A_BUTTON) this->counter = 45;
 						saveMessage(F("I will throw\nthese two cards."), 2, Alignment::Computer);
 						break;
 
@@ -130,16 +133,11 @@ void PlayGameState::update(StateMachine & machine) {
 
 							}
 
+							this->viewState = ViewState::TurnUp;
+							this->counter = 0;
 						}
 						break;
 
-				}
-
-				this->counter++;
-
-				if (this->counter > 61) {
-					this->viewState = ViewState::TurnUp;
-					this->counter = 0;
 				}
 
 			break;
@@ -161,6 +159,7 @@ void PlayGameState::update(StateMachine & machine) {
 					break;
 
 				case 26 ... 70:
+					if (justPressed & A_BUTTON) this->counter = 70;
 					saveMessage(F("Your turn to\nstart."), 2, Alignment::Computer);
 					break;
 
@@ -184,12 +183,18 @@ void PlayGameState::update(StateMachine & machine) {
 			if (justPressed & A_BUTTON) {
 
 				uint8_t card = player1.removeFromHand(highlightCard);
-				this->play[this->playIdx] = card;
+				this->playedCards[this->playIdx] = card;
 				this->playIdx++;
 
 				if (this->highlightCard == player1.getHandCardCount()) this->highlightCard--;
 				this->viewState = ViewState::ComputersTurn;
 				this->counter = 0;
+
+Serial.print("playIdx: ");
+Serial.println(playIdx);							
+
+Serial.print("score: ");
+Serial.println(getScore());							
 
 			}
 
@@ -208,7 +213,7 @@ void PlayGameState::update(StateMachine & machine) {
 					{
 						uint8_t card = Constants::NoCard;
 						uint8_t points = 0;
-						player2.playCard(this->play, card, points);
+						player2.playCard(this->playedCards, card, points);
 						Serial.print("Computer played: ");
 						Serial.print(card);
 						Serial.print(" ");
@@ -216,9 +221,9 @@ void PlayGameState::update(StateMachine & machine) {
 
 						if (card != Constants::NoCard) {
 
-							this->play[this->playIdx] = card;
+							this->playedCards[this->playIdx] = card;
 							this->playIdx++;
-							uint8_t playedValue = playValue();
+							uint8_t playedValue = getPlayValue();
 
 							if (points != 0) {
 
@@ -261,6 +266,11 @@ void PlayGameState::update(StateMachine & machine) {
 								saveMessage(messageText, 1, Alignment::Computer);
 
 							}
+Serial.print("playIdx: ");
+Serial.println(playIdx);							
+
+Serial.print("score: ");
+Serial.println(getScore());							
 						
 						}
 						else {
@@ -274,6 +284,7 @@ void PlayGameState::update(StateMachine & machine) {
 					break;
 
 				case 17 ... 60:
+					if (justPressed & A_BUTTON) this->counter = 60;
 					this->message.renderRequired = true;
 					break;
 

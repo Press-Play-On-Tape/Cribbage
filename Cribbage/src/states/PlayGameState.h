@@ -35,7 +35,7 @@ class PlayGameState : public BaseState {
     uint8_t counter = 0;
     uint8_t computerDiscard1 = 0;
     uint8_t computerDiscard2 = 0;
-    uint8_t play[8];
+    uint8_t playedCards[8];
     uint8_t playIdx;
     uint8_t turnUp;
 
@@ -59,8 +59,9 @@ class PlayGameState : public BaseState {
     void resetHand(StateMachine & machine);
     void saveMessage(String message, uint8_t lines, Alignment alignment);
     void saveMessage(String message, uint8_t lines, uint8_t width, Alignment alignment);
+    uint8_t getScore();
 
-    uint8_t playValue();
+    uint8_t getPlayValue();
 
 };
 
