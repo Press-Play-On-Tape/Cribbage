@@ -14,7 +14,7 @@ class PlayGameState : public BaseState {
       String message;
       uint8_t lines;
       uint8_t width;
-      Alignment alignment = Alignment::None;
+      BubbleAlignment alignment = BubbleAlignment::None;
       bool renderRequired = false;
     };
 
@@ -57,11 +57,12 @@ class PlayGameState : public BaseState {
     void drawPlay(StateMachine & machine);
 
     void resetHand(StateMachine & machine);
-    void saveMessage(String message, uint8_t lines, Alignment alignment);
-    void saveMessage(String message, uint8_t lines, uint8_t width, Alignment alignment);
+    void saveMessage(String message, uint8_t lines, BubbleAlignment alignment);
+    void saveMessage(String message, uint8_t lines, uint8_t width, BubbleAlignment alignment);
+    void saveMessageWithScore(uint8_t playedValue, uint8_t points, BubbleAlignment alignment);
     uint8_t getScore();
 
-    uint8_t getPlayValue();
+    uint8_t getBoardValue();
 
 };
 

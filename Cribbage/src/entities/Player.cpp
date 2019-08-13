@@ -43,35 +43,23 @@ uint8_t Player::getCribCardCount() {
 
 }
 
-void Player::calculateHandScore(uint8_t turnUp) {
+void Player::calculateHandScore(Score scores[], uint8_t turnUp) {
 
-  for (uint8_t x = 0; x < 4; x++) {
-
-    this->calcScore[x] = this->hand[x];
-  }
-
-  this->calcScore[4] = turnUp;
-  CardUtils::sort(this->calcScore, 5);
-
-  calculateScores();
+  CardUtils::sort(this->hand, 4);
+  calculateScores(scores, this->hand);
 
 }
 
-void Player::calculateCribScore(uint8_t turnUp) {
+void Player::calculateCribScore(Score scores[], uint8_t turnUp) {
 
-  for (uint8_t x = 0; x < 4; x++) {
-
-    this->calcScore[x] = this->crib[x];
-  }
-
-  this->calcScore[4] = turnUp;
-  CardUtils::sort(this->calcScore, 5);
-
-  calculateScores();
+  CardUtils::sort(this->crib, 4);
+  calculateScores(scores, this->crib);
 
 }
 
-void Player::calculateScores() {
+void Player::calculateScores(Score scores[], uint8_t calcScore[]) {
+
+  uint8_t scoreIdx = 0;
 
   for (uint8_t i = 1; i < 31; i++) {
 
@@ -82,7 +70,7 @@ void Player::calculateScores() {
 
       if ((j ^ 2) & i) {
 
-        possibility[possIdx] = this->calcScore[j];
+        possibility[possIdx] = calcScore[j];
         possIdx++;
 
       }
@@ -96,12 +84,12 @@ void Player::calculateScores() {
 
           for (uint8_t k = 0; k < 5; k++) {
 
-            this->scores[this->scoreIdx].setHand(k, possibility[k]);
+            scores[scoreIdx].setHand(k, possibility[k]);
 
           }
 
-          this->scores[this->scoreIdx].setScore(2);
-          this->scoreIdx++;
+          scores[scoreIdx].setScore(2);
+          scoreIdx++;
 
         }
 
@@ -123,12 +111,12 @@ void Player::calculateScores() {
 
           for (uint8_t k = 0; k < 5; k++) {
 
-            this->scores[this->scoreIdx].setHand(k, possibility[k]);
+            scores[scoreIdx].setHand(k, possibility[k]);
 
           }
 
-          this->scores[this->scoreIdx].setScore(2);
-          this->scoreIdx++;
+          scores[scoreIdx].setScore(2);
+          scoreIdx++;
 
         }
 
@@ -144,12 +132,12 @@ void Player::calculateScores() {
 
           for (uint8_t k = 0; k < 3; k++) {
 
-            this->scores[this->scoreIdx].setHand(k, possibility[k]);
+            scores[scoreIdx].setHand(k, possibility[k]);
 
           }
 
-          this->scores[this->scoreIdx].setScore(3);
-          this->scoreIdx++;
+          scores[scoreIdx].setScore(3);
+          scoreIdx++;
 
         }
 
@@ -169,9 +157,9 @@ void Player::calculateScores() {
 
           for (uint8_t k = 0; k < Constants::PlayerHandScores; k++) {
 
-            if (this->scores[k].getHand(0) == possibility[0] &&
-                this->scores[k].getHand(1) == possibility[1] &&
-                this->scores[k].getHand(2) == possibility[2]) {
+            if (scores[k].getHand(0) == possibility[0] &&
+                scores[k].getHand(1) == possibility[1] &&
+                scores[k].getHand(2) == possibility[2]) {
 
               foundIdx = k;
               found = true;
@@ -182,19 +170,19 @@ void Player::calculateScores() {
 
           if (!found){
 
-            foundIdx = this->scoreIdx;
-            this->scoreIdx++;
+            foundIdx = scoreIdx;
+            scoreIdx++;
 
           }
 
           for (uint8_t k = 0; k < 4; k++) {
 
-            this->scores[foundIdx].setHand(k, possibility[k]);
+            scores[foundIdx].setHand(k, possibility[k]);
 
           }
 
-          this->scores[this->scoreIdx].setScore(4);
-          this->scoreIdx++;
+          scores[scoreIdx].setScore(4);
+          scoreIdx++;
 
         }
 
@@ -215,10 +203,10 @@ void Player::calculateScores() {
 
           for (uint8_t k = 0; k < Constants::PlayerHandScores; k++) {
 
-            if (this->scores[k].getHand(0) == possibility[0] &&
-                this->scores[k].getHand(1) == possibility[1] &&
-                this->scores[k].getHand(2) == possibility[2] &&
-                this->scores[k].getHand(3) == possibility[4]) {
+            if (scores[k].getHand(0) == possibility[0] &&
+                scores[k].getHand(1) == possibility[1] &&
+                scores[k].getHand(2) == possibility[2] &&
+                scores[k].getHand(3) == possibility[4]) {
 
               foundIdx = k;
               found = true;
@@ -229,19 +217,19 @@ void Player::calculateScores() {
 
           if (!found){
 
-            foundIdx = this->scoreIdx;
-            this->scoreIdx++;
+            foundIdx = scoreIdx;
+            scoreIdx++;
 
           }
 
           for (uint8_t k = 0; k < 4; k++) {
 
-            this->scores[foundIdx].setHand(k, possibility[k]);
+            scores[foundIdx].setHand(k, possibility[k]);
 
           }
 
-          this->scores[this->scoreIdx].setScore(5);
-          this->scoreIdx++;
+          scores[scoreIdx].setScore(5);
+          scoreIdx++;
 
         }
 
@@ -414,16 +402,15 @@ void Player::resetHand() {
 
   this->handIdx = 0;
   this->cribIdx = 0;
-  this->scoreIdx = 0;
   
   memset(this->hand, 0, (sizeof(this->hand) / sizeof(this->hand[0])));
   memset(this->crib, 0, (sizeof(this->crib) / sizeof(this->crib[0])));
 
-  for (uint8_t x = 0; x < Constants::PlayerHandScores; x++) {
+  // for (uint8_t x = 0; x < Constants::PlayerHandScores; x++) {
 
-    this->scores[x].reset();
+  //   this->scores[x].reset();
 
-  }
+  // }
 
 }
 

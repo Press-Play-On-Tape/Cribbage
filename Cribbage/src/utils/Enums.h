@@ -40,7 +40,7 @@ enum class GameStateType : uint8_t {
   HighScore
 };
 
-enum class Alignment : uint8_t {
+enum class BubbleAlignment : uint8_t {
 	Player,
 	Computer,
   None

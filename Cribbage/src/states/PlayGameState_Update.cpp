@@ -92,7 +92,7 @@ void PlayGameState::update(StateMachine & machine) {
 
 					case 0 ... 45:
 						if (justPressed & A_BUTTON) this->counter = 45;
-						saveMessage(F("I will throw\nthese two cards."), 2, Alignment::Computer);
+						saveMessage(F("I will throw\nthese two cards."), 2, BubbleAlignment::Computer);
 						break;
 
 					case 46:
@@ -160,7 +160,7 @@ void PlayGameState::update(StateMachine & machine) {
 
 				case 26 ... 70:
 					if (justPressed & A_BUTTON) this->counter = 70;
-					saveMessage(F("Your turn to\nstart."), 2, Alignment::Computer);
+					saveMessage(F("Your turn to\nstart."), 2, BubbleAlignment::Computer);
 					break;
 
 				case 71:				
@@ -177,26 +177,42 @@ void PlayGameState::update(StateMachine & machine) {
 
 		case ViewState::PlayersTurn:
 
-			if ((justPressed & LEFT_BUTTON) && (this->highlightCard > 0))															this->highlightCard--;
-			if ((justPressed & RIGHT_BUTTON) && this->highlightCard < player1.getHandCardCount() - 1)	this->highlightCard++;
+      switch (this->counter) {
 
-			if (justPressed & A_BUTTON) {
+        case 0:
+          if ((justPressed & LEFT_BUTTON) && (this->highlightCard > 0))															this->highlightCard--;
+          if ((justPressed & RIGHT_BUTTON) && this->highlightCard < player1.getHandCardCount() - 1)	this->highlightCard++;
 
-				uint8_t card = player1.removeFromHand(highlightCard);
-				this->playedCards[this->playIdx] = card;
-				this->playIdx++;
+          if (justPressed & A_BUTTON) {
 
-				if (this->highlightCard == player1.getHandCardCount()) this->highlightCard--;
-				this->viewState = ViewState::ComputersTurn;
-				this->counter = 0;
+            uint8_t card = player1.removeFromHand(highlightCard);
+            this->playedCards[this->playIdx] = card;
+            this->playIdx++;
+            if (this->highlightCard == player1.getHandCardCount()) this->highlightCard--;
 
-Serial.print("playIdx: ");
-Serial.println(playIdx);							
+            uint8_t playedValue = getBoardValue();
+            saveMessageWithScore(playedValue, getScore(), BubbleAlignment::Player);
+            this->counter = 1;
+            Serial.print("playIdx: ");
+            Serial.println(playIdx);							
 
-Serial.print("score: ");
-Serial.println(getScore());							
+            Serial.print("score: ");
+            Serial.println(getScore());							
 
-			}
+          }
+          break;
+
+        case 1 ... 45:
+          this->counter++;
+          this->message.renderRequired = true;
+          break;
+
+        case 46:
+          this->viewState = ViewState::ComputersTurn;
+          this->counter = 0;
+          break;
+
+      }
 
 			break;
 
@@ -223,47 +239,16 @@ Serial.println(getScore());
 
 							this->playedCards[this->playIdx] = card;
 							this->playIdx++;
-							uint8_t playedValue = getPlayValue();
+							uint8_t playedValue = getBoardValue();
 
 							if (points != 0) {
-
-								char messageText[] = "                ";
-								uint8_t messageIdx = 0;
-
-								if (playedValue >= 10) 	{ messageText[messageIdx] = (playedValue / 10) + 48; messageIdx++; }
-								messageText[messageIdx] = (playedValue % 10) + 48; messageIdx++; 
-
-								messageIdx++;
-								messageText[messageIdx] = 'f'; messageIdx++; 
-								messageText[messageIdx] = 'o'; messageIdx++; 
-								messageText[messageIdx] = 'r'; messageIdx++; 
-								messageIdx++;
-
-								if (points >= 10) 	{ messageText[messageIdx] = (points / 10) + 48; messageIdx++; }
-								if (points < 10) 		{ messageText[messageIdx] = (points % 10) + 48; messageIdx++; }
-
-								messageIdx++;
-								messageText[messageIdx] = 'p'; messageIdx++; 
-								messageText[messageIdx] = 'o'; messageIdx++; 
-								messageText[messageIdx] = 'i'; messageIdx++; 
-								messageText[messageIdx] = 'n'; messageIdx++; 
-								messageText[messageIdx] = 't'; messageIdx++; 
-								messageText[messageIdx] = 's'; messageIdx++; 
-								messageText[messageIdx] = '.'; messageIdx++; 
-
-								saveMessage(messageText, 1, Alignment::Computer);
+								
+								saveMessageWithScore(playedValue, points, BubbleAlignment::Computer);
 
 							}
 							else {
 
-								char messageText[] = "   ";
-								uint8_t messageIdx = 0;
-
-								if (playedValue >= 10) 	{ messageText[messageIdx] = (playedValue / 10) + 48; messageIdx++; }
-								messageText[messageIdx] = (playedValue % 10) + 48; messageIdx++; 
-								messageText[messageIdx] = '.'; 
-
-								saveMessage(messageText, 1, Alignment::Computer);
+								saveMessageWithScore(playedValue, 0, BubbleAlignment::Computer);
 
 							}
 Serial.print("playIdx: ");
@@ -275,7 +260,7 @@ Serial.println(getScore());
 						}
 						else {
 
-							saveMessage(F("  Go!  "), 1, 34, Alignment::Computer);
+							saveMessage(F("  Go!  "), 1, 34, BubbleAlignment::Computer);
 
 						}
 

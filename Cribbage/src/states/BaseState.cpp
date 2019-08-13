@@ -42,18 +42,18 @@ void BaseState::renderScore(StateMachine & machine, int16_t score, uint8_t x, ui
 }
 
 
-void BaseState::drawMessageBox(StateMachine &machine, String message, uint8_t lines, Alignment alignment) {
+void BaseState::drawMessageBox(StateMachine &machine, String message, uint8_t lines, BubbleAlignment alignment) {
 
 	drawMessageBox(machine, message, lines, 72, alignment);
 
 }
 
-void BaseState::drawMessageBox(StateMachine &machine, String message, uint8_t lines, uint8_t width, Alignment alignment) {
+void BaseState::drawMessageBox(StateMachine &machine, String message, uint8_t lines, uint8_t width, BubbleAlignment alignment) {
 
 	auto & arduboy = machine.getContext().arduboy;
 
 //	const uint8_t yPos[] = { 12, 8, 4 };
-	uint8_t x = (alignment == Alignment::Player ? 0 : 128 - width);
+	uint8_t x = (alignment == BubbleAlignment::Player ? 0 : 128 - width);
 //	uint8_t y = yPos[lines - 1];
 	uint8_t y = 0;
 	uint8_t yBottom = y + (lines * 8) + 4;
@@ -68,7 +68,7 @@ void BaseState::drawMessageBox(StateMachine &machine, String message, uint8_t li
 	Sprites::drawExternalMask(x, y, Images::Talk_Top_Left, Images::Talk_Bottom_Left_Mask, 0, 0);
 	Sprites::drawExternalMask(x + width - 8, y, Images::Talk_Top_Right, Images::Talk_Bottom_Right_Mask, 0, 0);
 
-	if (alignment == Alignment::Player) {
+	if (alignment == BubbleAlignment::Player) {
 
 		Sprites::drawExternalMask(x, yBottom - 1, Images::Talk_Bubble_Left, Images::Talk_Bubble_Left_Mask, 0, 0);
 		Sprites::drawExternalMask(x + width - 8, yBottom, Images::Talk_Bottom_Right, Images::Talk_Bottom_Right_Mask, 0, 0);

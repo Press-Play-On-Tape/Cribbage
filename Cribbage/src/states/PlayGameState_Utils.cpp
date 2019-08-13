@@ -25,13 +25,13 @@ void PlayGameState::resetHand(StateMachine & machine) {
 
 }
 
-void PlayGameState::saveMessage(String message, uint8_t lines, Alignment alignment) {
+void PlayGameState::saveMessage(String message, uint8_t lines, BubbleAlignment alignment) {
 
 	saveMessage(message, lines, 72, alignment);
 
 }
 
-void PlayGameState::saveMessage(String message, uint8_t lines, uint8_t width, Alignment alignment) {
+void PlayGameState::saveMessage(String message, uint8_t lines, uint8_t width, BubbleAlignment alignment) {
 
 	this->message.message = message;
 	this->message.lines= lines;
@@ -41,7 +41,7 @@ void PlayGameState::saveMessage(String message, uint8_t lines, uint8_t width, Al
 
 }
 
-uint8_t PlayGameState::getPlayValue() {
+uint8_t PlayGameState::getBoardValue() {
 
 	uint8_t value = 0;
 
@@ -118,7 +118,7 @@ uint8_t PlayGameState::getScore() {
 
 	// Check for 15 or 31 ..
 
-	uint8_t playValue = getPlayValue();
+	uint8_t playValue = getBoardValue();
 
 	if (playValue == 15 || playValue == 31) {
 
@@ -166,3 +166,41 @@ uint8_t PlayGameState::getScore() {
 	return score;
 
 }
+
+
+void PlayGameState::saveMessageWithScore(uint8_t playedValue, uint8_t points, BubbleAlignment alignment) {
+
+  uint8_t messageIdx = 0;
+
+  if (points > 0) {
+
+    const char forText[] = " for ";
+    const char pointsText[] = " points.";
+    char messageText[] = "                ";
+
+    if (playedValue >= 10) 	{ messageText[messageIdx] = (playedValue / 10) + 48; messageIdx++; }
+    messageText[messageIdx] = (playedValue % 10) + 48; messageIdx++; 
+
+    memcpy(&messageText[messageIdx], forText, 5);
+    messageIdx += 5;
+
+    if (points >= 10) 	{ messageText[messageIdx] = (points / 10) + 48; messageIdx++; }
+    if (points < 10) 		{ messageText[messageIdx] = (points % 10) + 48; messageIdx++; }
+
+    memcpy(&messageText[messageIdx], pointsText, 8);
+    saveMessage(messageText, 1, alignment);
+
+  }
+  else {
+    
+    char messageText[] = "   ";
+
+    if (playedValue >= 10) 	{ messageText[messageIdx] = (playedValue / 10) + 48; messageIdx++; }
+    messageText[messageIdx] = (playedValue % 10) + 48; messageIdx++; 
+    messageText[messageIdx] = '.'; 
+    saveMessage(messageText, 1, 34, alignment);
+
+  }
+
+}
+

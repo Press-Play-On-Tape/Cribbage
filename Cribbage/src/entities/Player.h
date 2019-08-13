@@ -17,8 +17,8 @@ class Player {
     uint8_t getCribCard(uint8_t index);
     uint8_t getCribCardCount();
 
-    void calculateHandScore(uint8_t turnUp);
-    void calculateCribScore(uint8_t turnUp);
+    void calculateHandScore(Score scores[], uint8_t turnUp);
+    void calculateCribScore(Score scores[], uint8_t turnUp);
 
     void discardToCrib(uint8_t &card1, uint8_t &card2);
     void addToHand(uint8_t card);
@@ -32,18 +32,15 @@ class Player {
 
   private:
 
-    void calculateScores();
+    void calculateScores(Score scores[], uint8_t calcScore[]);
 
   private:
 
     uint8_t handIdx;
     uint8_t cribIdx;
-    uint8_t scoreIdx;
 
     uint8_t hand[6];
-    uint8_t orig[4];
+//    uint8_t orig[4];
     uint8_t crib[4];
-    uint8_t calcScore[5];
-    Score scores[Constants::PlayerHandScores];
-
+    
 };

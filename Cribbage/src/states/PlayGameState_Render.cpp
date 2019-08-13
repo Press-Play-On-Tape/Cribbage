@@ -66,7 +66,7 @@ void PlayGameState::render(StateMachine & machine) {
 
     case ViewState::PlayersTurn:
       drawSmallCard(machine, 0, 0, this->turnUp, false);
-      drawHighlight(machine, this->highlightCard);
+      if (this->counter == 0) drawHighlight(machine, this->highlightCard);
       drawPlay(machine);
       drawCrib(machine, this->cribState);
 			break;
@@ -128,7 +128,7 @@ void PlayGameState::drawPlayerHands(StateMachine & machine) {
   uint8_t width = (gameStats.player2.getHandCardCount() * CARD_LARGE_SPACING_DEALER) + (CARD_LARGE_SPACING_FULL - CARD_LARGE_SPACING_DEALER);
   uint8_t rightHandSide = CARD_DEALER_CENTER + (width / 2);
 
-  for (int x = 0; x < gameStats.player2.getHandCardCount(); x++) {
+  for (uint8_t x = 0; x < gameStats.player2.getHandCardCount(); x++) {
 			
 		if (x < gameStats.player2.getHandCardCount() - 1) {
 

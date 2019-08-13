@@ -43,6 +43,7 @@ class GameStats {
     Deck deck;
 
     uint8_t playersTurn = 0;
+    Score scores[Constants::PlayerHandScores];
 
 
   //     Player player3;
