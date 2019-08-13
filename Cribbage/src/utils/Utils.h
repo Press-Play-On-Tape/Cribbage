@@ -40,6 +40,15 @@ template <typename T> void swap(T& x,T& y) {
 // ----------------------------------------------------------------------------
 //  A better absolute as it uses less memory than the standard one .. 
 //
+template<typename T> T diffT(const T & x, const T & y) {
+  
+  return (x < y) ? y - x : x - y;
+
+}
+
+// ----------------------------------------------------------------------------
+//  A better absolute as it uses less memory than the standard one .. 
+//
 template<typename T> T absT(const T & v) {
   
   return (v < 0) ? -v : v;

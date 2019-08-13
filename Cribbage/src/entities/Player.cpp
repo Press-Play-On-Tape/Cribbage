@@ -486,25 +486,21 @@ Serial.println(this->handIdx);
 
     // Convert a pair to a Royal pair ..
 
-    for (uint8_t x = 0; x < 7; x++) {
+    if (cardsPlayed >= 2) {
+    
+      uint8_t card1 = CardUtils::getCardValue(playedCards[cardsPlayed - 2], false);
+      uint8_t card2 = CardUtils::getCardValue(playedCards[cardsPlayed - 1], false);
+      uint8_t cardVal = CardUtils::getCardValue(playedCards[cardsPlayed - 2], true);
 
-      if (playedCards[x] != Constants::NoCard && playedCards[x + 1] != Constants::NoCard) {
-      
-        uint8_t card1 = CardUtils::getCardValue(playedCards[x], false);
-        uint8_t card2 = CardUtils::getCardValue(playedCards[x + 1], false);
-        uint8_t cardVal = CardUtils::getCardValue(playedCards[x], true);
+      if ((card1 == card2) && (pointsToDate + cardVal <= 31)) {
+    
+        for (uint8_t y = 0; y < this->handIdx; y++) {
 
-        if (card1 == card2 && (cardVal * 3 <= 31)) {
-      
-          for (uint8_t y = 0; y < this->handIdx; y++) {
-
-            if (card1 == CardUtils::getCardValue(this->hand[y], false)) {
+          if (card1 == CardUtils::getCardValue(this->hand[y], false)) {
 Serial.println("Royal Pair");
-              card = removeFromHand(y);
-              points = 6;
-              return;
-
-            }
+            card = removeFromHand(y);
+            points = 6;
+            return;
 
           }
 
@@ -518,27 +514,22 @@ Serial.println("Royal Pair");
 
     // Convert a pair to a Double Royal pair ..
 
-    for (uint8_t x = 0; x < 6; x++) {
+    if (cardsPlayed >= 3) {
+    
+      uint8_t card1 = CardUtils::getCardValue(playedCards[cardsPlayed - 3], false);
+      uint8_t card2 = CardUtils::getCardValue(playedCards[cardsPlayed - 2], false);
+      uint8_t card3 = CardUtils::getCardValue(playedCards[cardsPlayed - 1], false);
+      uint8_t cardVal = CardUtils::getCardValue(playedCards[cardsPlayed - 3], true);
 
-      if (playedCards[x] != Constants::NoCard && playedCards[x + 1] != Constants::NoCard && playedCards[x + 2] != Constants::NoCard) {
-      
-        uint8_t card1 = CardUtils::getCardValue(playedCards[x], false);
-        uint8_t card2 = CardUtils::getCardValue(playedCards[x + 1], false);
-        uint8_t card3 = CardUtils::getCardValue(playedCards[x + 2], false);
-      
-        uint8_t cardVal = CardUtils::getCardValue(playedCards[x], true);
+      if (card1 == card2 && card1 == card3 && (pointsToDate + cardVal <= 31)) {
+    
+        for (uint8_t y = 0; y < this->handIdx; y++) {
 
-        if (card1 == card2 && card1 == card3 && (cardVal * 4 <= 31)) {
-      
-          for (uint8_t y = 0; y < this->handIdx; y++) {
-
-            if (card1 == CardUtils::getCardValue(this->hand[y], false)) {
+          if (card1 == CardUtils::getCardValue(this->hand[y], false)) {
 Serial.println("Double Royal Pair");
-              card = removeFromHand(y);
-              points = 12;
-              return;
-
-            }
+            card = removeFromHand(y);
+            points = 12;
+            return;
 
           }
 
@@ -551,23 +542,15 @@ Serial.println("Double Royal Pair");
 
     // Check for 15 or 31 ..
 
-    for (uint8_t x = 0; x < 8; x++) {
-
-      if (playedCards[x] != Constants::NoCard) {
+    for (uint8_t y = 0; y < this->handIdx; y++) {
       
-        for (uint8_t y = 0; y < this->handIdx; y++) {
-          
-          uint8_t total = pointsToDate + CardUtils::getCardValue(this->hand[y], true);
+      uint8_t total = pointsToDate + CardUtils::getCardValue(this->hand[y], true);
 
-          if (total == 15 || total == 31) {
+      if (total == 15 || total == 31) {
 Serial.println("15 or 31");
-            card = removeFromHand(y);
-            points = 2;
-            return;
-
-          }
-
-        }
+        card = removeFromHand(y);
+        points = 2;
+        return;
 
       }
 
@@ -576,26 +559,23 @@ Serial.println("15 or 31");
 
     // Check for run of three ..
 
-    for (uint8_t x = 0; x < 7; x++) {
+    if (cardsPlayed >= 3) {
 
-      if (playedCards[x] != Constants::NoCard && playedCards[x + 1] != Constants::NoCard) {
+      uint8_t card1 = CardUtils::getCardValue(playedCards[cardsPlayed - 2], false);
+      uint8_t card2 = CardUtils::getCardValue(playedCards[cardsPlayed - 1], false);
       
-        for (uint8_t y = 0; y < this->handIdx; y++) {
-        
-          uint8_t card1 = CardUtils::getCardValue(playedCards[x], false);
-          uint8_t card2 = CardUtils::getCardValue(playedCards[x + 1], false);
-          uint8_t card3 = CardUtils::getCardValue(this->hand[y], false);
-          uint8_t cardVal = CardUtils::getCardValue(this->hand[y], true);
+      for (uint8_t y = 0; y < this->handIdx; y++) {
+      
+        uint8_t card3 = CardUtils::getCardValue(this->hand[y], false);
+        uint8_t cardVal = CardUtils::getCardValue(this->hand[y], true);
 
-          if (pointsToDate + cardVal <= 31 &&
-            (card1 != card2 && card1 != card3 && card2 != card3) &&
-            absT(card1 - card2) <= 2 && absT(card1 - card3) <=2) {
+        if (pointsToDate + cardVal <= 31 &&
+           (card1 != card2 && card1 != card3 && card2 != card3) &&
+           diffT(card1, card2) <= 2 && diffT(card1, card3) <=2) {
 Serial.println("Run of three");
-            card = removeFromHand(y);
-            points = 3;
-            return;
-
-          }
+          card = removeFromHand(y);
+          points = 3;
+          return;
 
         }
 
@@ -606,27 +586,24 @@ Serial.println("Run of three");
 
     // Check for run of four ..
 
-    for (uint8_t x = 0; x < 6; x++) {
+    if (cardsPlayed >= 4) {
 
-      if (playedCards[x] != Constants::NoCard && playedCards[x + 1] != Constants::NoCard && playedCards[x + 2] != Constants::NoCard) {
+      uint8_t card1 = CardUtils::getCardValue(playedCards[cardsPlayed - 3], false);
+      uint8_t card2 = CardUtils::getCardValue(playedCards[cardsPlayed - 2], false);
+      uint8_t card3 = CardUtils::getCardValue(playedCards[cardsPlayed - 1], false);
           
-        for (uint8_t y = 0; y < this->handIdx; y++) {
+      for (uint8_t y = 0; y < this->handIdx; y++) {
 
-          uint8_t card1 = CardUtils::getCardValue(playedCards[x], false);
-          uint8_t card2 = CardUtils::getCardValue(playedCards[x + 1], false);
-          uint8_t card3 = CardUtils::getCardValue(playedCards[x + 2], false);
-          uint8_t card4 = CardUtils::getCardValue(this->hand[x], false);
-          uint8_t cardVal = CardUtils::getCardValue(this->hand[x], true);
+        uint8_t card4 = CardUtils::getCardValue(this->hand[y], false);
+        uint8_t cardVal = CardUtils::getCardValue(this->hand[y], true);
 
-          if (pointsToDate + cardVal <= 31 &&
-            (card1 != card2 && card1 != card3 && card1 != card4 && card2 != card3 && card2 != card4 && card3 != card4) &&
-            absT(card1 - card2) <= 3 && absT(card1 - card3) <=3 && absT(card1 - card4) <=3 && absT(card2 - card3) <=3 && absT(card2 - card4) <=3 && absT(card3 - card4) <=3) {
+        if (pointsToDate + cardVal <= 31 &&
+          (card1 != card2 && card1 != card3 && card1 != card4 && card2 != card3 && card2 != card4 && card3 != card4) &&
+          diffT(card1, card2) <= 3 && diffT(card1, card3) <=3 && diffT(card1, card4) <=3 && diffT(card2, card3) <=3 && diffT(card2, card4) <=3 && diffT(card3, card4) <=3) {
 Serial.println("Run of four");
-            card = removeFromHand(x);
-            points = 4;
-            return;
-
-          }
+          card = removeFromHand(y);
+          points = 4;
+          return;
 
         }
 

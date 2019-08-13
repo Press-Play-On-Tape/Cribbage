@@ -136,7 +136,7 @@ uint8_t PlayGameState::getScore() {
 		uint8_t card3 = CardUtils::getCardValue(playedCards[playIdx - 1], false);
 
 		if ((card1 != card2 && card1 != card3 && card2 != card3) &&
-			absT(card1 - card2) <= 2 && absT(card1 - card3) <=2) {
+			diffT(card1, card2) <= 2 && diffT(card1, card3) <=2) {
 
 			score += 3;
 
@@ -155,7 +155,7 @@ uint8_t PlayGameState::getScore() {
 		uint8_t card4 = CardUtils::getCardValue(playedCards[playIdx - 1], false);
 
 		if ((card1 != card2 && card1 != card3 && card1 != card4 && card2 != card3 && card2 != card4 && card3 != card4) &&
-			absT(card1 - card2) <= 3 && absT(card1 - card3) <=3 && absT(card1 - card4) <=3 && absT(card2 - card3) <=3 && absT(card2 - card4) <=3 && absT(card3 - card4) <=3) {
+			diffT(card1, card2) <= 3 && diffT(card1, card3) <=3 && diffT(card1, card4) <=3 && diffT(card2, card3) <=3 && diffT(card2, card4) <=3 && diffT(card3, card4) <=3) {
 
 			score += 1;
 
