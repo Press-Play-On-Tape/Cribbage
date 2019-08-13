@@ -193,6 +193,9 @@ void PlayGameState::update(StateMachine & machine) {
             uint8_t playedValue = getBoardValue();
             saveMessageWithScore(playedValue, getScore(), BubbleAlignment::Player);
             this->counter = 1;
+
+						uint8_t score = getScore();
+						player1.addScore(score);
             Serial.print("playIdx: ");
             Serial.println(playIdx);							
 
@@ -243,6 +246,7 @@ void PlayGameState::update(StateMachine & machine) {
 
 							if (points != 0) {
 								
+								player2.addScore(points);
 								saveMessageWithScore(playedValue, points, BubbleAlignment::Computer);
 
 							}
@@ -286,6 +290,60 @@ Serial.println(getScore());
 
 			break;
 
+		case ViewState::DisplayScore:
+
+			if (justPressed & A_BUTTON) {
+				viewState = prevViewState; 
+			}
+
+			if (arduboy.everyXFrames(16)) {
+
+				switch (this->counter) {
+
+					case 0:
+						if (this->player1Counter < this->player1EndPos) {
+							this->player1Counter++;
+						}
+						else {
+							this->counter++;
+						}
+						break;
+
+					case 1:
+					case 3:
+					case 5:
+					case 7:
+						this->highlight = false;
+						this->counter++;
+						break;
+
+					case 2:
+					case 4:
+					case 6:
+					case 8:
+						this->highlight = true;
+						this->counter++;
+						break;
+
+					default: break;
+
+				}
+
+			}
+
+		}
+
+		if (justPressed & B_BUTTON) {
+//			machine.changeState(GameStateType::DisplayScore); 
+
+			this->player1StartPos = 80;
+			this->player1EndPos = 93;
+			this->player1Counter = this->player1StartPos;
+
+			this->counter = 0;
+			this->highlight = true;
+			prevViewState = viewState;
+			viewState = ViewState::DisplayScore;
 
 		}
 

@@ -97,17 +97,6 @@ void Game::loop(void) {
 			this->playGameState.render(*this);
 			break;
 
-		case GameStateType::DisplayScoreState: 
-
-			if (currentState != savedCurrentState) {
-				this->context.gameState = this->currentState;
-				this->displayScoreState.activate(*this);
-				this->savedCurrentState = this->currentState;
-			}
-			this->displayScoreState.update(*this);
-			this->displayScoreState.render(*this);
-			break;
-
 		case GameStateType::GameOver: 
 
 			if (currentState != savedCurrentState) {
@@ -118,17 +107,6 @@ void Game::loop(void) {
 			this->gameOverState.update(*this);
 			this->gameOverState.render(*this);
 			break;
-
-		case GameStateType::HighScore: 
-
-			if (currentState != savedCurrentState) {
-				this->context.gameState = this->currentState;
-				this->highScoreState.activate(*this);
-				this->savedCurrentState = this->currentState;
-			}
-			this->highScoreState.update(*this);
-			this->highScoreState.render(*this);
-			break;		
 
 		default: break;	
 

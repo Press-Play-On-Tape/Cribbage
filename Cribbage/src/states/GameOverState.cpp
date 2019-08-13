@@ -24,7 +24,7 @@ void GameOverState::update(StateMachine & machine) {
 
 	if (justPressed & A_BUTTON) {
 		arduboy.setRGBled(0, 0, 0);
-		machine.changeState(GameStateType::HighScore); 
+		machine.changeState(GameStateType::TitleScreen); 
 	}
 
 }

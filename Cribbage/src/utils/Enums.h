@@ -33,11 +33,8 @@ enum class PlayerTile : uint8_t {
 enum class GameStateType : uint8_t {
 	SplashScreen,
 	TitleScreen,
-  PlayerNames,
   PlayGame,
-  DisplayScoreState,
-  GameOver,
-  HighScore
+  GameOver
 };
 
 enum class BubbleAlignment : uint8_t {

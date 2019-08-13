@@ -6,6 +6,41 @@
 
 Player::Player() {}
 
+uint8_t Player::getScore() {
+
+  return this->score;
+
+}
+
+uint8_t Player::getPrevScore() {
+
+  return this->prevScore;
+
+}
+
+void Player::setScore(uint8_t score) {
+
+  this->score = score;
+
+}
+
+void Player::setPrevScore(uint8_t score) {
+
+  this->prevScore = score;
+
+}
+
+void Player::addScore(uint8_t score) {
+
+  this->score += score;
+
+}
+
+void Player::addPrevScore(uint8_t score) {
+
+  this->prevScore += score;
+
+}
 
 uint8_t Player::getHandCard(uint8_t index) {
 

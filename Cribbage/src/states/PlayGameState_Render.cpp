@@ -30,16 +30,24 @@ constexpr const static uint8_t PLAY_CENTER = 62;
 void PlayGameState::render(StateMachine & machine) {
 
 	auto & arduboy = machine.getContext().arduboy;
-//	auto & ardBitmap = machine.getContext().ardBitmap;
+  auto & gameStats = machine.getContext().gameStats;
+	auto & player1 = gameStats.player1;
+	auto & player2 = gameStats.player2;
 
-  // ardBitmap.drawCompressed(87, 18, Images::Dealer_Mask, BLACK, ALIGN_NONE, MIRROR_NONE);
-  // ardBitmap.drawCompressed(87, 18, Images::Dealer_BlankFace, WHITE, ALIGN_NONE, MIRROR_NONE);
-  // ardBitmap.drawCompressed(87 + 12, 28, Images::Dealer_Faces[2], WHITE, ALIGN_NONE, MIRROR_NONE);
+	switch (this->viewState) {
 
-  drawPlayerHands(machine);
-  arduboy.drawFastHLine(0, 61, 128);
-  arduboy.drawFastHLine(0, 60, 128, BLACK);
-  arduboy.drawHorizontalDottedLine(0, 127, 63);
+    case ViewState::DisplayScore:
+      break;
+
+    default:
+      SpritesB::drawOverwrite(87, 18, Images::Dealer, 0);
+      drawPlayerHands(machine);
+      arduboy.drawFastHLine(0, 61, 128);
+      arduboy.drawFastHLine(0, 60, 128, BLACK);
+      arduboy.drawHorizontalDottedLine(0, 127, 63);
+      break;
+
+  }
 
 	switch (this->viewState) {
 
@@ -65,32 +73,59 @@ void PlayGameState::render(StateMachine & machine) {
 			break;
 
     case ViewState::PlayersTurn:
-      drawSmallCard(machine, 0, 0, this->turnUp, false);
+      drawSmallCard(0, 0, this->turnUp, false);
       if (this->counter == 0) drawHighlight(machine, this->highlightCard);
-      drawPlay(machine);
+      drawPlay();
       drawCrib(machine, this->cribState);
 			break;
 
     case ViewState::ComputersTurn:
-      drawSmallCard(machine, 0, 0, this->turnUp, false);
+      drawSmallCard(0, 0, this->turnUp, false);
       drawHighlight(machine, this->highlightCard);
-      drawPlay(machine);
+      drawPlay();
       drawCrib(machine, this->cribState);
 			break;
 
+    case ViewState::DisplayScore:
+      {
+      auto & arduboy = machine.getContext().arduboy;
+      auto & gameStats = machine.getContext().gameStats;
+      auto & player1 = gameStats.player1;
+      auto & player2 = gameStats.player2;
+
+      SpritesB::drawOverwrite(0, 22, Images::Dealer, 0);
+      SpritesB::drawSelfMasked(43, 0, Images::Divider, 0);
+      SpritesB::drawSelfMasked(51, 4, Images::Board, 0);
+
+      this->drawPlayer_1(this->player1StartPos, PlayerTile::Original);
+      if (this->highlight) this->drawPlayer_1(this->player1Counter, PlayerTile::Player1);
+
+      drawScore(machine, 5, -1, player2.getScore());
+      drawScore(machine, 26, -1, player1.getScore());
+      arduboy.fillRect(1, 0, 5, 7);
+      arduboy.fillRect(22, 0, 5, 7);
+      SpritesB::drawErase(1, 2, Images::Peg, 0);
+      SpritesB::drawErase(22, 2, Images::Peg, 1);
+      }
+      break;
+
 	}
 
-  // arduboy.fillRect(0, 52, WIDTH, HEIGHT, BLACK);
-  // ardBitmap.drawCompressed(0, 51, Images::Background, WHITE, ALIGN_NONE, MIRROR_NONE); 
-  // drawPlayerHands_Lines(machine);
-	// drawButtons(machine);
-  // drawStats(machine, this->highlightEndOfGame);
+  switch (this->viewState) {
+    
+    case ViewState::DisplayScore:
+      break;
 
-  // if (!dealer.noComment()) renderDealer(machine);
+    default:
+      drawScore(machine, 114, -1, player2.getScore());
+      drawScore(machine, 114, 52, player1.getScore());
 
-  if (this->message.renderRequired) {
-    drawMessageBox(machine, this->message.message, this->message.lines, this->message.width, this->message.alignment);
-    this->message.renderRequired = false;
+      if (this->message.renderRequired) {
+        drawMessageBox(machine, this->message.message, this->message.lines, this->message.width, this->message.alignment);
+        this->message.renderRequired = false;
+      }
+      break;
+
   }
 
 }
@@ -113,10 +148,10 @@ void PlayGameState::drawPlayerHands(StateMachine & machine) {
   for (uint8_t x = 0; x < gameStats.player1.getHandCardCount(); x++) {
     
     if (x < gameStats.player1.getHandCardCount() - 1) {
-      drawCard(machine, leftHand + (x * CARD_LARGE_SPACING), CARD_LARGE_TOP_PLAYER, gameStats.player1.getHandCard(x), false);   
+      drawCard(leftHand + (x * CARD_LARGE_SPACING), CARD_LARGE_TOP_PLAYER, gameStats.player1.getHandCard(x), false);   
     }
     else {
-      drawCard(machine, leftHand + (x * CARD_LARGE_SPACING), CARD_LARGE_TOP_PLAYER, gameStats.player1.getHandCard(x), true);   
+      drawCard(leftHand + (x * CARD_LARGE_SPACING), CARD_LARGE_TOP_PLAYER, gameStats.player1.getHandCard(x), true);   
     }
     
   }
@@ -132,12 +167,12 @@ void PlayGameState::drawPlayerHands(StateMachine & machine) {
 			
 		if (x < gameStats.player2.getHandCardCount() - 1) {
 
-			drawComputerCard(machine, rightHandSide - (x * CARD_LARGE_SPACING_DEALER), CARD_LARGE_TOP_DEALER, false);   
+			drawComputerCard(rightHandSide - (x * CARD_LARGE_SPACING_DEALER), CARD_LARGE_TOP_DEALER, false);   
 
 		}
 		else {
 
-			drawComputerCard(machine, rightHandSide - (x * CARD_LARGE_SPACING_DEALER) + 2, CARD_LARGE_TOP_DEALER, true);   
+			drawComputerCard(rightHandSide - (x * CARD_LARGE_SPACING_DEALER) + 2, CARD_LARGE_TOP_DEALER, true);   
 
 		}
     
@@ -145,24 +180,22 @@ void PlayGameState::drawPlayerHands(StateMachine & machine) {
       
 }
 
-void PlayGameState::drawComputerCard(StateMachine & machine, uint8_t xPos, uint8_t yPos, bool fullSizeCard) {
+void PlayGameState::drawComputerCard(uint8_t xPos, uint8_t yPos, bool fullSizeCard) {
 
 	if (fullSizeCard) {
 
-		SpritesB::drawOverwrite(xPos - CARD_LARGE_SPACING_FULL, yPos - 17, Images::Card_Outline_Full, 0);
-		SpritesB::drawErase(xPos - 18, yPos - 11, Images::Card_Background_Full, 0);
+		SpritesB::drawSelfMasked(xPos - CARD_LARGE_SPACING_FULL, yPos - 8, Images::Computer_Full, 0);
 
 	}
 	else {
 
-	  SpritesB::drawOverwrite(xPos - CARD_LARGE_SPACING, yPos - 17, Images::Card_Outline_Half, 0);
-		SpritesB::drawErase(xPos - 7, yPos - 11, Images::Card_Background_Half, 0);
+	  SpritesB::drawSelfMasked(xPos - CARD_LARGE_SPACING, yPos - 8, Images::Computer_Half, 0);
 
 	}
 
 }
 
-void PlayGameState::drawCard(StateMachine & machine, uint8_t xPos, uint8_t yPos, uint8_t card, bool fullSizeCard) {
+void PlayGameState::drawCard(uint8_t xPos, uint8_t yPos, uint8_t card, bool fullSizeCard) {
 
 	uint8_t cardNumber = card % 13;
 
@@ -183,7 +216,7 @@ void PlayGameState::drawCard(StateMachine & machine, uint8_t xPos, uint8_t yPos,
 
 }
 
-void PlayGameState::drawSmallCard(StateMachine & machine, uint8_t xPos, uint8_t yPos, uint8_t card, bool leftAlign) {
+void PlayGameState::drawSmallCard(uint8_t xPos, uint8_t yPos, uint8_t card, bool leftAlign) {
 
 	uint8_t cardNumber = card % 13;
 
@@ -276,14 +309,14 @@ void PlayGameState::drawTurnUp(StateMachine & machine, TurnUpState turnUpState) 
       break;
 
     case TurnUpState::Visible:
-      drawSmallCard(machine, 0, yPos, this->turnUp, false);
+      drawSmallCard(0, yPos, this->turnUp, false);
       break;
 
   }
 
 }
 
-void PlayGameState::drawPlay(StateMachine & machine) {
+void PlayGameState::drawPlay() {
 
   uint8_t xLeft = PLAY_CENTER - ((16 + (playIdx * 10)) / 2);
 
@@ -293,10 +326,25 @@ void PlayGameState::drawPlay(StateMachine & machine) {
 
     if (this->playedCards[x] != Constants::NoCard) {
 
-      drawSmallCard(machine, xLeft + (x * 10), 13, this->playedCards[x], leftAlign);
+      drawSmallCard(xLeft + (x * 10), 13, this->playedCards[x], leftAlign);
 
     }
 
   }
+
+}
+
+void PlayGameState::drawPlayer_1(uint8_t position, PlayerTile playerTile) {
+
+  uint8_t x = pgm_read_byte(&Board_Positions_Player_2[position * 2]);
+  uint8_t y = pgm_read_byte(&Board_Positions_Player_2[position * 2] + 1);
+  uint8_t frame = 0;
+
+  if (y >= 128) {
+    frame = 1;
+    y = y & 0x7F;
+  }
+
+  SpritesB::drawExternalMask(x, y, Images::Peg, Images::Peg_Mask, 0, frame);
 
 }

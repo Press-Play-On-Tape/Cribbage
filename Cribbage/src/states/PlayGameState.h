@@ -4,6 +4,7 @@
 #include "../utils/GameState.h"
 #include "../utils/Enums.h"
 #include "../images/Images.h"
+#include "../locations/Board.h"
 #include "BaseState.h"
 
 class PlayGameState : public BaseState {
@@ -24,10 +25,12 @@ class PlayGameState : public BaseState {
       DiscardCribComputer,
       TurnUp,
       PlayersTurn,
-      ComputersTurn
+      ComputersTurn,
+      DisplayScore
     };
 
     ViewState viewState = ViewState::DealCards;
+    ViewState prevViewState = ViewState::DealCards;
     CribState cribState = CribState::Empty;
     Message message;
 
@@ -38,6 +41,7 @@ class PlayGameState : public BaseState {
     uint8_t playedCards[8];
     uint8_t playIdx;
     uint8_t turnUp;
+    bool highlight = true;
 
   public:	
   
@@ -48,13 +52,13 @@ class PlayGameState : public BaseState {
   private:
 
     void drawPlayerHands(StateMachine & machine);
-    void drawCard(StateMachine & machine, uint8_t xPos, uint8_t yPos, uint8_t card, bool fullSizeCard);
-    void drawSmallCard(StateMachine & machine, uint8_t xPos, uint8_t yPos, uint8_t card, bool leftAlign);
+    void drawCard(uint8_t xPos, uint8_t yPos, uint8_t card, bool fullSizeCard);
+    void drawSmallCard(uint8_t xPos, uint8_t yPos, uint8_t card, bool leftAlign);
     void drawCrib(StateMachine & machine, CribState cribState);
     void drawHighlight(StateMachine & machine, uint8_t hghlightCard);
     void drawTurnUp(StateMachine & machine, TurnUpState turnUpState);
-    void drawComputerCard(StateMachine & machine, uint8_t xPos, uint8_t yPos, bool fullSizeCard);
-    void drawPlay(StateMachine & machine);
+    void drawComputerCard(uint8_t xPos, uint8_t yPos, bool fullSizeCard);
+    void drawPlay();
 
     void resetHand(StateMachine & machine);
     void saveMessage(String message, uint8_t lines, BubbleAlignment alignment);
@@ -63,6 +67,16 @@ class PlayGameState : public BaseState {
     uint8_t getScore();
 
     uint8_t getBoardValue();
+    void drawPlayer_1(uint8_t position, PlayerTile playerTile);
+
+
+
+
+
+
+    uint8_t player1StartPos = 0;
+    uint8_t player1EndPos = 0;
+    uint8_t player1Counter = 0;
 
 };
 

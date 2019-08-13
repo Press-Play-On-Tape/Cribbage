@@ -6,42 +6,6 @@
 #include "../fonts/Font3x5.h"
 
 
-
-void BaseState::renderScore(StateMachine & machine, int16_t score, uint8_t x, uint8_t y) {
-
-	auto & arduboy = machine.getContext().arduboy;
-
-	// if (score < 0) { arduboy.drawFastHLine(x - 3, y + 3, 2); }
-
-	// if (score > 10000) {
-
-	// 	for (uint8_t j = 5, x2 = x - 4; j > 0; --j, x2 += 4) {
-			
-	// 		uint8_t digits[5] = {};
-	// 		extractDigits(digits, static_cast<uint16_t>(absT(score)));
-
-	// 		font3x5.setCursor(x2, y);
-	// 		font3x5.print(digits[j - 1]);
-
-	// 	}
-
-	// }
-	// else {
-
-	// 	for (uint8_t j = 4, x2 = x; j > 0; --j, x2 += 4) {
-			
-	// 		uint8_t digits[4] = {};
-	// 		extractDigits(digits, static_cast<uint16_t>(absT(score)));
-
-	// 		font3x5.setCursor(x2, y);
-	// 		font3x5.print(digits[j - 1]);
-	// 	}
-
-	// }
-
-}
-
-
 void BaseState::drawMessageBox(StateMachine &machine, String message, uint8_t lines, BubbleAlignment alignment) {
 
 	drawMessageBox(machine, message, lines, 72, alignment);
@@ -88,3 +52,20 @@ void BaseState::drawMessageBox(StateMachine &machine, String message, uint8_t li
 
 }
 
+
+void BaseState::drawScore(StateMachine & machine, uint8_t x, int8_t y, uint8_t score) {
+
+	auto & arduboy = machine.getContext().arduboy;
+
+  uint8_t xPos = x + 6; 
+  if (score >= 10)  xPos = x + 4; 
+  if (score >= 100) xPos = x + 2; 
+
+  font3x5.setTextColor(BLACK);
+  arduboy.fillRect(x, y, 14, 8, BLACK);
+  arduboy.fillRect(x + 1, y + 1, 13, 7);
+  font3x5.setCursor(xPos, y + 1);
+  font3x5.print(score);
+  font3x5.setTextColor(WHITE);
+
+}

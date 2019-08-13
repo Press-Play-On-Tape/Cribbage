@@ -10,6 +10,15 @@ class Player {
 
     Player();
 
+    uint8_t getScore();
+    uint8_t getPrevScore();
+
+    void setScore(uint8_t score);
+    void setPrevScore(uint8_t score);
+
+    void addScore(uint8_t score);
+    void addPrevScore(uint8_t score);
+
     uint8_t getHandCard(uint8_t index);
     uint8_t getHandCardCount();
     uint8_t getHandCardIndex(uint8_t card);
@@ -40,7 +49,9 @@ class Player {
     uint8_t cribIdx;
 
     uint8_t hand[6];
-//    uint8_t orig[4];
     uint8_t crib[4];
+
+    uint8_t score = 0;
+    uint8_t prevScore;
     
 };

@@ -193,7 +193,8 @@ void PlayGameState::saveMessageWithScore(uint8_t playedValue, uint8_t points, Bu
   }
   else {
     
-    char messageText[] = "   ";
+    char messageText[] = "      ";
+		messageIdx = 3;
 
     if (playedValue >= 10) 	{ messageText[messageIdx] = (playedValue / 10) + 48; messageIdx++; }
     messageText[messageIdx] = (playedValue % 10) + 48; messageIdx++; 
