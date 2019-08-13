@@ -11,6 +11,7 @@ class TitleScreenState : public BaseState {
   private:
 
     uint8_t restart = 0;
+    uint8_t counter = 0;
 
   public:	
   

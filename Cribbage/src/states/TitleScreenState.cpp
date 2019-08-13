@@ -41,6 +41,14 @@ void TitleScreenState::update(StateMachine & machine) {
 	}
 
 
+	// Update ticker ..
+
+	if (arduboy.everyXFrames(16)) {
+		this->counter++;
+		if (this->counter == 28) this->counter = 0;
+	}
+
+
 	// Handle other input ..
 
 	if (justPressed & A_BUTTON) {
@@ -55,6 +63,11 @@ void TitleScreenState::update(StateMachine & machine) {
 //
 void TitleScreenState::render(StateMachine & machine) {
 
-	SpritesB::drawOverwrite(0, 0, Images::Title, 0);
+	SpritesB::drawOverwrite(75, 0, Images::TitleScreen_Board, 0);
+	SpritesB::drawOverwrite(7, 16, Images::TitleScreen_Words, 0);
+
+	for (int16_t x = -20; x < 154; x = x + 28) {
+		SpritesB::drawOverwrite(x - counter, 44, Images::TitleScreen_Cards, 0);
+	}
 
 }
