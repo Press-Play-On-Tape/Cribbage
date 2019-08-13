@@ -21,13 +21,11 @@
 #include "Arduboy2Ext.h"
 #include "Enums.h"
 #include "GameStats.h"
-#include "../ardBitmap/ArdBitmap.h"
 
 class GameContext {
 
   public:
 
-    ArdBitmap<WIDTH, HEIGHT> ardBitmap;
     GameStateType gameState;
     Arduboy2Ext arduboy;
     GameStats gameStats;

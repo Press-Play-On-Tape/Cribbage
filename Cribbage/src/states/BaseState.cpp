@@ -65,19 +65,19 @@ void BaseState::drawMessageBox(StateMachine &machine, String message, uint8_t li
 	arduboy.drawRect(x + 2, y + 2, width - 4, yBottom - y + 4, BLACK);	
 
 
-	Sprites::drawExternalMask(x, y, Images::Talk_Top_Left, Images::Talk_Bottom_Left_Mask, 0, 0);
-	Sprites::drawExternalMask(x + width - 8, y, Images::Talk_Top_Right, Images::Talk_Bottom_Right_Mask, 0, 0);
+	SpritesB::drawExternalMask(x, y, Images::Talk_Top_Left, Images::Talk_Bottom_Left_Mask, 0, 0);
+	SpritesB::drawExternalMask(x + width - 8, y, Images::Talk_Top_Right, Images::Talk_Bottom_Right_Mask, 0, 0);
 
 	if (alignment == BubbleAlignment::Player) {
 
-		Sprites::drawExternalMask(x, yBottom - 1, Images::Talk_Bubble_Left, Images::Talk_Bubble_Left_Mask, 0, 0);
-		Sprites::drawExternalMask(x + width - 8, yBottom, Images::Talk_Bottom_Right, Images::Talk_Bottom_Right_Mask, 0, 0);
+		SpritesB::drawExternalMask(x, yBottom - 1, Images::Talk_Bubble_Left, Images::Talk_Bubble_Left_Mask, 0, 0);
+		SpritesB::drawExternalMask(x + width - 8, yBottom, Images::Talk_Bottom_Right, Images::Talk_Bottom_Right_Mask, 0, 0);
 
 	}
 	else {
 
-		Sprites::drawExternalMask(x, yBottom, Images::Talk_Bottom_Left, Images::Talk_Bottom_Left_Mask, 0, 0);
-		Sprites::drawExternalMask(x + width - 26, yBottom - 1, Images::Talk_Bubble_Right, Images::Talk_Bubble_Right_Mask, 0, 0);
+		SpritesB::drawExternalMask(x, yBottom, Images::Talk_Bottom_Left, Images::Talk_Bottom_Left_Mask, 0, 0);
+		SpritesB::drawExternalMask(x + width - 26, yBottom - 1, Images::Talk_Bubble_Right, Images::Talk_Bubble_Right_Mask, 0, 0);
 
 	}
 

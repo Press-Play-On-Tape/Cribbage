@@ -30,11 +30,11 @@ constexpr const static uint8_t PLAY_CENTER = 62;
 void PlayGameState::render(StateMachine & machine) {
 
 	auto & arduboy = machine.getContext().arduboy;
-	auto & ardBitmap = machine.getContext().ardBitmap;
+//	auto & ardBitmap = machine.getContext().ardBitmap;
 
-  ardBitmap.drawCompressed(87, 18, Images::Dealer_Mask, BLACK, ALIGN_NONE, MIRROR_NONE);
-  ardBitmap.drawCompressed(87, 18, Images::Dealer_BlankFace, WHITE, ALIGN_NONE, MIRROR_NONE);
-  ardBitmap.drawCompressed(87 + 12, 28, Images::Dealer_Faces[2], WHITE, ALIGN_NONE, MIRROR_NONE);
+  // ardBitmap.drawCompressed(87, 18, Images::Dealer_Mask, BLACK, ALIGN_NONE, MIRROR_NONE);
+  // ardBitmap.drawCompressed(87, 18, Images::Dealer_BlankFace, WHITE, ALIGN_NONE, MIRROR_NONE);
+  // ardBitmap.drawCompressed(87 + 12, 28, Images::Dealer_Faces[2], WHITE, ALIGN_NONE, MIRROR_NONE);
 
   drawPlayerHands(machine);
   arduboy.drawFastHLine(0, 61, 128);
@@ -147,18 +147,16 @@ void PlayGameState::drawPlayerHands(StateMachine & machine) {
 
 void PlayGameState::drawComputerCard(StateMachine & machine, uint8_t xPos, uint8_t yPos, bool fullSizeCard) {
 
-	auto & ardBitmap = machine.getContext().ardBitmap;
-
 	if (fullSizeCard) {
 
-		ardBitmap.drawCompressed(xPos - CARD_LARGE_SPACING_FULL, yPos - 17, Images::Card_Outline_Full, WHITE, ALIGN_NONE, MIRROR_HOR_VER);
-		ardBitmap.drawCompressed(xPos - 18, yPos - 11, Images::Card_Background_Full, BLACK, ALIGN_NONE, MIRROR_NONE);
+		SpritesB::drawOverwrite(xPos - CARD_LARGE_SPACING_FULL, yPos - 17, Images::Card_Outline_Full, 0);
+		SpritesB::drawErase(xPos - 18, yPos - 11, Images::Card_Background_Full, 0);
 
 	}
 	else {
 
-		ardBitmap.drawCompressed(xPos - CARD_LARGE_SPACING, yPos - 17, Images::Card_Outline_Half, WHITE, ALIGN_NONE, MIRROR_HOR_VER);
-		ardBitmap.drawCompressed(xPos - 7, yPos - 11, Images::Card_Background_Half, BLACK, ALIGN_NONE, MIRROR_NONE);
+	  SpritesB::drawOverwrite(xPos - CARD_LARGE_SPACING, yPos - 17, Images::Card_Outline_Half, 0);
+		SpritesB::drawErase(xPos - 7, yPos - 11, Images::Card_Background_Half, 0);
 
 	}
 
@@ -166,22 +164,20 @@ void PlayGameState::drawComputerCard(StateMachine & machine, uint8_t xPos, uint8
 
 void PlayGameState::drawCard(StateMachine & machine, uint8_t xPos, uint8_t yPos, uint8_t card, bool fullSizeCard) {
 
-	auto & ardBitmap = machine.getContext().ardBitmap;
-
 	uint8_t cardNumber = card % 13;
 
   if (fullSizeCard) {
 
-		ardBitmap.drawCompressed(xPos, yPos, Images::Card_Outline_Full, WHITE, ALIGN_NONE, MIRROR_NONE);
-		ardBitmap.drawCompressed(xPos + 8, yPos + 11, Images::Suits[card / 13], BLACK, ALIGN_NONE, MIRROR_NONE);
-		ardBitmap.drawCompressed(xPos + 3, yPos + 4, Images::Pips[cardNumber], BLACK, ALIGN_NONE, MIRROR_NONE);
+		SpritesB::drawSelfMasked(xPos, yPos, Images::Card_Outline_Full, 0);
+		SpritesB::drawErase(xPos + 8, yPos + 11, Images::Suits, card / 13);
+		SpritesB::drawErase(xPos + 3, yPos + 4, Images::Pips[cardNumber], 0);
 
 	}
   else {
 
-		ardBitmap.drawCompressed(xPos, yPos, Images::Card_Outline_Half, WHITE, ALIGN_NONE, MIRROR_NONE);
-		ardBitmap.drawCompressed(xPos + 3, yPos + 11, Images::Suits[card / 13], BLACK, ALIGN_NONE, MIRROR_NONE);
-		ardBitmap.drawCompressed(xPos + 3, yPos + 4, Images::Pips[cardNumber], BLACK, ALIGN_NONE, MIRROR_NONE);
+		SpritesB::drawSelfMasked(xPos, yPos, Images::Card_Outline_Half, 0);
+		SpritesB::drawErase(xPos + 3, yPos + 11, Images::Suits, card / 13);
+		SpritesB::drawErase(xPos + 3, yPos + 4, Images::Pips[cardNumber], 0);
 
   }
 
@@ -189,14 +185,13 @@ void PlayGameState::drawCard(StateMachine & machine, uint8_t xPos, uint8_t yPos,
 
 void PlayGameState::drawSmallCard(StateMachine & machine, uint8_t xPos, uint8_t yPos, uint8_t card, bool leftAlign) {
 
-	auto & ardBitmap = machine.getContext().ardBitmap;
 	uint8_t cardNumber = card % 13;
 
   uint8_t xOffset = (leftAlign ? 4 : 6);
 
   SpritesB::drawExternalMask(xPos, yPos, Images::TurnUp, Images::TurnUp_Mask, 2, 0);
-  ardBitmap.drawCompressed(xPos + xOffset, yPos + 12, Images::Suits[card / 13], BLACK, ALIGN_NONE, MIRROR_NONE);
-  ardBitmap.drawCompressed(xPos + xOffset, yPos + 5, Images::Pips[cardNumber], BLACK, ALIGN_NONE, MIRROR_NONE);
+  SpritesB::drawErase(xPos + xOffset, yPos + 12, Images::Suits, card / 13);
+  SpritesB::drawErase(xPos + xOffset, yPos + 5, Images::Pips[cardNumber], 0);
 
 }
 
