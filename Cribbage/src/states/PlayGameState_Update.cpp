@@ -177,45 +177,84 @@ void PlayGameState::update(StateMachine & machine) {
 
 		case ViewState::PlayersTurn:
 
-      switch (this->counter) {
+			if (!player1.canPlay(this->playedCards)) {
 
-        case 0:
-          if ((justPressed & LEFT_BUTTON) && (this->highlightCard > 0))															this->highlightCard--;
-          if ((justPressed & RIGHT_BUTTON) && this->highlightCard < player1.getHandCardCount() - 1)	this->highlightCard++;
+				this->counter++;
 
-          if (justPressed & A_BUTTON) {
+				switch (this->counter) {
 
-            uint8_t card = player1.removeFromHand(highlightCard);
-            this->playedCards[this->playIdx] = card;
-            this->playIdx++;
-            if (this->highlightCard == player1.getHandCardCount()) this->highlightCard--;
+					case 0 ... 5:
+						break;
 
-            uint8_t playedValue = getBoardValue();
-            saveMessageWithScore(playedValue, getScore(), BubbleAlignment::Player);
-            this->counter = 1;
+					case 6:
+						if (player2.getGo()) {
+							player1.addScore(1);
+							saveMessage(F(" Go for 1. "), 1, 38, BubbleAlignment::Player);
+						}
+						else {
+							saveMessage(F("  Go!  "), 1, 34, BubbleAlignment::Player);
+						}
+						break;
 
-						uint8_t score = getScore();
-						player1.addScore(score);
-            Serial.print("playIdx: ");
-            Serial.println(playIdx);							
+					case 7 ... 52:
+						this->message.renderRequired = true;
+						break;
 
-            Serial.print("score: ");
-            Serial.println(getScore());							
+					case 53:
+						this->counter = 0;
+						this->viewState = ViewState::ComputersTurn;
+						resetPlay(machine);
+						break;
 
-          }
-          break;
+				}
 
-        case 1 ... 45:
-          this->counter++;
-          this->message.renderRequired = true;
-          break;
+			}
+			else {
+					
+				switch (this->counter) {
 
-        case 46:
-          this->viewState = ViewState::ComputersTurn;
-          this->counter = 0;
-          break;
+					case 0:
+						if ((justPressed & LEFT_BUTTON) && (this->highlightCard > 0))															this->highlightCard--;
+						if ((justPressed & RIGHT_BUTTON) && this->highlightCard < player1.getHandCardCount() - 1)	this->highlightCard++;
 
-      }
+						if (justPressed & A_BUTTON) {
+
+							uint8_t card = player1.removeFromHand(highlightCard);
+							this->playedCards[this->playIdx] = card;
+							this->playIdx++;
+							if (this->highlightCard == player1.getHandCardCount()) this->highlightCard--;
+
+							uint8_t playedValue = getBoardValue();
+							saveMessageWithScore(playedValue, getScore(), BubbleAlignment::Player);
+							this->counter = 1;
+
+							uint8_t score = getScore();
+							player1.addScore(score);
+							Serial.print("playIdx: ");
+							Serial.println(playIdx);							
+
+							Serial.print("score: ");
+							Serial.println(getScore());							
+
+						}
+						break;
+
+					case 1 ... 45:
+						this->counter++;
+						this->message.renderRequired = true;
+						break;
+
+					case 46:
+						this->viewState = ViewState::ComputersTurn;
+						if (!player1.getGo() && player2.getGo()) {
+							this->viewState = ViewState::PlayersTurn;
+						}
+						this->counter = 0;
+						break;
+
+				}
+
+			}
 
 			break;
 
@@ -264,7 +303,13 @@ Serial.println(getScore());
 						}
 						else {
 
-							saveMessage(F("  Go!  "), 1, 34, BubbleAlignment::Computer);
+							if (player1.getGo()) {
+								player2.addScore(1);
+								saveMessage(F(" Go for 1. "), 1, 38, BubbleAlignment::Computer);
+							}
+							else {
+								saveMessage(F("  Go!  "), 1, 34, BubbleAlignment::Computer);
+							}
 
 						}
 
@@ -281,6 +326,14 @@ Serial.println(getScore());
 
 					this->counter = 0;
 					this->viewState = ViewState::PlayersTurn;
+					if (player1.getGo() && !player2.getGo()) {
+						this->viewState = ViewState::ComputersTurn;
+					}
+
+					if (isEndOfHand(machine)) {
+						Serial.println("End of Play");
+						resetPlay(machine);
+					}
 
 					player1.printHand(1);
 					player2.printHand(2);

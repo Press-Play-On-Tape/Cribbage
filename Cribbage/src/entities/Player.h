@@ -12,9 +12,11 @@ class Player {
 
     uint8_t getScore();
     uint8_t getPrevScore();
+    bool getGo();
 
     void setScore(uint8_t score);
     void setPrevScore(uint8_t score);
+    void setGo(bool value);
 
     void addScore(uint8_t score);
     void addPrevScore(uint8_t score);
@@ -38,6 +40,7 @@ class Player {
     uint8_t removeFromHand(uint8_t index);
     void resetHand();
     void printHand(uint8_t playerNo);
+    bool canPlay(uint8_t playedCards[]);
 
   private:
 
@@ -52,6 +55,7 @@ class Player {
     uint8_t crib[4];
 
     uint8_t score = 0;
-    uint8_t prevScore;
+    uint8_t prevScore = 0;
+    bool go = false;
     
 };

@@ -18,6 +18,12 @@ uint8_t Player::getPrevScore() {
 
 }
 
+bool Player::getGo() {
+
+  return this->go;
+
+}
+
 void Player::setScore(uint8_t score) {
 
   this->score = score;
@@ -27,6 +33,12 @@ void Player::setScore(uint8_t score) {
 void Player::setPrevScore(uint8_t score) {
 
   this->prevScore = score;
+
+}
+
+void Player::setGo(bool value) {
+
+  this->go = value;
 
 }
 
@@ -441,6 +453,8 @@ void Player::resetHand() {
   memset(this->hand, 0, (sizeof(this->hand) / sizeof(this->hand[0])));
   memset(this->crib, 0, (sizeof(this->crib) / sizeof(this->crib[0])));
 
+  this->go = false;
+
   // for (uint8_t x = 0; x < Constants::PlayerHandScores; x++) {
 
   //   this->scores[x].reset();
@@ -688,8 +702,35 @@ Serial.println("Return a card");
     }
 
     card = Constants::NoCard;
+    this->go = true;
     return;
   
   }
+
+}
+
+bool Player::canPlay(uint8_t playedCards[]) {
+
+  uint8_t pointsToDate = 0;
+  uint8_t cardsPlayed = 0;
+
+  for (uint8_t x = 0; x < 8; x++) {
+    if (playedCards[x] != Constants::NoCard) {
+      cardsPlayed = x + 1;
+      pointsToDate = pointsToDate + CardUtils::getCardValue(playedCards[x], true);
+    }
+  }
+
+  for (uint8_t i = 0; i < this->handIdx; i++) {
+
+    if (pointsToDate + CardUtils::getCardValue(this->hand[i], true) <= 31) {
+
+      return true;
+
+    }
+
+  }
+
+  return false;
 
 }

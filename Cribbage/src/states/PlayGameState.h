@@ -61,10 +61,12 @@ class PlayGameState : public BaseState {
     void drawPlay();
 
     void resetHand(StateMachine & machine);
+    void resetPlay(StateMachine & machine);
     void saveMessage(String message, uint8_t lines, BubbleAlignment alignment);
     void saveMessage(String message, uint8_t lines, uint8_t width, BubbleAlignment alignment);
     void saveMessageWithScore(uint8_t playedValue, uint8_t points, BubbleAlignment alignment);
     uint8_t getScore();
+    bool isEndOfHand(StateMachine & machine);
 
     uint8_t getBoardValue();
     void drawPlayer_1(uint8_t position, PlayerTile playerTile);

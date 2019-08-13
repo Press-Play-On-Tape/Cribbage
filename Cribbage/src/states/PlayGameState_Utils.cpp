@@ -3,6 +3,20 @@
 #include "../utils/CardUtils.h"
 #include "../utils/Utils.h"
 
+void PlayGameState::resetPlay(StateMachine & machine) {
+
+	auto & gameStats = machine.getContext().gameStats;
+	auto & player1 = gameStats.player1;
+	auto & player2 = gameStats.player2;
+	auto & deck = gameStats.deck;
+
+	for (uint8_t x = 0; x < 8; x++) {
+
+		this->playedCards[x] = Constants::NoCard;
+
+	}
+
+}
 
 void PlayGameState::resetHand(StateMachine & machine) {
 
@@ -205,3 +219,13 @@ void PlayGameState::saveMessageWithScore(uint8_t playedValue, uint8_t points, Bu
 
 }
 
+
+bool PlayGameState::isEndOfHand(StateMachine & machine) {
+
+	auto & gameStats = machine.getContext().gameStats;
+	auto & player1 = gameStats.player1;
+	auto & player2 = gameStats.player2;
+	
+	return (!(player1.canPlay(this->playedCards) || player2.canPlay(this->playedCards)));
+
+}
