@@ -19,18 +19,18 @@ void BaseState::drawMessageBox(StateMachine &machine, String message, uint8_t li
 //	const uint8_t yPos[] = { 12, 8, 4 };
 	uint8_t x = (alignment == BubbleAlignment::Player ? 0 : 128 - width);
 //	uint8_t y = yPos[lines - 1];
-	uint8_t y = 0;
+	int8_t y = -1;
 	uint8_t yBottom = y + (lines * 8) + 4;
 
-	arduboy.fillRect(x, y + 2, width, yBottom - y + 4, BLACK);	
-	arduboy.fillRect(x + 2, y, width - 4, yBottom - y + 8, BLACK);	
+	arduboy.fillRect(x, y + 4, width, yBottom - y, BLACK);	
+	arduboy.fillRect(x + 4, y, width - 8, yBottom - y + 8, BLACK);	
 	arduboy.fillRect(x + 1, y + 4, width - 2, yBottom - y + 1, WHITE);	
 	arduboy.fillRect(x + 4, y + 1, width - 8, yBottom - y + 6, WHITE);	
 	arduboy.drawRect(x + 2, y + 2, width - 4, yBottom - y + 4, BLACK);	
 
 
-	SpritesB::drawExternalMask(x, y, Images::Talk_Top_Left, Images::Talk_Bottom_Left_Mask, 0, 0);
-	SpritesB::drawExternalMask(x + width - 8, y, Images::Talk_Top_Right, Images::Talk_Bottom_Right_Mask, 0, 0);
+	SpritesB::drawExternalMask(x, y, Images::Talk_Top_Left, Images::Talk_Top_Left_Mask, 0, 0);
+	SpritesB::drawExternalMask(x + width - 8, y, Images::Talk_Top_Right, Images::Talk_Top_Right_Mask, 0, 0);
 
 	if (alignment == BubbleAlignment::Player) {
 

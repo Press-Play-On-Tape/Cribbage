@@ -1,6 +1,6 @@
 #include "PlayGameState.h"
 #include "../images/Images.h"
-
+#include "../utils/CardUtils.h"
 
 
 // ----------------------------------------------------------------------------
@@ -169,6 +169,52 @@ void PlayGameState::update(StateMachine & machine) {
 
 					player1.printHand(1);
 					player2.printHand(2);
+
+
+									
+// ---------------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+					player1.calculateHandScore(gameStats.scores, this->turnUp);
+
+					for (uint8_t x=0; x < 10; x++) {
+						Score score = gameStats.scores[x];
+						for (uint8_t y=0; y < 5; y++) {
+							Serial.print(score.getHand(y));
+							Serial.print(" ");
+						}
+							Serial.println(" ");
+					}
+
+
+// ---------------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------
+
+
+
+
 					break;
 
 			}
@@ -178,6 +224,7 @@ void PlayGameState::update(StateMachine & machine) {
 		case ViewState::PlayersTurn:
 
 			if (!player1.canPlay(this->playedCards)) {
+				player1.setGo(true);
 				this->viewState = ViewState::PlayersTurn_Go;
 			}
 			else {
@@ -210,13 +257,17 @@ void PlayGameState::update(StateMachine & machine) {
 
 				case 53:
 					this->counter = 0;
-					resetPlay(machine);
-					if (player2.canPlay(this->playedCards)) {
+					if (player2.getGo()) {
+						resetPlay(machine);
 						this->viewState = ViewState::ComputersTurn;
 					}
 					else {
-						this->viewState = ViewState::DisplayScore;
+						this->viewState = ViewState::PlayersTurn;
+						if (!player2.getGo()) {
+							this->viewState = ViewState::ComputersTurn;
+						}
 					}
+
 					break;
 
 			}
@@ -232,22 +283,34 @@ void PlayGameState::update(StateMachine & machine) {
 
 					if (justPressed & A_BUTTON) {
 
-						uint8_t card = player1.removeFromHand(highlightCard);
-						this->playedCards[this->playIdx] = card;
-						this->playIdx++;
-						if (this->highlightCard == player1.getHandCardCount()) this->highlightCard--;
+						uint8_t board = getBoardValue();
+						uint8_t card = CardUtils::getCardValue(player1.getHandCard(this->highlightCard), true);
 
-						uint8_t playedValue = getBoardValue();
-						uint8_t score = getScore();
-						saveMessageWithScore(playedValue, score, BubbleAlignment::Player);
-						this->counter = 1;
+						if (board + card > 31) {
 
-						player1.addScore(score);
-						Serial.print("playIdx: ");
-						Serial.println(playIdx);							
+							//RGB LED
 
-						Serial.print("score: ");
-						Serial.println(getScore());							
+						}
+						else {
+
+							uint8_t card = player1.removeFromHand(highlightCard);
+							this->playedCards[this->playIdx] = card;
+							this->playIdx++;
+							if (this->highlightCard == player1.getHandCardCount()) this->highlightCard--;
+
+							uint8_t playedValue = getBoardValue();
+							uint8_t score = getScore(machine, player1, player2.getGo());
+							saveMessageWithScore(playedValue, score, BubbleAlignment::Player);
+							this->counter++;
+
+							player1.addScore(score);
+							Serial.print("playIdx: ");
+							Serial.println(playIdx);							
+
+							Serial.print("score: ");
+							Serial.println(score);							
+
+						}
 
 					}
 					break;
@@ -260,26 +323,55 @@ void PlayGameState::update(StateMachine & machine) {
 				case 46:
 					{
 						uint8_t board = getBoardValue();
+						this->counter = 0;
 
 						if (board == 31) {
-							if (player1.canPlay(this->playedCards)) {
-								this->viewState = ViewState::PlayersTurn;
-								resetPlay(machine);
-							}
-							else if (player2.canPlay(this->playedCards)) {
+							if (player2.getHandCardCount() != 0) {
+Serial.println("+a");								
 								this->viewState = ViewState::ComputersTurn;
 								resetPlay(machine);
 							}
+							else if (player1.getHandCardCount() != 0) {
+Serial.println("+b");
+//								this->viewState = ViewState::PlayersTurn_Normal;
+								resetPlay(machine);
+							}
 							else {
-								this->viewState = ViewState::DisplayScore;
+Serial.println("+c");
+								this->viewState = ViewState::DisplayScore_Board;
 							}
 						}
 						else {
+Serial.println("+d");
 							this->viewState = ViewState::ComputersTurn;
+// 							if (!player1.getGo() && player2.getGo()) {
+// Serial.println("+e");
+// 								if (!player1.canPlay(this->playedCards)) {
+// 									resetPlay(machine);
+// 								}
+// 								this->viewState = ViewState::PlayersTurn_Normal;
+// 							}
+
 							if (!player1.getGo() && player2.getGo()) {
-								this->viewState = ViewState::PlayersTurn;
+Serial.println("+e");
+								if (!player1.canPlay(this->playedCards)) {
+Serial.println("+f");
+								 	resetPlay(machine);
+									if (player2.getHandCardCount() > 0) {
+Serial.println("+g");
+										this->viewState = ViewState::ComputersTurn;
+									}
+									else {
+Serial.println("+h");
+										this->viewState = ViewState::PlayersTurn_Normal;
+									}
+
+								}
+								else {
+Serial.println("+i");
+									this->viewState = ViewState::PlayersTurn_Normal;
+								}
 							}
-							this->counter = 0;
 						}
 					}
 					break;
@@ -301,7 +393,7 @@ void PlayGameState::update(StateMachine & machine) {
 					{
 						uint8_t card = Constants::NoCard;
 						uint8_t points = 0;
-						player2.playCard(this->playedCards, card, points);
+						player2.playCard(this->playedCards, (player1.getHandCardCount() > 1 && !player1.getGo()), card, points);
 						Serial.print("Computer played: ");
 						Serial.print(card);
 						Serial.print(" ");
@@ -313,29 +405,31 @@ void PlayGameState::update(StateMachine & machine) {
 							this->playIdx++;
 							uint8_t playedValue = getBoardValue();
 
-							if (points != 0) {
-								
-								player2.addScore(points);
-								saveMessageWithScore(playedValue, points, BubbleAlignment::Computer);
 
+							// Add a point if the dealer has played the last card ..
+
+							if (playedValue != 31) {
+								if ((player1.getHandCardCount() == 0 || player1.getGo()) && (player2.getHandCardCount() == 0 || !player2.canPlay(this->playedCards))) {
+									points++;
+								}
 							}
-							else {
 
-								saveMessageWithScore(playedValue, 0, BubbleAlignment::Computer);
+							player2.addScore(points);
+							saveMessageWithScore(playedValue, points, BubbleAlignment::Computer);
 
-							}
 Serial.print("playIdx: ");
 Serial.println(playIdx);							
 
 Serial.print("score: ");
-Serial.println(getScore());							
+Serial.println(points);							
 						
 						}
 						else {
 
+//							if (player1.getGo() || !player1.canPlay(this->playedCards)) {
 							if (player1.getGo()) {
 								player2.addScore(1);
-								saveMessage(F(" Go for 1. "), 1, 38, BubbleAlignment::Computer);
+								saveMessage(F(" Go for 1. "), 1, 45, BubbleAlignment::Computer);
 							}
 							else {
 								saveMessage(F("  Go!  "), 1, 34, BubbleAlignment::Computer);
@@ -354,7 +448,7 @@ Serial.println(getScore());
 
 				case 61:				
 
-					// this->counter = 0;
+					// 
 					// this->viewState = ViewState::PlayersTurn;
 					// if (player1.getGo() && !player2.getGo()) {
 					// 	this->viewState = ViewState::ComputersTurn;
@@ -365,32 +459,62 @@ Serial.println(getScore());
 					// 	resetPlay(machine);
 					// }
 					{
+						this->counter = 0;
 						uint8_t board = getBoardValue();
 
 						if (board == 31) {
-							if (player1.canPlay(this->playedCards)) {
+							if (player1.getHandCardCount() != 0) {
 								this->viewState = ViewState::PlayersTurn;
 								resetPlay(machine);
 							}
-							else if (player2.canPlay(this->playedCards)) {
+							else if (player2.getHandCardCount() != 0) {
 								this->viewState = ViewState::ComputersTurn;
 								resetPlay(machine);
 							}
 							else {
-								this->viewState = ViewState::DisplayScore;
+								this->viewState = ViewState::DisplayScore_Board;
 							}
 						}
 						else {
+
 							if (player1.getHandCardCount() == 0 && player2.getHandCardCount() == 0) {
-								this->viewState = ViewState::DisplayScore;
+Serial.println("-a");								
+								this->viewState = ViewState::DisplayScore_Board;
 							}
-							else {
+							else if (player1.getHandCardCount() != 0) {
+Serial.println("-b1");								
 								this->viewState = ViewState::PlayersTurn;
-								if (player1.getGo() && !player2.getGo()) {
-									this->viewState = ViewState::ComputersTurn;
+								if (player1.getGo()) {
+Serial.println("-b2");								
+									resetPlay(machine);
 								}
 							}
-							this->counter = 0;
+							else {
+Serial.print("-c ");
+Serial.print(player1.getGo());
+Serial.println(player2.getGo());
+								this->viewState = ViewState::PlayersTurn;
+								if ((player1.getGo() || player1.getHandCardCount() == 0) && !player2.getGo()) {
+Serial.println("-d");
+									if (!player2.canPlay(this->playedCards)) {
+Serial.println("-2");
+										if (player1.getHandCardCount() > 0) {
+											this->viewState = ViewState::PlayersTurn;
+										}
+										else {
+											this->viewState = ViewState::ComputersTurn;
+										}
+										resetPlay(machine);
+									}
+									else {
+										this->viewState = ViewState::ComputersTurn;
+									}
+
+								}
+								else if (player1.getGo() && player2.getGo()) {
+										resetPlay(machine);
+								}
+							}
 						}
 					}
 
@@ -402,19 +526,32 @@ Serial.println(getScore());
 
 			break;
 
-		case ViewState::DisplayScore:
+		case ViewState::DisplayScore_Board:
+		case ViewState::DisplayScore_Dealer:
+		case ViewState::DisplayScore_Crib:
 
-			if (justPressed & A_BUTTON) {
-				viewState = prevViewState; 
-			}
+			// if (justPressed & A_BUTTON) {
+			// 	player1.setPrevScore(player1.getScore());
+			// 	player2.setPrevScore(player2.getScore());
+			// 	viewState = prevViewState; 
+			// }
 
 			if (arduboy.everyXFrames(16)) {
 
 				switch (this->counter) {
 
 					case 0:
-						if (this->player1Counter < this->player1EndPos) {
-							this->player1Counter++;
+
+						if (this->player1Counter < player1.getPrevScore()) this->player1Counter = player1.getPrevScore();
+						if (this->player2Counter < player2.getPrevScore()) this->player2Counter = player2.getPrevScore();
+
+						if (this->player1Counter < player1.getScore() || this->player2Counter < player2.getScore()) {
+							if (this->player1Counter < player1.getScore()) {
+								this->player1Counter++;
+							}
+							if (this->player2Counter < player2.getScore()) {
+								this->player2Counter++;
+							}
 						}
 						else {
 							this->counter++;
@@ -443,20 +580,45 @@ Serial.println(getScore());
 
 			}
 
-		}
+			if (justPressed & A_BUTTON) {
+				viewState = ViewState::DisplayScore_Other;
+			// 	player1.setPrevScore(player1.getScore());
+			// 	player2.setPrevScore(player2.getScore());
+			// 	viewState = prevViewState; 
+			}
 
-		if (justPressed & B_BUTTON) {
-//			machine.changeState(GameStateType::DisplayScore); 
+			break;
 
-			this->player1StartPos = 80;
-			this->player1EndPos = 93;
-			this->player1Counter = this->player1StartPos;
+		case ViewState::DisplayScore_Other:
+			{
+				if (gameStats.playersTurn == 0) {
+					player1.calculateHandScore(gameStats.scores, this->turnUp);
 
-			this->counter = 0;
-			this->highlight = true;
-			prevViewState = viewState;
-			viewState = ViewState::DisplayScore;
+					for (uint8_t x=0; x < 10; x++) {
+						Score score = gameStats.scores[x];
+						for (uint8_t y=0; y < 5; y++) {
+							Serial.print(score.getHand(y));
+							Serial.print(" ");
+						}
+							Serial.println(" ");
+					}
+				}
+			}
+			break;
 
-		}
+	}
+
+	if (justPressed & B_BUTTON) {
+//			machine.changeState(GameStateType_Board); 
+
+		this->player1Counter = 0;
+		this->player2Counter = 0;
+
+		this->counter = 0;
+		this->highlight = true;
+		prevViewState = viewState;
+		viewState = ViewState::DisplayScore_Board;
+
+	}
 
 }

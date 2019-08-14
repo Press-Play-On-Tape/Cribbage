@@ -8,7 +8,6 @@ void PlayGameState::resetPlay(StateMachine & machine) {
 	auto & gameStats = machine.getContext().gameStats;
 	auto & player1 = gameStats.player1;
 	auto & player2 = gameStats.player2;
-	auto & deck = gameStats.deck;
 
 	for (uint8_t x = 0; x < 8; x++) {
 
@@ -79,9 +78,10 @@ uint8_t PlayGameState::getBoardValue() {
 }
 
 
-uint8_t PlayGameState::getScore() {
+uint8_t PlayGameState::getScore(StateMachine & machine, Player &player, bool player2Go) {
 	
 	uint8_t score = 0;
+
 
 	// A pair ?
 
@@ -91,7 +91,7 @@ uint8_t PlayGameState::getScore() {
 		uint8_t card2 = CardUtils::getCardValue(playedCards[playIdx - 1], false);
 
 		if (card1 == card2) {
-	
+Serial.println("pair");	
 			score += 2;
 
 		}
@@ -109,12 +109,12 @@ uint8_t PlayGameState::getScore() {
 
 		if (card1 == card2 && card2== card3) {
 
+Serial.println("royal");	
 			score += 4;
 
 		}
 
 	}
-
 
 
 	// Double Royal pair ?
@@ -128,6 +128,7 @@ uint8_t PlayGameState::getScore() {
 
 		if (card1 == card2 && card1 == card3 && card3 == card4) {
 	
+Serial.println("double royal");	
 			score += 6;
 
 		}
@@ -141,6 +142,7 @@ uint8_t PlayGameState::getScore() {
 
 	if (playValue == 15 || playValue == 31) {
 
+Serial.println("15 or 31");	
 		score += 2;
 
 	}
@@ -154,9 +156,17 @@ uint8_t PlayGameState::getScore() {
 		uint8_t card2 = CardUtils::getCardValue(playedCards[playIdx - 2], false);
 		uint8_t card3 = CardUtils::getCardValue(playedCards[playIdx - 1], false);
 
-		if ((card1 != card2 && card1 != card3 && card2 != card3) &&
-			diffT(card1, card2) <= 2 && diffT(card1, card3) <=2) {
-
+		if ((card1 != card2 && card1 != card3 && 
+		     card2 != card3) &&
+			diffT(card1, card2) <= 2 && diffT(card1, card3) <=2 && 
+			diffT(card2, card3) <= 2 ) {
+Serial.print(card1);
+Serial.print(" ");
+Serial.print(card2);
+Serial.print(" ");
+Serial.print(card3);
+Serial.print(" ");
+Serial.println("run of 3");	
 			score += 3;
 
 		}
@@ -173,12 +183,53 @@ uint8_t PlayGameState::getScore() {
 		uint8_t card3 = CardUtils::getCardValue(playedCards[playIdx - 2], false);
 		uint8_t card4 = CardUtils::getCardValue(playedCards[playIdx - 1], false);
 
-		if ((card1 != card2 && card1 != card3 && card1 != card4 && card2 != card3 && card2 != card4 && card3 != card4) &&
-			diffT(card1, card2) <= 3 && diffT(card1, card3) <=3 && diffT(card1, card4) <=3 && diffT(card2, card3) <=3 && diffT(card2, card4) <=3 && diffT(card3, card4) <=3) {
+		if ((card1 != card2 && card1 != card3 && card1 != card4 && 
+		     card2 != card3 && card2 != card4 && 
+				 card3 != card4) &&
+			diffT(card1, card2) <= 3 && diffT(card1, card3) <=3 && diffT(card1, card4) <=3 && 
+			diffT(card2, card3) <=3 && diffT(card2, card4) <=3 && 
+			diffT(card3, card4) <=3) {
 
+Serial.println("run of 4");	
 			score += 1;
 
 		}
+
+	}
+
+
+	// Check for run of five ..
+
+	if (playIdx >= 5) {
+
+		uint8_t card1 = CardUtils::getCardValue(playedCards[playIdx - 5], false);
+		uint8_t card2 = CardUtils::getCardValue(playedCards[playIdx - 4], false);
+		uint8_t card3 = CardUtils::getCardValue(playedCards[playIdx - 3], false);
+		uint8_t card4 = CardUtils::getCardValue(playedCards[playIdx - 2], false);
+		uint8_t card5 = CardUtils::getCardValue(playedCards[playIdx - 1], false);
+
+		if ((card1 != card2 && card1 != card3 && card1 != card4 && card1 != card5 && 
+		     card2 != card3 && card2 != card4 && card2 != card5 && 
+				 card3 != card4 && card3 != card5 && 
+				 card4 != card5) &&
+			diffT(card1, card2) <=4 && diffT(card1, card3) <=4 && diffT(card1, card4) <=4 && diffT(card1, card5) <=4 && 
+			diffT(card2, card3) <=4 && diffT(card2, card4) <=4 && diffT(card2, card5) <=4 && 
+			diffT(card3, card4) <=4 && diffT(card3, card5) <=4 &&
+			diffT(card4, card5) <=4) {
+
+Serial.println("run of 5");	
+			score += 1;
+
+		}
+
+	}
+
+	// Check last card for dominated player ..
+
+	if (playValue != 31 && player2Go && (player.getHandCardCount() == 0 || !player.canPlay(this->playedCards))) {
+
+		score += 1;
+Serial.println("last card");	
 
 	}
 	
@@ -194,6 +245,7 @@ void PlayGameState::saveMessageWithScore(uint8_t playedValue, uint8_t points, Bu
   if (points > 0) {
 
     const char forText[] = " for ";
+    const char pointText[] = " point.";
     const char pointsText[] = " points.";
     char messageText[] = "                ";
 
@@ -206,7 +258,12 @@ void PlayGameState::saveMessageWithScore(uint8_t playedValue, uint8_t points, Bu
     if (points >= 10) 	{ messageText[messageIdx] = (points / 10) + 48; messageIdx++; }
     if (points < 10) 		{ messageText[messageIdx] = (points % 10) + 48; messageIdx++; }
 
-    memcpy(&messageText[messageIdx], pointsText, 8);
+		if (points > 1) {
+	    memcpy(&messageText[messageIdx], pointsText, 8);
+		}
+		else {
+	    memcpy(&messageText[messageIdx], pointText, 7);
+		}
     saveMessage(messageText, 1, alignment);
 
   }

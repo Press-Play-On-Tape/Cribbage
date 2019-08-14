@@ -35,7 +35,7 @@ class Player {
     void addToHand(uint8_t card);
     void addToCrib(uint8_t card);
 
-    void playCard(uint8_t playedCards[], uint8_t &card, uint8_t &points);
+    void playCard(uint8_t playedCards[], bool canOpponentPlay, uint8_t &card, uint8_t &points);
 
     uint8_t removeFromHand(uint8_t index);
     void resetHand();

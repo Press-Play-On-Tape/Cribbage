@@ -1,7 +1,6 @@
 #include "PlayGameState.h"
 #include "../images/Images.h"
-#include "PlayGameState.h"
-#include "../images/Images.h"
+#include "../utils/CardUtils.h"
 
 
 constexpr const static uint8_t DEALER_COMMENT_LENGTH = 64;
@@ -36,7 +35,10 @@ void PlayGameState::render(StateMachine & machine) {
 
 	switch (this->viewState) {
 
-    case ViewState::DisplayScore:
+    case ViewState::DisplayScore_Board:
+    case ViewState::DisplayScore_Other:
+    case ViewState::DisplayScore_Dealer:
+    case ViewState::DisplayScore_Crib:
       break;
 
     default:
@@ -88,7 +90,10 @@ void PlayGameState::render(StateMachine & machine) {
       drawCrib(machine, this->cribState);
 			break;
 
-    case ViewState::DisplayScore:
+    case ViewState::DisplayScore_Board:
+    case ViewState::DisplayScore_Other:
+    case ViewState::DisplayScore_Dealer:
+    case ViewState::DisplayScore_Crib:
       {
       auto & arduboy = machine.getContext().arduboy;
       auto & gameStats = machine.getContext().gameStats;
@@ -99,8 +104,10 @@ void PlayGameState::render(StateMachine & machine) {
       SpritesB::drawSelfMasked(43, 0, Images::Divider, 0);
       SpritesB::drawSelfMasked(51, 4, Images::Board, 0);
 
-      this->drawPlayer_1(this->player1StartPos, PlayerTile::Original);
-      if (this->highlight) this->drawPlayer_1(this->player1Counter, PlayerTile::Player1);
+      bool playerFlash1 = (player1.getPrevScore() != player1.getScore()) && this->highlight;
+      bool playerFlash2 = (player2.getPrevScore() != player2.getScore()) && this->highlight;
+      this->drawPlayer_Upper(player2.getPrevScore(), this->player2Counter, playerFlash1);
+      this->drawPlayer_Lower(player1.getPrevScore(), this->player1Counter, playerFlash1);
 
       drawScore(machine, 5, -1, player2.getScore());
       drawScore(machine, 26, -1, player1.getScore());
@@ -115,7 +122,10 @@ void PlayGameState::render(StateMachine & machine) {
 
   switch (this->viewState) {
     
-    case ViewState::DisplayScore:
+    case ViewState::DisplayScore_Board:
+    case ViewState::DisplayScore_Other:
+    case ViewState::DisplayScore_Dealer:
+    case ViewState::DisplayScore_Crib:
       break;
 
     default:
@@ -220,13 +230,14 @@ void PlayGameState::drawCard(uint8_t xPos, uint8_t yPos, uint8_t card, bool full
 
 void PlayGameState::drawSmallCard(uint8_t xPos, uint8_t yPos, uint8_t card, bool leftAlign) {
 
-	uint8_t cardNumber = card % 13;
+	uint8_t cardNumber = CardUtils::getCardValue(card, false);
+	Suit suit = CardUtils::getCardSuit(card);
 
   uint8_t xOffset = (leftAlign ? 4 : 6);
 
   SpritesB::drawExternalMask(xPos, yPos, Images::TurnUp, Images::TurnUp_Mask, 2, 0);
-  SpritesB::drawErase(xPos + xOffset, yPos + 12, Images::Suits, card / 13);
-  SpritesB::drawErase(xPos + xOffset, yPos + 5, Images::Pips[cardNumber], 0);
+  SpritesB::drawErase(xPos + xOffset, yPos + 12, Images::Suits, static_cast<uint8_t>(suit));
+  SpritesB::drawErase(xPos + xOffset + (cardNumber == 10 ? 0 : 1), yPos + 5, Images::Pips[cardNumber - 1], 0);
 
 }
 
@@ -336,17 +347,54 @@ void PlayGameState::drawPlay() {
 
 }
 
-void PlayGameState::drawPlayer_1(uint8_t position, PlayerTile playerTile) {
+void PlayGameState::drawPlayer_Upper(uint8_t oldPosition, uint8_t newPosition, bool flash) {
 
-  uint8_t x = pgm_read_byte(&Board_Positions_Player_2[position * 2]);
-  uint8_t y = pgm_read_byte(&Board_Positions_Player_2[position * 2] + 1);
-  uint8_t frame = 0;
+  uint8_t oldX = pgm_read_byte(&Board_Positions_Player_1[oldPosition * 2]);
+  uint8_t oldY = pgm_read_byte(&Board_Positions_Player_1[oldPosition * 2] + 1);
 
-  if (y >= 128) {
-    frame = 1;
-    y = y & 0x7F;
+  uint8_t newX = pgm_read_byte(&Board_Positions_Player_1[newPosition * 2]);
+  uint8_t newY = pgm_read_byte(&Board_Positions_Player_1[newPosition * 2] + 1);
+
+  uint8_t oldFrame = 0;
+  uint8_t newFrame = 0;
+
+  if (oldY >= 128) {
+    oldFrame = 1;
+    oldY = oldY & 0x7F;
   }
 
-  SpritesB::drawExternalMask(x, y, Images::Peg, Images::Peg_Mask, 0, frame);
+  if (newY >= 128) {
+    newFrame = 1;
+    newY = newY & 0x7F;
+  }
+
+  SpritesB::drawExternalMask(oldX, oldY, Images::Peg, Images::Peg_Mask, 0, oldFrame);
+  if (flash) SpritesB::drawExternalMask(newX, newY, Images::Peg, Images::Peg_Mask, 0, newFrame);
+
+}
+
+void PlayGameState::drawPlayer_Lower(uint8_t oldPosition, uint8_t newPosition, bool flash) {
+
+  uint8_t oldX = pgm_read_byte(&Board_Positions_Player_2[oldPosition * 2]);
+  uint8_t oldY = pgm_read_byte(&Board_Positions_Player_2[oldPosition * 2] + 1);
+
+  uint8_t newX = pgm_read_byte(&Board_Positions_Player_2[newPosition * 2]);
+  uint8_t newY = pgm_read_byte(&Board_Positions_Player_2[newPosition * 2] + 1);
+
+  uint8_t oldFrame = 0;
+  uint8_t newFrame = 0;
+
+  if (oldY >= 128) {
+    oldFrame = 1;
+    oldY = oldY & 0x7F;
+  }
+
+  if (newY >= 128) {
+    newFrame = 1;
+    newY = newY & 0x7F;
+  }
+
+  SpritesB::drawExternalMask(oldX, oldY, Images::Peg, Images::Peg_Mask, 1, oldFrame);
+  if (flash) SpritesB::drawExternalMask(newX, newY, Images::Peg, Images::Peg_Mask, 1, newFrame);
 
 }
