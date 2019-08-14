@@ -16,6 +16,11 @@ void PlayGameState::resetPlay(StateMachine & machine) {
 
 	}
 
+	this->playIdx = 0;
+
+	player1.setGo(false);
+	player2.setGo(false);
+
 }
 
 void PlayGameState::resetHand(StateMachine & machine) {

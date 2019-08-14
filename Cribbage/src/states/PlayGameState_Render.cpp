@@ -73,6 +73,8 @@ void PlayGameState::render(StateMachine & machine) {
 			break;
 
     case ViewState::PlayersTurn:
+    case ViewState::PlayersTurn_Go:
+    case ViewState::PlayersTurn_Normal:
       drawSmallCard(0, 0, this->turnUp, false);
       if (this->counter == 0) drawHighlight(machine, this->highlightCard);
       drawPlay();

@@ -25,6 +25,8 @@ class PlayGameState : public BaseState {
       DiscardCribComputer,
       TurnUp,
       PlayersTurn,
+      PlayersTurn_Normal,
+      PlayersTurn_Go,
       ComputersTurn,
       DisplayScore
     };

@@ -178,81 +178,111 @@ void PlayGameState::update(StateMachine & machine) {
 		case ViewState::PlayersTurn:
 
 			if (!player1.canPlay(this->playedCards)) {
-
-				this->counter++;
-
-				switch (this->counter) {
-
-					case 0 ... 5:
-						break;
-
-					case 6:
-						if (player2.getGo()) {
-							player1.addScore(1);
-							saveMessage(F(" Go for 1. "), 1, 38, BubbleAlignment::Player);
-						}
-						else {
-							saveMessage(F("  Go!  "), 1, 34, BubbleAlignment::Player);
-						}
-						break;
-
-					case 7 ... 52:
-						this->message.renderRequired = true;
-						break;
-
-					case 53:
-						this->counter = 0;
-						this->viewState = ViewState::ComputersTurn;
-						resetPlay(machine);
-						break;
-
-				}
-
+				this->viewState = ViewState::PlayersTurn_Go;
 			}
 			else {
-					
-				switch (this->counter) {
+				this->viewState = ViewState::PlayersTurn_Normal;
+			}
+			break;
 
-					case 0:
-						if ((justPressed & LEFT_BUTTON) && (this->highlightCard > 0))															this->highlightCard--;
-						if ((justPressed & RIGHT_BUTTON) && this->highlightCard < player1.getHandCardCount() - 1)	this->highlightCard++;
+		case ViewState::PlayersTurn_Go:
 
-						if (justPressed & A_BUTTON) {
+			this->counter++;
 
-							uint8_t card = player1.removeFromHand(highlightCard);
-							this->playedCards[this->playIdx] = card;
-							this->playIdx++;
-							if (this->highlightCard == player1.getHandCardCount()) this->highlightCard--;
+			switch (this->counter) {
 
-							uint8_t playedValue = getBoardValue();
-							saveMessageWithScore(playedValue, getScore(), BubbleAlignment::Player);
-							this->counter = 1;
+				case 0 ... 5:
+					break;
 
-							uint8_t score = getScore();
-							player1.addScore(score);
-							Serial.print("playIdx: ");
-							Serial.println(playIdx);							
+				case 6:
+					if (player2.getGo()) {
+						player1.addScore(1);
+						saveMessage(F(" Go for 1. "), 1, 45, BubbleAlignment::Player);
+					}
+					else {
+						saveMessage(F("  Go!  "), 1, 34, BubbleAlignment::Player);
+					}
+					break;
 
-							Serial.print("score: ");
-							Serial.println(getScore());							
+				case 7 ... 52:
+					this->message.renderRequired = true;
+					break;
 
-						}
-						break;
-
-					case 1 ... 45:
-						this->counter++;
-						this->message.renderRequired = true;
-						break;
-
-					case 46:
+				case 53:
+					this->counter = 0;
+					resetPlay(machine);
+					if (player2.canPlay(this->playedCards)) {
 						this->viewState = ViewState::ComputersTurn;
-						if (!player1.getGo() && player2.getGo()) {
-							this->viewState = ViewState::PlayersTurn;
-						}
-						this->counter = 0;
-						break;
+					}
+					else {
+						this->viewState = ViewState::DisplayScore;
+					}
+					break;
 
-				}
+			}
+			break;
+			
+		case ViewState::PlayersTurn_Normal:
+				
+			switch (this->counter) {
+
+				case 0:
+					if ((justPressed & LEFT_BUTTON) && (this->highlightCard > 0))															this->highlightCard--;
+					if ((justPressed & RIGHT_BUTTON) && this->highlightCard < player1.getHandCardCount() - 1)	this->highlightCard++;
+
+					if (justPressed & A_BUTTON) {
+
+						uint8_t card = player1.removeFromHand(highlightCard);
+						this->playedCards[this->playIdx] = card;
+						this->playIdx++;
+						if (this->highlightCard == player1.getHandCardCount()) this->highlightCard--;
+
+						uint8_t playedValue = getBoardValue();
+						uint8_t score = getScore();
+						saveMessageWithScore(playedValue, score, BubbleAlignment::Player);
+						this->counter = 1;
+
+						player1.addScore(score);
+						Serial.print("playIdx: ");
+						Serial.println(playIdx);							
+
+						Serial.print("score: ");
+						Serial.println(getScore());							
+
+					}
+					break;
+
+				case 1 ... 45:
+					this->counter++;
+					this->message.renderRequired = true;
+					break;
+
+				case 46:
+					{
+						uint8_t board = getBoardValue();
+
+						if (board == 31) {
+							if (player1.canPlay(this->playedCards)) {
+								this->viewState = ViewState::PlayersTurn;
+								resetPlay(machine);
+							}
+							else if (player2.canPlay(this->playedCards)) {
+								this->viewState = ViewState::ComputersTurn;
+								resetPlay(machine);
+							}
+							else {
+								this->viewState = ViewState::DisplayScore;
+							}
+						}
+						else {
+							this->viewState = ViewState::ComputersTurn;
+							if (!player1.getGo() && player2.getGo()) {
+								this->viewState = ViewState::PlayersTurn;
+							}
+							this->counter = 0;
+						}
+					}
+					break;
 
 			}
 
@@ -324,22 +354,51 @@ Serial.println(getScore());
 
 				case 61:				
 
-					this->counter = 0;
-					this->viewState = ViewState::PlayersTurn;
-					if (player1.getGo() && !player2.getGo()) {
-						this->viewState = ViewState::ComputersTurn;
-					}
+					// this->counter = 0;
+					// this->viewState = ViewState::PlayersTurn;
+					// if (player1.getGo() && !player2.getGo()) {
+					// 	this->viewState = ViewState::ComputersTurn;
+					// }
 
-					if (isEndOfHand(machine)) {
-						Serial.println("End of Play");
-						resetPlay(machine);
+					// if (isEndOfHand(machine)) {
+					// 	Serial.println("End of Play");
+					// 	resetPlay(machine);
+					// }
+					{
+						uint8_t board = getBoardValue();
+
+						if (board == 31) {
+							if (player1.canPlay(this->playedCards)) {
+								this->viewState = ViewState::PlayersTurn;
+								resetPlay(machine);
+							}
+							else if (player2.canPlay(this->playedCards)) {
+								this->viewState = ViewState::ComputersTurn;
+								resetPlay(machine);
+							}
+							else {
+								this->viewState = ViewState::DisplayScore;
+							}
+						}
+						else {
+							if (player1.getHandCardCount() == 0 && player2.getHandCardCount() == 0) {
+								this->viewState = ViewState::DisplayScore;
+							}
+							else {
+								this->viewState = ViewState::PlayersTurn;
+								if (player1.getGo() && !player2.getGo()) {
+									this->viewState = ViewState::ComputersTurn;
+								}
+							}
+							this->counter = 0;
+						}
 					}
 
 					player1.printHand(1);
 					player2.printHand(2);
 					break;
 
-				}
+			}
 
 			break;
 
