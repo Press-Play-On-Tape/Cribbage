@@ -112,19 +112,27 @@ void Player::calculateCribScore(Score scores[], uint8_t turnUp) {
 
 void Player::calculateScores(Score scores[], uint8_t calcScore[]) {
 
-Serial.println("calculateScores");
-Serial.print("calcScore: ");
-for (uint8_t k = 0; k < 5; k++) {
-  Serial.print(calcScore[k]);
-  Serial.print(" ");
-}
-Serial.println("");
+  // Clear scores collection ..
+
+  for (uint8_t k = 0; k < Constants::PlayerHandScores; k++) {
+    scores[k].reset();
+
+  }
+
+
+// Serial.println("calculateScores");
+// Serial.print("calcScore: ");
+// for (uint8_t k = 0; k < 5; k++) {
+//   Serial.print(calcScore[k]);
+//   Serial.print(" ");
+// }
+// Serial.println("");
 
   uint8_t scoreIdx = 0;
 
   for (uint8_t i = 1; i < 31; i++) {
 
-    uint8_t possibility[5] = {255, 255, 255, 255, 255 };
+    uint8_t possibility[5] = { Constants::NoCard, Constants::NoCard, Constants::NoCard, Constants::NoCard, Constants::NoCard };
     uint8_t possIdx = 0;
 
     for (uint8_t j = 0; j < 5; j++) {
@@ -147,33 +155,31 @@ Serial.println("");
     }
 // Serial.println(")");
 
-Serial.print("Poss: ");
-for (uint8_t k = 0; k < 5; k++) {
-  CardUtils::printCard(possibility[k]);
-  Serial.print(" ");
-}
-Serial.print(" (");
-Serial.print(possIdx);
-Serial.print("-");
-Serial.print(i);
-Serial.println(")");
+// Serial.print("Poss: ");
+// for (uint8_t k = 0; k < 5; k++) {
+//   CardUtils::printCard(possibility[k]);
+//   Serial.print(" ");
+// }
+// Serial.print(" (");
+// Serial.print(possIdx);
+// Serial.print("-");
+// Serial.print(i);
+// Serial.println(")");
 
 
 
     // Check for pairs ..
 
     if (possIdx == 2) {
-Serial.println("looking for pairs");
+
       if (CardUtils::getCardValue(possibility[0], false) == CardUtils::getCardValue(possibility[1], false)) {
 
-//        for (uint8_t k = 0; k < 5; k++) {
-Serial.print("pair of ");
-Serial.println(CardUtils::getCardValue(possibility[0], false));
+// Serial.print("pair of ");
+// Serial.println(CardUtils::getCardValue(possibility[0], false));
 
-          scores[scoreIdx].setHand(0, possibility[0]);
-          scores[scoreIdx].setHand(1, possibility[1]);
-
-//        }
+        for (uint8_t k = 0; k < 5; k++) {
+          scores[scoreIdx].setHand(k, possibility[k]);
+        }
 
         scores[scoreIdx].setScore(2);
         scoreIdx++;
@@ -195,12 +201,13 @@ Serial.println(CardUtils::getCardValue(possibility[0], false));
       }
 
       if (total == 15) {
+// Serial.print("a 15 ");
 
         for (uint8_t k = 0; k < 5; k++) {
-
+          // CardUtils::printCard(possibility[k]);
           scores[scoreIdx].setHand(k, possibility[k]);
-
         }
+// Serial.println("");
 
         scores[scoreIdx].setScore(2);
         scoreIdx++;
@@ -216,12 +223,13 @@ Serial.println(CardUtils::getCardValue(possibility[0], false));
 
       if (CardUtils::getCardValue(possibility[0], false) + 1 == CardUtils::getCardValue(possibility[1], false) &&   
           CardUtils::getCardValue(possibility[1], false) + 1 == CardUtils::getCardValue(possibility[2], false)) {
-
-        for (uint8_t k = 0; k < 3; k++) {
-
+Serial.print("a run of 3 ");
+        for (uint8_t k = 0; k < 5; k++) {
+          CardUtils::printCard(possibility[k]);
           scores[scoreIdx].setHand(k, possibility[k]);
 
         }
+Serial.println("");
 
         scores[scoreIdx].setScore(3);
         scoreIdx++;
@@ -250,8 +258,9 @@ Serial.println(CardUtils::getCardValue(possibility[0], false));
 
             foundIdx = k;
             found = true;
-
+Serial.println("found the run of 3");
           }
+
 
         }
 
@@ -261,13 +270,13 @@ Serial.println(CardUtils::getCardValue(possibility[0], false));
           scoreIdx++;
 
         }
-
-        for (uint8_t k = 0; k < 4; k++) {
-
+Serial.print("a run of 4 ");
+        for (uint8_t k = 0; k < 5; k++) {
+          CardUtils::printCard(possibility[k]);
           scores[foundIdx].setHand(k, possibility[k]);
 
         }
-
+Serial.println("");
         scores[scoreIdx].setScore(4);
         scoreIdx++;
 
@@ -308,13 +317,14 @@ Serial.println(CardUtils::getCardValue(possibility[0], false));
           scoreIdx++;
 
         }
+// Serial.print("a run of 5 ");
 
-        for (uint8_t k = 0; k < 4; k++) {
-
+        for (uint8_t k = 0; k < 5; k++) {
+// CardUtils::printCard(possibility[k]);
           scores[foundIdx].setHand(k, possibility[k]);
 
         }
-
+// Serial.println("");
         scores[scoreIdx].setScore(5);
         scoreIdx++;
 

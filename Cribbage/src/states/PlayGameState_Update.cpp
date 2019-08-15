@@ -195,10 +195,12 @@ void PlayGameState::update(StateMachine & machine) {
 					for (uint8_t x=0; x < 10; x++) {
 						Score score = gameStats.scores[x];
 						for (uint8_t y=0; y < 5; y++) {
-							Serial.print(score.getHand(y));
+							CardUtils::printCard(score.getHand(y));
 							Serial.print(" ");
 						}
-							Serial.println(" ");
+							Serial.print(" (");
+							Serial.print(score.getScore());
+							Serial.println(")");
 					}
 
 
