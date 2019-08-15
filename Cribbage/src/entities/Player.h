@@ -52,6 +52,7 @@ class Player {
     uint8_t cribIdx;
 
     uint8_t hand[6];
+    uint8_t orig[4];
     uint8_t crib[4];
 
     uint8_t score = 0;

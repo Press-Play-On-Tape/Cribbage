@@ -42,6 +42,7 @@ class GameStats {
     Player player2;
     Deck deck;
 
+    uint8_t playerDealer = 1;
     uint8_t playersTurn = 0;
     Score scores[Constants::PlayerHandScores];
 

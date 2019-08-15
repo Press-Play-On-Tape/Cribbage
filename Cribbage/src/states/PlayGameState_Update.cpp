@@ -17,9 +17,6 @@ void PlayGameState::update(StateMachine & machine) {
   auto justPressed = arduboy.justPressedButtons();
   auto pressed = arduboy.pressedButtons();
 
-// Serial.print("Vs:");
-// Serial.println((uint8_t)this->viewState);
-
 	switch (this->viewState) {
 
 		case ViewState::DealCards:
@@ -86,59 +83,59 @@ void PlayGameState::update(StateMachine & machine) {
 
 		case ViewState::DiscardCribComputer:
 
-				this->counter++;
+			this->counter++;
 
-				switch (this->counter) {
+			switch (this->counter) {
 
-					case 0 ... 45:
-						if (justPressed & A_BUTTON) this->counter = 45;
-						saveMessage(F("I will throw\nthese two cards."), 2, BubbleAlignment::Computer);
-						break;
+				case 0 ... 45:
+					if (justPressed & A_BUTTON) this->counter = 45;
+					saveMessage(F("I will throw\nthese two cards."), 2, BubbleAlignment::Computer);
+					break;
 
-					case 46:
-						{
-							uint8_t index = player2.getHandCardIndex(this->computerDiscard1);
-							player2.removeFromHand(index);
+				case 46:
+					{
+						uint8_t index = player2.getHandCardIndex(this->computerDiscard1);
+						player2.removeFromHand(index);
 
-							if (gameStats.playersTurn == 0) {
+						if (gameStats.playersTurn == 0) {
 
-								player1.addToCrib(this->computerDiscard1);
-
-							}
-							else {
-
-								player2.addToCrib(this->computerDiscard1);
-
-							}
+							player1.addToCrib(this->computerDiscard1);
 
 						}
-						break;
+						else {
 
-					case 47 ... 60:
-						break;
+							player2.addToCrib(this->computerDiscard1);
 
-					case 61:
-						{
-							uint8_t index = player2.getHandCardIndex(this->computerDiscard2);
-							player2.removeFromHand(index);
-
-							if (gameStats.playersTurn == 0) {
-
-								player1.addToCrib(this->computerDiscard2);
-
-							}
-							else {
-
-								player2.addToCrib(this->computerDiscard2);
-
-							}
-
-							this->viewState = ViewState::TurnUp;
-							this->counter = 0;
 						}
-						break;
 
-				}
+					}
+					break;
+
+				case 47 ... 60:
+					break;
+
+				case 61:
+					{
+						uint8_t index = player2.getHandCardIndex(this->computerDiscard2);
+						player2.removeFromHand(index);
+
+						if (gameStats.playersTurn == 0) {
+
+							player1.addToCrib(this->computerDiscard2);
+
+						}
+						else {
+
+							player2.addToCrib(this->computerDiscard2);
+
+						}
+
+						this->viewState = ViewState::TurnUp;
+						this->counter = 0;
+					}
+					break;
+
+			}
 
 			break;
 
@@ -169,53 +166,6 @@ void PlayGameState::update(StateMachine & machine) {
 
 					player1.printHand(1);
 					player2.printHand(2);
-
-
-									
-// ---------------------------------------------------------------------------------------------------------------------------
-// ---------------------------------------------------------------------------------------------------------------------------
-// ---------------------------------------------------------------------------------------------------------------------------
-// ---------------------------------------------------------------------------------------------------------------------------
-// ---------------------------------------------------------------------------------------------------------------------------
-// ---------------------------------------------------------------------------------------------------------------------------
-// ---------------------------------------------------------------------------------------------------------------------------
-// ---------------------------------------------------------------------------------------------------------------------------
-// ---------------------------------------------------------------------------------------------------------------------------
-// ---------------------------------------------------------------------------------------------------------------------------
-// ---------------------------------------------------------------------------------------------------------------------------
-// ---------------------------------------------------------------------------------------------------------------------------
-
-
-
-
-
-
-					player1.calculateHandScore(gameStats.scores, this->turnUp);
-
-					for (uint8_t x=0; x < 10; x++) {
-						Score score = gameStats.scores[x];
-						for (uint8_t y=0; y < 5; y++) {
-							CardUtils::printCard(score.getHand(y));
-							Serial.print(" ");
-						}
-							Serial.print(" (");
-							Serial.print(score.getScore());
-							Serial.println(")");
-					}
-
-
-// ---------------------------------------------------------------------------------------------------------------------------
-// ---------------------------------------------------------------------------------------------------------------------------
-// ---------------------------------------------------------------------------------------------------------------------------
-// ---------------------------------------------------------------------------------------------------------------------------
-// ---------------------------------------------------------------------------------------------------------------------------
-// ---------------------------------------------------------------------------------------------------------------------------
-// ---------------------------------------------------------------------------------------------------------------------------
-// ---------------------------------------------------------------------------------------------------------------------------
-// ---------------------------------------------------------------------------------------------------------------------------
-
-
-
 
 					break;
 
@@ -329,50 +279,29 @@ void PlayGameState::update(StateMachine & machine) {
 
 						if (board == 31) {
 							if (player2.getHandCardCount() != 0) {
-Serial.println("+a");								
 								this->viewState = ViewState::ComputersTurn;
 								resetPlay(machine);
 							}
 							else if (player1.getHandCardCount() != 0) {
-Serial.println("+b");
-//								this->viewState = ViewState::PlayersTurn_Normal;
 								resetPlay(machine);
 							}
 							else {
-Serial.println("+c");
 								this->viewState = ViewState::DisplayScore_Board;
 							}
 						}
 						else {
-Serial.println("+d");
 							this->viewState = ViewState::ComputersTurn;
-// 							if (!player1.getGo() && player2.getGo()) {
-// Serial.println("+e");
-// 								if (!player1.canPlay(this->playedCards)) {
-// 									resetPlay(machine);
-// 								}
-// 								this->viewState = ViewState::PlayersTurn_Normal;
-// 							}
-
 							if (!player1.getGo() && player2.getGo()) {
-Serial.println("+e");
 								if (!player1.canPlay(this->playedCards)) {
-Serial.println("+f");
 								 	resetPlay(machine);
 									if (player2.getHandCardCount() > 0) {
-Serial.println("+g");
 										this->viewState = ViewState::ComputersTurn;
 									}
 									else {
-Serial.println("+h");
 										this->viewState = ViewState::PlayersTurn_Normal;
 									}
-
 								}
-								else {
-Serial.println("+i");
-									this->viewState = ViewState::PlayersTurn_Normal;
-								}
+								this->viewState = ViewState::PlayersTurn_Normal;
 							}
 						}
 					}
@@ -418,17 +347,10 @@ Serial.println("+i");
 
 							player2.addScore(points);
 							saveMessageWithScore(playedValue, points, BubbleAlignment::Computer);
-
-Serial.print("playIdx: ");
-Serial.println(playIdx);							
-
-Serial.print("score: ");
-Serial.println(points);							
 						
 						}
 						else {
 
-//							if (player1.getGo() || !player1.canPlay(this->playedCards)) {
 							if (player1.getGo()) {
 								player2.addScore(1);
 								saveMessage(F(" Go for 1. "), 1, 45, BubbleAlignment::Computer);
@@ -449,17 +371,6 @@ Serial.println(points);
 					break;
 
 				case 61:				
-
-					// 
-					// this->viewState = ViewState::PlayersTurn;
-					// if (player1.getGo() && !player2.getGo()) {
-					// 	this->viewState = ViewState::ComputersTurn;
-					// }
-
-					// if (isEndOfHand(machine)) {
-					// 	Serial.println("End of Play");
-					// 	resetPlay(machine);
-					// }
 					{
 						this->counter = 0;
 						uint8_t board = getBoardValue();
@@ -480,26 +391,18 @@ Serial.println(points);
 						else {
 
 							if (player1.getHandCardCount() == 0 && player2.getHandCardCount() == 0) {
-Serial.println("-a");								
 								this->viewState = ViewState::DisplayScore_Board;
 							}
 							else if (player1.getHandCardCount() != 0) {
-Serial.println("-b1");								
 								this->viewState = ViewState::PlayersTurn;
 								if (player1.getGo()) {
-Serial.println("-b2");								
 									resetPlay(machine);
 								}
 							}
 							else {
-Serial.print("-c ");
-Serial.print(player1.getGo());
-Serial.println(player2.getGo());
 								this->viewState = ViewState::PlayersTurn;
 								if ((player1.getGo() || player1.getHandCardCount() == 0) && !player2.getGo()) {
-Serial.println("-d");
 									if (!player2.canPlay(this->playedCards)) {
-Serial.println("-2");
 										if (player1.getHandCardCount() > 0) {
 											this->viewState = ViewState::PlayersTurn;
 										}
@@ -584,29 +487,102 @@ Serial.println("-2");
 
 			if (justPressed & A_BUTTON) {
 				viewState = ViewState::DisplayScore_Other;
-			// 	player1.setPrevScore(player1.getScore());
-			// 	player2.setPrevScore(player2.getScore());
-			// 	viewState = prevViewState; 
+				this->counter = 0;
+				this->highlight = true;
 			}
 
 			break;
 
 		case ViewState::DisplayScore_Other:
 			{
-				if (gameStats.playersTurn == 0) {
-					player1.calculateHandScore(gameStats.scores, this->turnUp);
+				switch (this->counter) {
 
-					for (uint8_t x=0; x < 10; x++) {
-						Score score = gameStats.scores[x];
-						for (uint8_t y=0; y < 5; y++) {
-							Serial.print(score.getHand(y));
-							Serial.print(" ");
+					case 0 ... 5:
+						this->counter++;
+						break;
+
+					case 6 ... 48:
+						this->counter++;
+						if (gameStats.playerDealer == 0) {
+							saveMessage(F("My hand .."), 1, 45, BubbleAlignment::Player);
 						}
-							Serial.println(" ");
-					}
+						else {
+							saveMessage(F("Your hand .."), 1, 45, BubbleAlignment::Player);
+						}
+						break;
+
+					case 49:
+						this->counter++;
+						if (gameStats.playerDealer == 0) {
+Serial.println("player2");
+							player2.calculateHandScore(gameStats.scores, this->turnUp);
+						}
+						else {
+Serial.println("player1");
+							player1.calculateHandScore(gameStats.scores, this->turnUp);
+						}
+for (uint8_t x=0; x < 10; x++) {
+Score score = gameStats.scores[x];
+for (uint8_t y=0; y < 5; y++) {
+CardUtils::printCard(score.getHand(y));
+Serial.print(" ");
+}
+Serial.print(" (S");
+Serial.print(score.getScore());
+Serial.print(" ,T");
+Serial.print((uint8_t)score.getType());
+Serial.println(")");
+}
+						break;
+
+					case 50 ... 64:
+
+						if (this->player1Counter < player1.getPrevScore()) this->player1Counter = player1.getPrevScore();
+						if (this->player2Counter < player2.getPrevScore()) this->player2Counter = player2.getPrevScore();
+
+						if (this->player1Counter < player1.getScore() || this->player2Counter < player2.getScore()) {
+							if (this->player1Counter < player1.getScore()) {
+								this->player1Counter++;
+							}
+							if (this->player2Counter < player2.getScore()) {
+								this->player2Counter++;
+							}
+						}
+						else {
+							this->counter++;
+						}
+						break;
+
+
+					case 80 ... 94:
+					case 110 ... 124:
+					case 140 ... 154:
+					case 170 ... 184:
+						this->counter++;
+						this->highlight = false;
+						break;
+
+					case 65 ... 79:
+					case 95 ... 109:
+					case 125 ... 139:
+					case 155 ... 169:
+						this->counter++;
+						this->highlight = true;
+						break;
+
+					default: break;
+
 				}
+
+
+				if (justPressed & A_BUTTON) {
+					viewState = ViewState::DisplayScore_Other;
+					this->counter = 0;
+				}
+
 			}
-			break;
+
+		break;
 
 	}
 

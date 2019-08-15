@@ -91,32 +91,61 @@ void PlayGameState::render(StateMachine & machine) {
 			break;
 
     case ViewState::DisplayScore_Board:
-    case ViewState::DisplayScore_Other:
     case ViewState::DisplayScore_Dealer:
     case ViewState::DisplayScore_Crib:
       {
-      auto & arduboy = machine.getContext().arduboy;
-      auto & gameStats = machine.getContext().gameStats;
-      auto & player1 = gameStats.player1;
-      auto & player2 = gameStats.player2;
+        SpritesB::drawOverwrite(0, 22, Images::Dealer, 0);
+        SpritesB::drawSelfMasked(43, 0, Images::Divider, 0);
+        SpritesB::drawSelfMasked(51, 4, Images::Board, 0);
 
-      SpritesB::drawOverwrite(0, 22, Images::Dealer, 0);
-      SpritesB::drawSelfMasked(43, 0, Images::Divider, 0);
-      SpritesB::drawSelfMasked(51, 4, Images::Board, 0);
+        bool playerFlash1 = (player1.getPrevScore() != player1.getScore()) && this->highlight;
+        bool playerFlash2 = (player2.getPrevScore() != player2.getScore()) && this->highlight;
+        this->drawPlayer_Upper(player2.getPrevScore(), this->player2Counter, playerFlash1);
+        this->drawPlayer_Lower(player1.getPrevScore(), this->player1Counter, playerFlash1);
 
-      bool playerFlash1 = (player1.getPrevScore() != player1.getScore()) && this->highlight;
-      bool playerFlash2 = (player2.getPrevScore() != player2.getScore()) && this->highlight;
-      this->drawPlayer_Upper(player2.getPrevScore(), this->player2Counter, playerFlash1);
-      this->drawPlayer_Lower(player1.getPrevScore(), this->player1Counter, playerFlash1);
-
-      drawScore(machine, 5, -1, player2.getScore());
-      drawScore(machine, 26, -1, player1.getScore());
-      arduboy.fillRect(1, 0, 5, 7);
-      arduboy.fillRect(22, 0, 5, 7);
-      SpritesB::drawErase(1, 2, Images::Peg, 0);
-      SpritesB::drawErase(22, 2, Images::Peg, 1);
+        drawScore(machine, 5, -1, player2.getScore());
+        drawScore(machine, 26, -1, player1.getScore());
+        arduboy.fillRect(1, 0, 5, 7);
+        arduboy.fillRect(22, 0, 5, 7);
+        SpritesB::drawErase(1, 2, Images::Peg, 0);
+        SpritesB::drawErase(22, 2, Images::Peg, 1);
       }
       break;
+
+    case ViewState::DisplayScore_Other:
+      {
+        SpritesB::drawOverwrite(0, 22, Images::Dealer, 0);
+        SpritesB::drawSelfMasked(43, 0, Images::Divider, 0);
+
+if (this->counter >= 49) {
+  drawScores(machine);
+}
+        switch (this->counter) {
+
+          case 0 ... 48:
+            SpritesB::drawSelfMasked(51, 4, Images::Board, 0);
+            bool playerFlash1 = (player1.getPrevScore() != player1.getScore()) && this->highlight;
+            bool playerFlash2 = (player2.getPrevScore() != player2.getScore()) && this->highlight;
+            this->drawPlayer_Upper(player2.getPrevScore(), this->player2Counter, playerFlash1);
+            this->drawPlayer_Lower(player1.getPrevScore(), this->player1Counter, playerFlash1);
+
+            drawScore(machine, 5, -1, player2.getScore());
+            drawScore(machine, 26, -1, player1.getScore());
+            arduboy.fillRect(1, 0, 5, 7);
+            arduboy.fillRect(22, 0, 5, 7);
+            SpritesB::drawErase(1, 2, Images::Peg, 0);
+            SpritesB::drawErase(22, 2, Images::Peg, 1);            
+            break;
+
+          case 49 ... 185:
+            drawScores(machine);
+            break;
+
+        }
+
+      }
+      break;
+
 
 	}
 
@@ -132,15 +161,54 @@ void PlayGameState::render(StateMachine & machine) {
       drawScore(machine, 114, -1, player2.getScore());
       drawScore(machine, 114, 52, player1.getScore());
 
-      if (this->message.renderRequired) {
-        drawMessageBox(machine, this->message.message, this->message.lines, this->message.width, this->message.alignment);
-        this->message.renderRequired = false;
-      }
+
       break;
 
   }
 
+  if (this->message.renderRequired) {
+    drawMessageBox(machine, this->message.message, this->message.lines, this->message.width, this->message.alignment);
+    this->message.renderRequired = false;
+  }
+
 }
+
+void PlayGameState::drawScores(StateMachine & machine) {
+
+  auto & gameStats = machine.getContext().gameStats;
+
+  uint8_t total = 0;
+
+  for (uint8_t i = 0; i < Constants::PlayerHandScores; i++) {
+
+    if (gameStats.scores[i].getHand(0) != Constants::NoCard) {
+
+      for (uint8_t j = 0; j < 5; j++) {
+
+        if (gameStats.scores[i].getHand(j) != Constants::NoCard) {
+
+          Sprites::drawSelfMasked(50 + (j * 15), 10 + (i * 7), Images::Pips[CardUtils::getCardValue(gameStats.scores[i].getHand(j), false) - 1], 0);
+          Sprites::drawSelfMasked(55 + (j * 15), 10 + (i * 7), Images::Suits, static_cast<uint8_t>(CardUtils::getCardSuit(gameStats.scores[i].getHand(j))));
+
+//          font3x5.setCursor(j * 14, i * 7);
+//          CardUtils::printCard(gameStats.scores[i].getHand(j));
+
+        }
+
+      }
+
+      uint8_t score = gameStats.scores[i].getScore();
+      total = total + score;
+      font3x5.setCursor(115, 10 + (i * 7) - 1);
+      if (score < 10) font3x5.print(" ");
+      font3x5.print(score);
+
+    }
+
+  }
+
+}
+
 
 void PlayGameState::drawPlayerHands(StateMachine & machine) {
 

@@ -2,8 +2,18 @@
 
 #include <stdint.h>
 #include "Utils.h"
-#include "../entities/Entities.h"
 
+
+enum class ScoreType : uint8_t {
+  Fifteen,
+  Pair,
+  RoyalPair,
+  DoubleRoyalPair,
+  RunOf5,
+  RunOf4,
+  RunOf3,
+  OneForNibs
+};
 
 enum class CribState : uint8_t {
   Empty,

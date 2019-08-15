@@ -17,6 +17,8 @@ uint16_t CardUtils::getCardSort(uint8_t cardNumber) {
     return ((cardNumber % 13) * 10) + (cardNumber / 13);
 }
 
+
+
 void CardUtils::swap(uint8_t *xp, uint8_t *yp)  
 {  
     uint8_t temp = *xp;  

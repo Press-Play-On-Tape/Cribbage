@@ -64,6 +64,7 @@ class PlayGameState : public BaseState {
     void drawTurnUp(StateMachine & machine, TurnUpState turnUpState);
     void drawComputerCard(uint8_t xPos, uint8_t yPos, bool fullSizeCard);
     void drawPlay();
+    void drawScores(StateMachine & machine);
 
     void resetHand(StateMachine & machine);
     void resetPlay(StateMachine & machine);
