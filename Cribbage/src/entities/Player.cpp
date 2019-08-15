@@ -92,20 +92,34 @@ uint8_t Player::getCribCardCount() {
 
 void Player::calculateHandScore(Score scores[], uint8_t turnUp) {
 
-  CardUtils::sort(this->hand, 4);
-  calculateScores(scores, this->hand);
+  uint8_t calcScore[5];
+  memcpy(calcScore, this->hand, 4);
+  calcScore[4] = turnUp;
+  CardUtils::sort(calcScore, 5);
+  calculateScores(scores, calcScore);
 
 }
 
 void Player::calculateCribScore(Score scores[], uint8_t turnUp) {
 
-  CardUtils::sort(this->crib, 4);
-  calculateScores(scores, this->crib);
+  uint8_t calcScore[5];
+  memcpy(calcScore, this->crib, 4);
+  calcScore[4] = turnUp;
+  CardUtils::sort(calcScore, 5);
+  calculateScores(scores, calcScore);
 
 }
 
 void Player::calculateScores(Score scores[], uint8_t calcScore[]) {
+
 Serial.println("calculateScores");
+Serial.print("calcScore: ");
+for (uint8_t k = 0; k < 5; k++) {
+  Serial.print(calcScore[k]);
+  Serial.print(" ");
+}
+Serial.println("");
+
   uint8_t scoreIdx = 0;
 
   for (uint8_t i = 1; i < 31; i++) {
@@ -114,21 +128,28 @@ Serial.println("calculateScores");
     uint8_t possIdx = 0;
 
     for (uint8_t j = 0; j < 5; j++) {
+// Serial.print(1 << j);
+// Serial.print(" ");
+// Serial.print(i);
+// Serial.print("=");
+// Serial.print((1<<j) & i);
+// Serial.print(", ");
 
       if ((1<<j) & i) {
-Serial.print(j);
-Serial.print(" ");
         possibility[possIdx] = calcScore[j];
         possIdx++;
 
       }
+      else {
+
+      }
 
     }
-Serial.println(")");
+// Serial.println(")");
 
 Serial.print("Poss: ");
 for (uint8_t k = 0; k < 5; k++) {
-  Serial.print(possibility[k]);
+  CardUtils::printCard(possibility[k]);
   Serial.print(" ");
 }
 Serial.print(" (");
@@ -145,13 +166,14 @@ Serial.println(")");
 Serial.println("looking for pairs");
       if (CardUtils::getCardValue(possibility[0], false) == CardUtils::getCardValue(possibility[1], false)) {
 
-        for (uint8_t k = 0; k < 5; k++) {
+//        for (uint8_t k = 0; k < 5; k++) {
 Serial.print("pair of ");
-Serial.println(CardUtils::getCardValue(possibility[k], false));
+Serial.println(CardUtils::getCardValue(possibility[0], false));
 
-          scores[scoreIdx].setHand(k, possibility[k]);
+          scores[scoreIdx].setHand(0, possibility[0]);
+          scores[scoreIdx].setHand(1, possibility[1]);
 
-        }
+//        }
 
         scores[scoreIdx].setScore(2);
         scoreIdx++;
@@ -491,17 +513,8 @@ void Player::printHand(uint8_t playerNo) {
     Serial.print("(");
     Serial.print(this->hand[x]);
     Serial.print(") ");
-    Serial.print(CardUtils::getCardValue(this->hand[x], false));
-    Suit suit = CardUtils::getCardSuit(this->hand[x]);
-
-    switch (suit) {
-
-      case Suit::Spades:    Serial.print("S, "); break;
-      case Suit::Clubs:     Serial.print("C, "); break;
-      case Suit::Diamonds:  Serial.print("D, "); break;
-      case Suit::Hearts:    Serial.print("H, "); break;
-
-    }
+    CardUtils::printCard(this->hand[x]);
+    Serial.print(" ");
 
   }
 
