@@ -64,6 +64,7 @@ class PlayGameState : public BaseState {
     void drawTurnUp(StateMachine & machine, TurnUpState turnUpState);
     void drawComputerCard(uint8_t xPos, uint8_t yPos, bool fullSizeCard);
     void drawPlay();
+    void drawHandScores(StateMachine & machine);
     void drawScores(StateMachine & machine);
 
     void resetHand(StateMachine & machine);
@@ -75,12 +76,17 @@ class PlayGameState : public BaseState {
     bool isEndOfHand(StateMachine & machine);
 
     uint8_t getBoardValue();
+    uint8_t getScoresTotal(StateMachine & machine);
 
     void drawPlayer_Upper(uint8_t oldPosition, uint8_t newPosition, bool flash);
     void drawPlayer_Lower(uint8_t oldPosition, uint8_t newPosition, bool flash);
+    uint8_t addHandScoreToPlayerTotal(StateMachine & machine);
 
     uint8_t player1Counter = 0;
     uint8_t player2Counter = 0;
+    uint8_t scoreUpperRow = 0;
+  	uint8_t scoresTotal = 0;
+
 
 };
 

@@ -38,7 +38,7 @@ void PlayGameState::update(StateMachine & machine) {
 			else {
 
 				this->viewState = ViewState::DiscardCribPlayer;
-
+	
 			}
 
 			break;
@@ -55,7 +55,7 @@ void PlayGameState::update(StateMachine & machine) {
 					this->cribState = CribState::Hidden;
 					uint8_t card = player1.removeFromHand(highlightCard);
 	
-					if (gameStats.playersTurn == 0) {
+					if (gameStats.playerDealer == 0) {
 
 						player1.addToCrib(card);
 
@@ -74,6 +74,7 @@ void PlayGameState::update(StateMachine & machine) {
 			else {
 
 				player2.discardToCrib(this->computerDiscard1, this->computerDiscard2);
+				
 				this->viewState = ViewState::DiscardCribComputer;
 				this->counter = 0;
 
@@ -97,7 +98,7 @@ void PlayGameState::update(StateMachine & machine) {
 						uint8_t index = player2.getHandCardIndex(this->computerDiscard1);
 						player2.removeFromHand(index);
 
-						if (gameStats.playersTurn == 0) {
+						if (gameStats.playerDealer == 0) {
 
 							player1.addToCrib(this->computerDiscard1);
 
@@ -119,7 +120,7 @@ void PlayGameState::update(StateMachine & machine) {
 						uint8_t index = player2.getHandCardIndex(this->computerDiscard2);
 						player2.removeFromHand(index);
 
-						if (gameStats.playersTurn == 0) {
+						if (gameStats.playerDealer == 0) {
 
 							player1.addToCrib(this->computerDiscard2);
 
@@ -163,6 +164,24 @@ void PlayGameState::update(StateMachine & machine) {
 				case 71:				
 					this->counter = 0;
 					this->viewState = ViewState::PlayersTurn;
+
+
+player1.removeFromHand(0);
+player1.removeFromHand(0);
+player1.removeFromHand(0);
+player1.removeFromHand(0);
+player1.addToHand(5);
+player1.addToHand(18);
+player1.addToHand(3);
+player1.addToHand(16);
+player1.addToHand(45);
+player1.removeFromHand(4);
+this->turnUp = 4;
+
+
+
+
+
 
 					player1.printHand(1);
 					player2.printHand(2);
@@ -252,16 +271,10 @@ void PlayGameState::update(StateMachine & machine) {
 
 							uint8_t playedValue = getBoardValue();
 							uint8_t score = getScore(machine, player1, player2.getGo());
+							player1.addScore(score);
 							saveMessageWithScore(playedValue, score, BubbleAlignment::Player);
 							this->counter++;
-
-							player1.addScore(score);
-							Serial.print("playIdx: ");
-							Serial.println(playIdx);							
-
-							Serial.print("score: ");
-							Serial.println(score);							
-
+				
 						}
 
 					}
@@ -330,10 +343,6 @@ void PlayGameState::update(StateMachine & machine) {
 						uint8_t card = Constants::NoCard;
 						uint8_t points = 0;
 						player2.playCard(this->playedCards, (player1.getHandCardCount() > 1 && !player1.getGo()), card, points);
-						Serial.print("Computer played: ");
-						Serial.print(card);
-						Serial.print(" ");
-						Serial.println(points);
 
 						if (card != Constants::NoCard) {
 
@@ -438,25 +447,11 @@ void PlayGameState::update(StateMachine & machine) {
 
 		case ViewState::DisplayScore_Board:
 
-			// if (justPressed & A_BUTTON) {
-			// 	player1.setPrevScore(player1.getScore());
-			// 	player2.setPrevScore(player2.getScore());
-			// 	viewState = prevViewState; 
-			// }
-
 			if (arduboy.everyXFrames(16)) {
 
 				switch (this->counter) {
 
 					case 0:
-Serial.print(this->player1Counter);
-Serial.print("<");
-Serial.print(player1.getPrevScore());
-Serial.print(",");
-Serial.print(this->player2Counter);
-Serial.print("<");
-Serial.print(player2.getPrevScore());
-Serial.println("");
 
 						if (this->player1Counter < player1.getPrevScore()) this->player1Counter = player1.getPrevScore();
 						if (this->player2Counter < player2.getPrevScore()) this->player2Counter = player2.getPrevScore();
@@ -500,6 +495,9 @@ Serial.println("");
 				viewState = ViewState::DisplayScore_Other;
 				this->counter = 0;
 				this->highlight = true;
+				this->scoreUpperRow = 0;
+				player1.setPrevScore(player1.getScore());
+				player2.setPrevScore(player2.getScore());
 			}
 
 			break;
@@ -515,101 +513,87 @@ Serial.println("");
 						break;
 
 					case 6 ... 48:
+
 						this->counter++;
+
 						switch (this->viewState) {
 
 							case ViewState::DisplayScore_Other:
 								if (gameStats.playerDealer == 0) {
-									saveMessage(F("My hand .."), 1, 45, BubbleAlignment::Player);
+									saveMessage(F("  My hand .."), 1, 50, BubbleAlignment::Player);
 								}
 								else {
-									saveMessage(F("Your hand .."), 1, 45, BubbleAlignment::Player);
+									saveMessage(F("  Your hand .."), 1, 50, BubbleAlignment::Player);
 								}
 								break;
 								
 							case ViewState::DisplayScore_Dealer:
 								if (gameStats.playerDealer == 1) {
-									saveMessage(F("My hand .."), 1, 45, BubbleAlignment::Player);
+									saveMessage(F("  My hand .."), 1, 50, BubbleAlignment::Player);
 								}
 								else {
-									saveMessage(F("Your hand .."), 1, 45, BubbleAlignment::Player);
+									saveMessage(F("  Your hand .."), 1, 50, BubbleAlignment::Player);
 								}
 								break;
 
 							case ViewState::DisplayScore_Crib:
 								if (gameStats.playerDealer == 1) {
-									saveMessage(F("My crib .."), 1, 45, BubbleAlignment::Player);
+									saveMessage(F("  My crib .."), 1, 50, BubbleAlignment::Player);
 								}
 								else {
-									saveMessage(F("Your crib .."), 1, 45, BubbleAlignment::Player);
+									saveMessage(F("  Your crib .."), 1, 50, BubbleAlignment::Player);
 								}
 								break;
+
+								default: break;
 
 						}
 						break;
 
 					case 49:
 						this->counter++;
-						switch (this->viewState) {
-
-							case ViewState::DisplayScore_Other:
-								if (gameStats.playerDealer == 0) {
-									player2.calculateHandScore(gameStats.scores, this->turnUp);
-								}
-								else {
-									player1.calculateHandScore(gameStats.scores, this->turnUp);
-								}
-								break;
-
-							case ViewState::DisplayScore_Dealer:
-								if (gameStats.playerDealer == 0) {
-									player1.calculateHandScore(gameStats.scores, this->turnUp);
-								}
-								else {
-									player2.calculateHandScore(gameStats.scores, this->turnUp);
-								}
-								break;
-
-							case ViewState::DisplayScore_Crib:
-								if (gameStats.playerDealer == 0) {
-									player2.calculateCribScore(gameStats.scores, this->turnUp);
-								}
-								else {
-									player1.calculateCribScore(gameStats.scores, this->turnUp);
-								}
-								break;
-
-						}
-						
-for (uint8_t x=0; x < 10; x++) {
-Score score = gameStats.scores[x];
-for (uint8_t y=0; y < 5; y++) {
-CardUtils::printCard(score.getHand(y));
-Serial.print(" ");
-}
-Serial.print(" (S");
-Serial.print(score.getScore());
-Serial.print(" ,T");
-Serial.print((uint8_t)score.getType());
-Serial.println(")");
-}
+						this->scoresTotal = addHandScoreToPlayerTotal(machine);
 						break;
 
-					case 50 ... 64:
+					case 50:
+						{
+							uint8_t numberOfScores = gameStats.getNumberOfScores();
+
+							if (justPressed & A_BUTTON) {
+								if (this->scoresTotal == 0) {
+									this->counter = 0; 	// Will fall through this case.  I have not cleared the justPressed so will exit.
+								}
+								else { 
+									justPressed = 0;		// Cleared the justPressed to prevent bottom justPressed test from handling.
+									this->counter++;
+								}
+							}
+
+							if (justPressed & UP_BUTTON && this->scoreUpperRow > 0) { this->scoreUpperRow--; }
+							if (justPressed & DOWN_BUTTON && this->scoreUpperRow + 5 < numberOfScores) { this->scoreUpperRow++; }
+
+						}
+						break;
+
+					case 51:
 
 						if (this->player1Counter < player1.getPrevScore()) this->player1Counter = player1.getPrevScore();
 						if (this->player2Counter < player2.getPrevScore()) this->player2Counter = player2.getPrevScore();
 
-						if (this->player1Counter < player1.getScore() || this->player2Counter < player2.getScore()) {
-							if (this->player1Counter < player1.getScore()) {
-								this->player1Counter++;
+						if (arduboy.everyXFrames(16)) {
+
+							if (this->player1Counter < player1.getScore() || this->player2Counter < player2.getScore()) {
+								if (this->player1Counter < player1.getScore()) {
+									this->player1Counter++;
+								}
+								if (this->player2Counter < player2.getScore()) {
+									this->player2Counter++;
+								}
 							}
-							if (this->player2Counter < player2.getScore()) {
-								this->player2Counter++;
+							else {
+								this->counter = 65;
 							}
-						}
-						else {
-							this->counter++;
+
 						}
 						break;
 
@@ -619,7 +603,7 @@ Serial.println(")");
 					case 140 ... 154:
 					case 170 ... 184:
 						this->counter++;
-						this->highlight = false;
+						this->highlight = true;
 						break;
 
 					case 65 ... 79:
@@ -627,7 +611,7 @@ Serial.println(")");
 					case 125 ... 139:
 					case 155 ... 169:
 						this->counter++;
-						this->highlight = true;
+						this->highlight = false;
 						break;
 
 					default: break;
@@ -635,6 +619,10 @@ Serial.println(")");
 				}
 
 				if (justPressed & A_BUTTON) {
+
+					if (this->counter <= 49) {
+						this->scoresTotal = addHandScoreToPlayerTotal(machine);
+					}
 
 					switch (this->viewState){
 
@@ -650,8 +638,12 @@ Serial.println(")");
 							this->viewState = ViewState::DealCards;
 							break;
 
+						default: break;
+
 					}
 
+					player1.setPrevScore(player1.getScore());
+					player2.setPrevScore(player2.getScore());
 					this->counter = 0;
 
 				}

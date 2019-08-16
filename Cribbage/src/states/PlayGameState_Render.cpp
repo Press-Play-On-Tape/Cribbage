@@ -9,13 +9,13 @@ constexpr const static uint8_t DEALER_COMMENT_YPOS_TOP = 6;
 constexpr const static uint8_t DEALER_COMMENT_YPOS_MID = 19;
 constexpr const static uint8_t DEALER_COMMENT_YPOS_BOT = 33;
 
-constexpr const static uint8_t CARD_LARGE_SPACING = 12;
-constexpr const static uint8_t CARD_LARGE_SPACING_DEALER = 12;
+constexpr const static uint8_t CARD_LARGE_SPACING = 10;
+constexpr const static uint8_t CARD_LARGE_SPACING_DEALER = 10;
 constexpr const static uint8_t CARD_LARGE_SPACING_FULL = 22;
 constexpr const static uint8_t CARD_LARGE_SPACING_ROTATED = 9;
 constexpr const static uint8_t CARD_HAND_SPACING = 12;
-constexpr const static uint8_t CARD_DEALER_CENTER = 58;
-constexpr const static uint8_t CARD_PLAYER_CENTER = 58;
+constexpr const static uint8_t CARD_DEALER_CENTER = 54;
+constexpr const static uint8_t CARD_PLAYER_CENTER = 52;
 constexpr const static uint8_t CARD_LARGE_TOP_PLAYER = 41;
 constexpr const static uint8_t CARD_SMALL_TOP_PLAYER = 37;
 constexpr const static uint8_t CARD_LARGE_TOP_DEALER = 0;
@@ -32,6 +32,8 @@ void PlayGameState::render(StateMachine & machine) {
   auto & gameStats = machine.getContext().gameStats;
 	auto & player1 = gameStats.player1;
 	auto & player2 = gameStats.player2;
+
+  bool flashScore = arduboy.getFrameCountHalf(32);
 
 	switch (this->viewState) {
 
@@ -77,15 +79,15 @@ void PlayGameState::render(StateMachine & machine) {
     case ViewState::PlayersTurn:
     case ViewState::PlayersTurn_Go:
     case ViewState::PlayersTurn_Normal:
-      drawSmallCard(0, 0, this->turnUp, false);
+      drawTurnUp(machine, TurnUpState::Visible);
       if (this->counter == 0) drawHighlight(machine, this->highlightCard);
       drawPlay();
       drawCrib(machine, this->cribState);
 			break;
 
     case ViewState::ComputersTurn:
-      drawSmallCard(0, 0, this->turnUp, false);
-      drawHighlight(machine, this->highlightCard);
+      drawTurnUp(machine, TurnUpState::Visible);
+//      drawHighlight(machine, this->highlightCard);
       drawPlay();
       drawCrib(machine, this->cribState);
 			break;
@@ -100,13 +102,8 @@ void PlayGameState::render(StateMachine & machine) {
         bool playerFlash2 = (player2.getPrevScore() != player2.getScore()) && this->highlight;
         this->drawPlayer_Upper(player2.getPrevScore(), this->player2Counter, playerFlash2);
         this->drawPlayer_Lower(player1.getPrevScore(), this->player1Counter, playerFlash1);
+        this->drawScores_TopLeft(machine, true, true);
 
-        drawScore(machine, 5, -1, player2.getScore());
-        drawScore(machine, 26, -1, player1.getScore());
-        arduboy.fillRect(1, 0, 5, 7);
-        arduboy.fillRect(22, 0, 5, 7);
-        SpritesB::drawErase(1, 2, Images::Peg, 0);
-        SpritesB::drawErase(22, 2, Images::Peg, 1);
       }
       break;
 
@@ -117,35 +114,61 @@ void PlayGameState::render(StateMachine & machine) {
         SpritesB::drawOverwrite(0, 22, Images::Dealer, 0);
         SpritesB::drawSelfMasked(43, 0, Images::Divider, 0);
 
-if (this->counter >= 49) {
-  drawScores(machine);
-}
+
+        // Flash the appropriate player's score ..
+
+        switch (this->viewState) {
+
+          case ViewState::DisplayScore_Other:
+            if (gameStats.playerDealer == 0) {
+              this->drawScores_TopLeft(machine, true, flashScore);
+            }
+            else {
+              this->drawScores_TopLeft(machine, flashScore, true);
+            }
+            break;
+
+          case ViewState::DisplayScore_Dealer:
+            if (gameStats.playerDealer == 0) {
+              this->drawScores_TopLeft(machine, flashScore, true);
+            }
+            else {
+              this->drawScores_TopLeft(machine, true, flashScore);
+            }
+            break;
+
+          case ViewState::DisplayScore_Crib: 
+            if (gameStats.playerDealer == 0) {
+              this->drawScores_TopLeft(machine, flashScore, true);
+            }
+            else {
+              this->drawScores_TopLeft(machine, true, flashScore);
+            }
+            break;
+
+          default: break;
+
+        }
+
         switch (this->counter) {
 
-          case 0 ... 48:
+          case 50:
+            drawHandScores(machine);
+            break;
+
+          default:
+
             SpritesB::drawSelfMasked(51, 4, Images::Board, 0);
             bool playerFlash1 = (player1.getPrevScore() != player1.getScore()) && this->highlight;
             bool playerFlash2 = (player2.getPrevScore() != player2.getScore()) && this->highlight;
-            this->drawPlayer_Upper(player2.getPrevScore(), this->player2Counter, playerFlash1);
+            this->drawPlayer_Upper(player2.getPrevScore(), this->player2Counter, playerFlash2);
             this->drawPlayer_Lower(player1.getPrevScore(), this->player1Counter, playerFlash1);
-
-            drawScore(machine, 5, -1, player2.getScore());
-            drawScore(machine, 26, -1, player1.getScore());
-            arduboy.fillRect(1, 0, 5, 7);
-            arduboy.fillRect(22, 0, 5, 7);
-            SpritesB::drawErase(1, 2, Images::Peg, 0);
-            SpritesB::drawErase(22, 2, Images::Peg, 1);            
-            break;
-
-          case 49 ... 185:
-            drawScores(machine);
             break;
 
         }
 
       }
       break;
-
 
 	}
 
@@ -158,10 +181,8 @@ if (this->counter >= 49) {
       break;
 
     default:
-      drawScore(machine, 114, -1, player2.getScore());
-      drawScore(machine, 114, 52, player1.getScore());
-
-
+      drawScore(machine, 114, -1, player2.getScore(), true);
+      drawScore(machine, 114, 52, player1.getScore(), true);
       break;
 
   }
@@ -173,40 +194,114 @@ if (this->counter >= 49) {
 
 }
 
-void PlayGameState::drawScores(StateMachine & machine) {
+
+// Draw scoring sequences from hand or crib in RHS ..
+
+void PlayGameState::drawHandScores(StateMachine & machine) {
 
 	auto & arduboy = machine.getContext().arduboy;
   auto & gameStats = machine.getContext().gameStats;
 
-  uint8_t total = 0;
 
-  for (uint8_t i = 0; i < Constants::PlayerHandScores; i++) {
+  // Render hand details ..
 
-    if (gameStats.scores[i].getHand(0) != Constants::NoCard) {
+  font3x5.setCursor(51, 0);
 
-      uint8_t handWidth = 0;
+  switch (this->viewState) {
 
-      for (uint8_t j = 0; j < 5; j++) {
+    case ViewState::DisplayScore_Other:
+      if (gameStats.playerDealer == 0) {
+        font3x5.print(F("My Hand:"));
+      }
+      else {
+        font3x5.print(F("Your Hand:"));
+      }
+      break;
 
-        if (gameStats.scores[i].getHand(j) != Constants::NoCard) {
+    case ViewState::DisplayScore_Dealer:
+      if (gameStats.playerDealer == 0) {
+        font3x5.print(F("Your Hand:"));
+      }
+      else {
+        font3x5.print(F("My Hand:"));
+      }
+      break;
 
-          handWidth++;
-          uint8_t cardVal = CardUtils::getCardValue(gameStats.scores[i].getHand(j), false);
-          Sprites::drawSelfMasked(50 + (j * 14) - (cardVal == 10 ? 1 : 0), 10 + (i * 7), Images::Pips[cardVal - 1], 0);
-          Sprites::drawSelfMasked(55 + (j * 14), 10 + (i * 7), Images::Suits, static_cast<uint8_t>(CardUtils::getCardSuit(gameStats.scores[i].getHand(j))));
+    case ViewState::DisplayScore_Crib: 
+      if (gameStats.playerDealer == 0) {
+        font3x5.print(F("Your Crib:"));
+      }
+      else {
+        font3x5.print(F("My Crib:"));
+      }
+      break;
 
-        }
+    default: break;
+
+  }
+
+
+
+  if (gameStats.scores[0].getCard(0) == Constants::NoCard) {
+
+    font3x5.setCursor(72, 28);
+    font3x5.print(F("Nothing !"));
+
+  }
+  else {
+
+    uint8_t numberOfScores = gameStats.getNumberOfScores();
+    uint8_t renderLine = 0;
+
+    // Render upper arrow if needed ..
+
+    if (numberOfScores > 4) {
+      SpritesB::drawSelfMasked(120, 1, Images::Arrow_Up, !this->scoreUpperRow);
+    }
+
+    for (uint8_t i = 0; i < numberOfScores; i++) {
+
+      if (i >= this->scoreUpperRow && i <= this->scoreUpperRow + 5) {
+
+        uint8_t handWidth = 0;
+
+        for (uint8_t j = 0; j < 5; j++) {
+
+          if (gameStats.scores[i].getCard(j) != Constants::NoCard) {
+
+            handWidth++;
+            uint8_t cardVal = CardUtils::getCardValue(gameStats.scores[i].getCard(j), false);
+            SpritesB::drawSelfMasked(50 + (j * 14) - (cardVal == 10 ? 1 : 0), 10 + (renderLine * 8), Images::Pips[cardVal - 1], 0);
+            SpritesB::drawSelfMasked(55 + (j * 14), 10 + (renderLine * 8), Images::Suits, static_cast<uint8_t>(CardUtils::getCardSuit(gameStats.scores[i].getCard(j))));
+
+          }
+
+        } 
+
+        arduboy.drawHorizontalDottedLine(50 + (handWidth * 14), 114, 15 + (renderLine * 8));
+
+        uint8_t score = gameStats.scores[i].getScore();
+        font3x5.setCursor(120, 10 + (renderLine * 8) - 1);
+        if (score < 10) font3x5.print("  ");
+        font3x5.print(score);
+        renderLine++;
 
       }
 
-      arduboy.drawHorizontalDottedLine(50 + (handWidth * 14),  112, 15 + (i * 7));
+    }
 
-      uint8_t score = gameStats.scores[i].getScore();
-      total = total + score;
-      font3x5.setCursor(120, 10 + (i * 7) - 1);
-      if (score < 10) font3x5.print(" ");
-      font3x5.print(score);
 
+    // Render lower arrow ..
+    if (numberOfScores > 4) {
+      SpritesB::drawSelfMasked(120, 60, Images::Arrow_Down, !(this->scoreUpperRow + 5 < numberOfScores));
+    }
+    if (this->scoreUpperRow + 5 >= numberOfScores) {
+      font3x5.setTextColor(WHITE);
+      font3x5.setCursor(93, 10 + (renderLine * 8));
+      font3x5.print(F("Total:"));
+      font3x5.setCursor(120, 10 + (renderLine * 8));
+      if (gameStats.getScoresTotal() < 10) font3x5.print("  ");
+      font3x5.print(gameStats.getScoresTotal());
     }
 
   }
@@ -325,12 +420,14 @@ void PlayGameState::drawHighlight(StateMachine & machine, uint8_t hghlightCard) 
 
   leftHand = CARD_PLAYER_CENTER - (widthTot / 2);
 
-  if (gameStats.player1.getHandCardCount() - 1 == hghlightCard) {
-    SpritesB::drawOverwrite(leftHand + (hghlightCard * CARD_LARGE_SPACING) - 1, 60, Images::Highlight_Large, 0);
-  }
-  else {
-    SpritesB::drawOverwrite(leftHand + (hghlightCard * CARD_LARGE_SPACING) - 1, 60, Images::Highlight_Small, 0);
-  }
+  // if (gameStats.player1.getHandCardCount() - 1 == hghlightCard) {
+  //   SpritesB::drawOverwrite(leftHand + (hghlightCard * CARD_LARGE_SPACING) - 1, 60, Images::Highlight_Large, 0);
+  // }
+  // else {
+  //   SpritesB::drawOverwrite(leftHand + (hghlightCard * CARD_LARGE_SPACING) - 1, 60, Images::Highlight_Small, 0);
+  // }
+
+  SpritesB::drawExternalMask(leftHand + (hghlightCard * CARD_LARGE_SPACING) + 1, 51, Images::Hand, Images::Hand_Mask, 0, 0);
 
 }
 
@@ -381,12 +478,12 @@ void PlayGameState::drawTurnUp(StateMachine & machine, TurnUpState turnUpState) 
 
   auto & gameStats = machine.getContext().gameStats;
 
-  uint8_t yPos = (gameStats.playerDealer == 0 ? 0: 37);
+  uint8_t yPos = (gameStats.playerDealer == 0 ? 0 : 37);
 
   switch (turnUpState) {
 
     case TurnUpState::Empty:
-      SpritesB::drawSelfMasked(0, yPos, Images::TurnUp, 0);
+      //SpritesB::drawSelfMasked(0, yPos, Images::TurnUp, 0);
       break;
 
     case TurnUpState::Hidden:

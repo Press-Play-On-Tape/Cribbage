@@ -53,7 +53,7 @@ void BaseState::drawMessageBox(StateMachine &machine, String message, uint8_t li
 }
 
 
-void BaseState::drawScore(StateMachine & machine, uint8_t x, int8_t y, uint8_t score) {
+void BaseState::drawScore(StateMachine & machine, uint8_t x, int8_t y, uint8_t score, bool renderText) {
 
 	auto & arduboy = machine.getContext().arduboy;
 
@@ -65,7 +65,26 @@ void BaseState::drawScore(StateMachine & machine, uint8_t x, int8_t y, uint8_t s
   arduboy.fillRect(x, y, 14, 8, BLACK);
   arduboy.fillRect(x + 1, y + 1, 13, 7);
   font3x5.setCursor(xPos, y + 1);
-  font3x5.print(score);
+  if (renderText) font3x5.print(score);
   font3x5.setTextColor(WHITE);
+
+}
+
+
+// Draw comp then player scores in top left..
+
+void BaseState::drawScores_TopLeft(StateMachine & machine, bool renderText_Player1, bool renderText_Player2) {
+
+	auto & arduboy = machine.getContext().arduboy;
+  auto & gameStats = machine.getContext().gameStats;
+	auto & player1 = gameStats.player1;
+	auto & player2 = gameStats.player2;
+
+  drawScore(machine, 5, -1, player2.getScore(), renderText_Player2);
+  drawScore(machine, 26, -1, player1.getScore(), renderText_Player1);
+  arduboy.fillRect(1, 0, 5, 7);
+  arduboy.fillRect(22, 0, 5, 7);
+  SpritesB::drawErase(1, 2, Images::Peg, 0);
+  SpritesB::drawErase(22, 2, Images::Peg, 1);            
 
 }

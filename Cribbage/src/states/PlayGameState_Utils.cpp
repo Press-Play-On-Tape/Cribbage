@@ -291,3 +291,80 @@ bool PlayGameState::isEndOfHand(StateMachine & machine) {
 	return (!(player1.canPlay(this->playedCards) || player2.canPlay(this->playedCards)));
 
 }
+
+uint8_t PlayGameState::getScoresTotal(StateMachine & machine) {
+
+	auto & gameStats = machine.getContext().gameStats;
+	
+	uint8_t total = 0;
+
+	for (uint8_t i = 0; i < Constants::PlayerHandScores; i++) {
+
+		if (gameStats.scores[i].getCard(0) == Constants::NoCard) break;
+
+		total = total + gameStats.scores[i].getScore();
+
+	}
+
+	return total;
+	
+}
+
+uint8_t PlayGameState::addHandScoreToPlayerTotal(StateMachine & machine) {
+
+	auto & gameStats = machine.getContext().gameStats;
+	auto & player1 = gameStats.player1;
+	auto & player2 = gameStats.player2;
+
+	uint8_t scoresTotal = 0;
+
+	switch (this->viewState) {
+
+		case ViewState::DisplayScore_Other:
+			if (gameStats.playerDealer == 0) {
+				player2.calculateHandScore(gameStats.scores, this->turnUp);
+				scoresTotal = getScoresTotal(machine);
+				player2.addScore(scoresTotal);
+			}
+			else {
+				player1.calculateHandScore(gameStats.scores, this->turnUp);
+				scoresTotal = getScoresTotal(machine);
+				player1.addScore(scoresTotal);
+			}
+			break;
+
+		case ViewState::DisplayScore_Dealer:
+			if (gameStats.playerDealer == 0) {
+				player1.calculateHandScore(gameStats.scores, this->turnUp);
+				scoresTotal = getScoresTotal(machine);
+				player1.addScore(scoresTotal);
+			}
+			else {
+				player2.calculateHandScore(gameStats.scores, this->turnUp);
+				scoresTotal = getScoresTotal(machine);
+				player2.addScore(scoresTotal);
+			}
+			break;
+
+		case ViewState::DisplayScore_Crib:
+			if (gameStats.playerDealer == 0) {
+				player1.calculateCribScore(gameStats.scores, this->turnUp);
+				scoresTotal = getScoresTotal(machine);
+				player1.addScore(scoresTotal);
+			}
+			else {
+				player2.calculateCribScore(gameStats.scores, this->turnUp);
+				scoresTotal = getScoresTotal(machine);
+				player2.addScore(scoresTotal);
+			}
+			break;
+
+		default: break;
+
+	}
+Serial.print("scoresTotal: ");
+Serial.println(scoresTotal);
+
+	return scoresTotal;
+
+}

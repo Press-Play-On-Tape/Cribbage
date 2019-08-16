@@ -62,6 +62,7 @@ void PlayGameState::activate(StateMachine & machine) {
 // player1.addToHand(5);
 // this->turnUp = 6;
 
+
 					// player1.calculateHandScore(gameStats.scores, this->turnUp);
 
 					// for (uint8_t x=0; x < 10; x++) {

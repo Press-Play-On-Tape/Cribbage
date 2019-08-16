@@ -11,7 +11,9 @@ class BaseState : public GameState<GameContext, GameStateType> {
 
     Font3x5 font3x5 = Font3x5();
 
-    void drawScore(StateMachine & machine, uint8_t x, int8_t y, uint8_t score);
+    void drawScore(StateMachine & machine, uint8_t x, int8_t y, uint8_t score, bool renderText);
+    void drawScores_TopLeft(StateMachine & machine, bool renderText_Player1, bool renderText_Player2);
+
     void drawMessageBox(StateMachine & machine, String message, uint8_t lines, BubbleAlignment alignment);
     void drawMessageBox(StateMachine & machine, String message, uint8_t lines, uint8_t width, BubbleAlignment alignment);
 

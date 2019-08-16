@@ -9,7 +9,7 @@ class Score {
 
     Score();
 
-    uint8_t getHand(uint8_t index);
+    uint8_t getCard(uint8_t index);
     uint8_t getScore();
     ScoreType getType();
 

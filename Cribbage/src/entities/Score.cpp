@@ -3,7 +3,7 @@
 
 Score::Score() {}
 
-uint8_t Score::getHand(uint8_t index) {
+uint8_t Score::getCard(uint8_t index) {
 
   return this->hand[index];
 
