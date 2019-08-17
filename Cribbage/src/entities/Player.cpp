@@ -60,6 +60,12 @@ uint8_t Player::getHandCard(uint8_t index) {
 
 }
 
+void Player::setHandCard(uint8_t index, uint8_t card) {
+
+  this->hand[index] = card;
+
+}
+
 uint8_t Player::getHandCardCount() {
 
   return this->handIdx;
@@ -96,7 +102,7 @@ void Player::calculateHandScore(Score scores[], uint8_t turnUp) {
   memcpy(calcScore, this->orig, 4);
   calcScore[4] = turnUp;
   CardUtils::sort(calcScore, 5);
-  calculateScores(scores, calcScore);
+  calculateScores(scores, calcScore, turnUp);
 
 }
 
@@ -106,11 +112,11 @@ void Player::calculateCribScore(Score scores[], uint8_t turnUp) {
   memcpy(calcScore, this->crib, 4);
   calcScore[4] = turnUp;
   CardUtils::sort(calcScore, 5);
-  calculateScores(scores, calcScore);
+  calculateScores(scores, calcScore, turnUp);
 
 }
 
-void Player::calculateScores(Score scores[], uint8_t calcScore[]) {
+void Player::calculateScores(Score scores[], uint8_t calcScore[], uint8_t turnUp) {
 
 
   // Clear scores collection ..
@@ -121,6 +127,24 @@ void Player::calculateScores(Score scores[], uint8_t calcScore[]) {
   }
 
   uint8_t scoreIdx = 0;
+
+
+  // One for his nob ..
+
+  for (uint8_t k = 0; k < 5; k++) {
+
+    if (calcScore[k] != turnUp && CardUtils::getCardValue(calcScore[k], false) == 11 && CardUtils::getCardSuit(calcScore[k]) == CardUtils::getCardSuit(turnUp)) {
+
+      scores[scoreIdx].setHand(0, calcScore[k]);
+      scores[scoreIdx].setScore(1);
+      scores[scoreIdx].setType(ScoreType::OneForNob);
+      scoreIdx++;
+
+    }
+
+  }
+
+
 
   for (uint8_t i = 31; i > 0; i--) {
 
@@ -550,6 +574,8 @@ void Player::resetHand() {
 
 void Player::printHand(uint8_t playerNo) {
 
+  #ifndef DEBUG_PRINT_HAND
+
   Serial.print("Player ");
   Serial.print(playerNo);
   Serial.print(": ");
@@ -565,6 +591,7 @@ void Player::printHand(uint8_t playerNo) {
   }
 
   Serial.println("");
+  #endif
   
 }
 

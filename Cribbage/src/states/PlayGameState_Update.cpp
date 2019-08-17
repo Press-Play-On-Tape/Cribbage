@@ -21,7 +21,27 @@ void PlayGameState::update(StateMachine & machine) {
 
 		case ViewState::DealCards:
 
-			this->cribState = CribState::Empty;
+			if (arduboy.everyXFrames(16) && player1.getHandCardCount() == 0) {
+				
+				player1.resetHand();
+				player2.resetHand();
+
+				this->cribState = CribState::Empty;
+				this->highlightCard = 0;
+				this->counter = 0;
+				this->computerDiscard1 = 0;
+				this->computerDiscard2 = 0;
+				this->playIdx = 0;
+				this->turnUp = Constants::NoCard;
+				this->highlight = true;
+
+				for (uint8_t x =0; x < 8; x++) {
+					this->playedCards[x] = Constants::NoCard;
+				}
+
+				gameStats.playerDealer = (gameStats.playerDealer == WhichPlayer::Player2 ? WhichPlayer::Player1 : WhichPlayer::Player2);
+				
+			}
 
 			if (player1.getHandCardCount() < 6) {
 
@@ -55,7 +75,7 @@ void PlayGameState::update(StateMachine & machine) {
 					this->cribState = CribState::Hidden;
 					uint8_t card = player1.removeFromHand(highlightCard);
 	
-					if (gameStats.playerDealer == 0) {
+					if (gameStats.playerDealer == WhichPlayer::Player1) {
 
 						player1.addToCrib(card);
 
@@ -90,7 +110,7 @@ void PlayGameState::update(StateMachine & machine) {
 
 				case 0 ... 45:
 					if (justPressed & A_BUTTON) this->counter = 45;
-					saveMessage(F("I will throw\nthese two cards."), 2, BubbleAlignment::Computer);
+					saveMessage(F("   I will throw\nthese two cards."), 2, BubbleAlignment::Computer);
 					break;
 
 				case 46:
@@ -98,7 +118,7 @@ void PlayGameState::update(StateMachine & machine) {
 						uint8_t index = player2.getHandCardIndex(this->computerDiscard1);
 						player2.removeFromHand(index);
 
-						if (gameStats.playerDealer == 0) {
+						if (gameStats.playerDealer == WhichPlayer::Player1) {
 
 							player1.addToCrib(this->computerDiscard1);
 
@@ -120,7 +140,7 @@ void PlayGameState::update(StateMachine & machine) {
 						uint8_t index = player2.getHandCardIndex(this->computerDiscard2);
 						player2.removeFromHand(index);
 
-						if (gameStats.playerDealer == 0) {
+						if (gameStats.playerDealer == WhichPlayer::Player1) {
 
 							player1.addToCrib(this->computerDiscard2);
 
@@ -131,9 +151,15 @@ void PlayGameState::update(StateMachine & machine) {
 
 						}
 
-						this->viewState = ViewState::TurnUp;
-						this->counter = 0;
 					}
+					break;
+
+				case 62 ... 105:
+					break;
+
+				case 106:
+					this->viewState = ViewState::TurnUp;
+					this->counter = 0;
 					break;
 
 			}
@@ -154,39 +180,50 @@ void PlayGameState::update(StateMachine & machine) {
 					break;
 
 				case 16 ... 25:
-					break;
-
-				case 26 ... 70:
-					if (justPressed & A_BUTTON) this->counter = 70;
-					saveMessage(F("Your turn to\nstart."), 2, BubbleAlignment::Computer);
-					break;
-
-				case 71:				
-					this->counter = 0;
-					this->viewState = ViewState::PlayersTurn;
-
-
-player1.removeFromHand(0);
-player1.removeFromHand(0);
-player1.removeFromHand(0);
-player1.removeFromHand(0);
-player1.addToHand(5);
-player1.addToHand(18);
-player1.addToHand(3);
-player1.addToHand(16);
-player1.addToHand(45);
-player1.removeFromHand(4);
-this->turnUp = 4;
-
-
-
-
-
-
+					//this->turnUp = 10; // Uncomment for 'Two for his nob' ..
 					player1.printHand(1);
 					player2.printHand(2);
-
+					if (CardUtils::getCardValue(this->turnUp, false) != 11) {
+						this->counter = 77;
+					}
 					break;
+
+				case 26:
+					if (gameStats.playerDealer == WhichPlayer::Player1) {
+						player1.addScore(2);
+						saveMessage(F("Two for his heels!"), 1, 78, BubbleAlignment::Player);
+					}
+					else {
+						player2.addScore(2);
+						saveMessage(F("Two for his heels!"), 1, 78, BubbleAlignment::Computer);
+					}
+					break;
+
+				case 27 ... 72:
+					this->message.renderRequired = true;
+					break;
+
+				case 73 ... 77:
+					break;
+
+				case 78 ... 125:
+					if (justPressed & A_BUTTON) this->counter = 126;
+					if (gameStats.playerDealer == WhichPlayer::Player2) {
+						saveMessage(F("Your turn to start@"), 1, 81, BubbleAlignment::Computer);
+					}
+					else {
+						saveMessage(F("My turn to start@"), 1, 71, BubbleAlignment::Computer);
+					}
+					break;
+
+				case 126:				
+					this->counter = 0;
+					if (gameStats.playerDealer == WhichPlayer::Player2) {
+						this->viewState = ViewState::PlayersTurn;
+					}
+					else {
+						this->viewState = ViewState::ComputersTurn;
+					}
 
 			}
 
@@ -308,8 +345,9 @@ this->turnUp = 4;
 
 							this->viewState = ViewState::ComputersTurn;
 							if (!player1.getGo() && player2.getGo()) {
-								
+
 								if (!player1.canPlay(this->playedCards)) {
+
 								 	resetPlay(machine);
 									if (player2.getHandCardCount() > 0) {
 										this->viewState = ViewState::ComputersTurn;
@@ -317,9 +355,14 @@ this->turnUp = 4;
 									else {
 										this->viewState = ViewState::PlayersTurn_Normal;
 									}
+
 								}
-								this->viewState = ViewState::PlayersTurn_Normal;
+								else {
+									this->viewState = ViewState::PlayersTurn_Normal;
+								}
+
 							}
+
 						}
 
 					}
@@ -342,6 +385,7 @@ this->turnUp = 4;
 					{
 						uint8_t card = Constants::NoCard;
 						uint8_t points = 0;
+
 						player2.playCard(this->playedCards, (player1.getHandCardCount() > 1 && !player1.getGo()), card, points);
 
 						if (card != Constants::NoCard) {
@@ -390,6 +434,7 @@ this->turnUp = 4;
 						uint8_t board = getBoardValue();
 
 						if (board == 31) {
+
 							if (player1.getHandCardCount() != 0) {
 								this->viewState = ViewState::PlayersTurn;
 								resetPlay(machine);
@@ -401,19 +446,25 @@ this->turnUp = 4;
 							else {
 								this->viewState = ViewState::DisplayScore_Board;
 							}
+
 						}
 						else {
 
 							if (player1.getHandCardCount() == 0 && player2.getHandCardCount() == 0) {
+
 								this->viewState = ViewState::DisplayScore_Board;
+
 							}
 							else if (player1.getHandCardCount() != 0) {
+
 								this->viewState = ViewState::PlayersTurn;
 								if (player1.getGo()) {
 									resetPlay(machine);
 								}
+
 							}
 							else {
+
 								this->viewState = ViewState::PlayersTurn;
 								if ((player1.getGo() || player1.getHandCardCount() == 0) && !player2.getGo()) {
 									if (!player2.canPlay(this->playedCards)) {
@@ -433,8 +484,11 @@ this->turnUp = 4;
 								else if (player1.getGo() && player2.getGo()) {
 										resetPlay(machine);
 								}
+
 							}
+
 						}
+
 					}
 
 					player1.printHand(1);
@@ -519,29 +573,29 @@ this->turnUp = 4;
 						switch (this->viewState) {
 
 							case ViewState::DisplayScore_Other:
-								if (gameStats.playerDealer == 0) {
-									saveMessage(F("  My hand .."), 1, 50, BubbleAlignment::Player);
+								if (gameStats.playerDealer == WhichPlayer::Player1) {
+									saveMessage(F(" My hand@"), 1, 52, BubbleAlignment::Player);
 								}
 								else {
-									saveMessage(F("  Your hand .."), 1, 50, BubbleAlignment::Player);
+									saveMessage(F(" Your hand@"), 1, 52, BubbleAlignment::Player);
 								}
 								break;
 								
 							case ViewState::DisplayScore_Dealer:
-								if (gameStats.playerDealer == 1) {
-									saveMessage(F("  My hand .."), 1, 50, BubbleAlignment::Player);
+								if (gameStats.playerDealer == WhichPlayer::Player2) {
+									saveMessage(F("  My hand@"), 1, 50, BubbleAlignment::Player);
 								}
 								else {
-									saveMessage(F("  Your hand .."), 1, 50, BubbleAlignment::Player);
+									saveMessage(F(" Your hand@"), 1, 52, BubbleAlignment::Player);
 								}
 								break;
 
 							case ViewState::DisplayScore_Crib:
-								if (gameStats.playerDealer == 1) {
-									saveMessage(F("  My crib .."), 1, 50, BubbleAlignment::Player);
+								if (gameStats.playerDealer == WhichPlayer::Player2) {
+									saveMessage(F("  My crib@"), 1, 50, BubbleAlignment::Player);
 								}
 								else {
-									saveMessage(F("  Your crib .."), 1, 50, BubbleAlignment::Player);
+									saveMessage(F(" Your crib@"), 1, 52, BubbleAlignment::Player);
 								}
 								break;
 

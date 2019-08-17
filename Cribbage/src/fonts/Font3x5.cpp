@@ -12,6 +12,7 @@
 #define CHAR_PLUS 43
 #define CHAR_QUESTION 63
 #define CHAR_COLON 58
+#define CHAR_AT 64
 #define CHAR_LETTER_A 65
 #define CHAR_LETTER_Z 90
 #define CHAR_LETTER_A_LOWER 97
@@ -25,6 +26,7 @@
 #define FONT_PLUS_INDEX 65
 #define FONT_QUESTION_INDEX 66
 #define FONT_COLON_INDEX 67
+#define FONT_AT_INDEX 68
 #define FONT_NUMBER_INDEX 52
 
 const uint8_t PROGMEM font_images[] = {
@@ -98,6 +100,7 @@ const uint8_t PROGMEM font_images[] = {
 0x04,	0x0E,	0x04, // +
 0x02,	0x29,	0x06, // ?
 0x0A,	0x00,	0x00, // :
+0x10,	0x00,	0x10, // @
 };
 
 
@@ -169,6 +172,10 @@ void Font3x5::printChar(const char c, const int8_t x, int8_t y) {
 
     case CHAR_COLON:
       idx = FONT_COLON_INDEX;
+      break;
+
+    case CHAR_AT:
+      idx = FONT_AT_INDEX;
       break;
 
   }

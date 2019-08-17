@@ -14,6 +14,8 @@ void PlayGameState::activate(StateMachine & machine) {
 	resetHand(machine);
 
 	this->cribState = CribState::Empty;
+	gameStats.playerDealer = WhichPlayer::Player1;
+	gameStats.playersTurn = WhichPlayer::Player1;
 
 									
 // ---------------------------------------------------------------------------------------------------------------------------

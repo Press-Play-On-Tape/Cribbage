@@ -31,7 +31,7 @@ namespace Constants {
   constexpr uint8_t NoCard = 255;
   constexpr uint8_t NumberOfCards = 52;
 
-  constexpr uint8_t PlayerHandScores = 10;
+  constexpr uint8_t PlayerHandScores = 12;
 
 
 }

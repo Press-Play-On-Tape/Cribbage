@@ -81,6 +81,8 @@ uint8_t PlayGameState::getBoardValue() {
 uint8_t PlayGameState::getScore(StateMachine & machine, Player &player, bool player2Go) {
 	
 	uint8_t score = 0;
+	bool found3InRow = false;
+	bool found4InRow = false;
 
 
 	// A pair ?
@@ -91,7 +93,7 @@ uint8_t PlayGameState::getScore(StateMachine & machine, Player &player, bool pla
 		uint8_t card2 = CardUtils::getCardValue(playedCards[playIdx - 1], false);
 
 		if (card1 == card2) {
-Serial.println("pair");	
+//Serial.println("pair");	
 			score += 2;
 
 		}
@@ -109,7 +111,7 @@ Serial.println("pair");
 
 		if (card1 == card2 && card2== card3) {
 
-Serial.println("royal");	
+//Serial.println("royal");	
 			score += 4;
 
 		}
@@ -128,7 +130,7 @@ Serial.println("royal");
 
 		if (card1 == card2 && card1 == card3 && card3 == card4) {
 	
-Serial.println("double royal");	
+//Serial.println("double royal");	
 			score += 6;
 
 		}
@@ -142,7 +144,7 @@ Serial.println("double royal");
 
 	if (playValue == 15 || playValue == 31) {
 
-Serial.println("15 or 31");	
+//Serial.println("15 or 31");	
 		score += 2;
 
 	}
@@ -160,14 +162,9 @@ Serial.println("15 or 31");
 		     card2 != card3) &&
 			diffT(card1, card2) <= 2 && diffT(card1, card3) <=2 && 
 			diffT(card2, card3) <= 2 ) {
-Serial.print(card1);
-Serial.print(" ");
-Serial.print(card2);
-Serial.print(" ");
-Serial.print(card3);
-Serial.print(" ");
-Serial.println("run of 3");	
+//Serial.println("run of 3");	
 			score += 3;
+			found3InRow = true;
 
 		}
 
@@ -190,8 +187,10 @@ Serial.println("run of 3");
 			diffT(card2, card3) <=3 && diffT(card2, card4) <=3 && 
 			diffT(card3, card4) <=3) {
 
-Serial.println("run of 4");	
-			score += 1;
+//Serial.println("run of 4");	
+			score += (found3InRow ? 0 : 3) + 1;
+			found3InRow = true;
+			found4InRow = true;
 
 		}
 
@@ -217,8 +216,16 @@ Serial.println("run of 4");
 			diffT(card3, card4) <=4 && diffT(card3, card5) <=4 &&
 			diffT(card4, card5) <=4) {
 
-Serial.println("run of 5");	
-			score += 1;
+//Serial.println("run of 5");	
+			if (found3InRow && found4InRow) {
+				score += 1;
+			}
+			else if (found3InRow && !found4InRow) {
+				score += 2;
+			}
+			else if (!found3InRow && !found4InRow) {
+				score += 5;
+			}
 
 		}
 
@@ -229,7 +236,7 @@ Serial.println("run of 5");
 	if (playValue != 31 && player2Go && (player.getHandCardCount() == 0 || !player.canPlay(this->playedCards))) {
 
 		score += 1;
-Serial.println("last card");	
+//Serial.println("last card");	
 
 	}
 	
@@ -321,7 +328,7 @@ uint8_t PlayGameState::addHandScoreToPlayerTotal(StateMachine & machine) {
 	switch (this->viewState) {
 
 		case ViewState::DisplayScore_Other:
-			if (gameStats.playerDealer == 0) {
+			if (gameStats.playerDealer == WhichPlayer::Player1) {
 				player2.calculateHandScore(gameStats.scores, this->turnUp);
 				scoresTotal = getScoresTotal(machine);
 				player2.addScore(scoresTotal);
@@ -334,7 +341,7 @@ uint8_t PlayGameState::addHandScoreToPlayerTotal(StateMachine & machine) {
 			break;
 
 		case ViewState::DisplayScore_Dealer:
-			if (gameStats.playerDealer == 0) {
+			if (gameStats.playerDealer == WhichPlayer::Player1) {
 				player1.calculateHandScore(gameStats.scores, this->turnUp);
 				scoresTotal = getScoresTotal(machine);
 				player1.addScore(scoresTotal);
@@ -347,7 +354,7 @@ uint8_t PlayGameState::addHandScoreToPlayerTotal(StateMachine & machine) {
 			break;
 
 		case ViewState::DisplayScore_Crib:
-			if (gameStats.playerDealer == 0) {
+			if (gameStats.playerDealer == WhichPlayer::Player1) {
 				player1.calculateCribScore(gameStats.scores, this->turnUp);
 				scoresTotal = getScoresTotal(machine);
 				player1.addScore(scoresTotal);
@@ -362,8 +369,6 @@ uint8_t PlayGameState::addHandScoreToPlayerTotal(StateMachine & machine) {
 		default: break;
 
 	}
-Serial.print("scoresTotal: ");
-Serial.println(scoresTotal);
 
 	return scoresTotal;
 

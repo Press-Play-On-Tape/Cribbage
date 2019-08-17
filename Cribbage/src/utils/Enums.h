@@ -12,7 +12,7 @@ enum class ScoreType : uint8_t {
   RunOf5,
   RunOf4,
   RunOf3,
-  OneForNibs
+  OneForNob
 };
 
 enum class CribState : uint8_t {
@@ -34,10 +34,9 @@ enum class Suit : uint8_t {
   Clubs,
 };
 
-enum class PlayerTile : uint8_t {
+enum class WhichPlayer : uint8_t {
   Player1,
-  Player2,
-  Original
+  Player2
 };
 
 enum class GameStateType : uint8_t {
