@@ -5,20 +5,12 @@
 #include "../utils/Enums.h"
 #include "../fonts/Font3x5.h"
 
-
-void BaseState::drawMessageBox(StateMachine &machine, String message, uint8_t lines, BubbleAlignment alignment) {
-
-	drawMessageBox(machine, message, lines, 72, alignment);
-
-}
-
-void BaseState::drawMessageBox(StateMachine &machine, String message, uint8_t lines, uint8_t width, BubbleAlignment alignment) {
+void BaseState::drawMessageBox(StateMachine &machine, String message, uint8_t lines, uint8_t width, uint8_t xPos, BubbleAlignment alignment) {
 
 	auto & arduboy = machine.getContext().arduboy;
 
-//	const uint8_t yPos[] = { 12, 8, 4 };
 	uint8_t x = (alignment == BubbleAlignment::Player ? 0 : 128 - width);
-//	uint8_t y = yPos[lines - 1];
+	if (xPos != 255) x = xPos;
 	int8_t y = -1;
 	uint8_t yBottom = y + (lines * 8) + 4;
 

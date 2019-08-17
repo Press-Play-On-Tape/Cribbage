@@ -48,7 +48,7 @@ void Game::setup(void) {
   // EEPROM_Utils::getName(gameStats.player3.name, EEPROM_PLAYER3);
   // EEPROM_Utils::getName(gameStats.player4.name, EEPROM_PLAYER4);
 
-	this->currentState = GameStateType::SplashScreen; //HighScore; //SJH SplashScreen; 
+	this->currentState = GameStateType::SplashScreen; 
 	this->splashScreenState.activate(*this);
 	
 }

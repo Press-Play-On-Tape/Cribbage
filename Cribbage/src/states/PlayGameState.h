@@ -15,6 +15,7 @@ class PlayGameState : public BaseState {
       String message;
       uint8_t lines;
       uint8_t width;
+      uint8_t xPos;
       BubbleAlignment alignment = BubbleAlignment::None;
       bool renderRequired = false;
     };
@@ -32,6 +33,7 @@ class PlayGameState : public BaseState {
       DisplayScore_Other,
       DisplayScore_Dealer,
       DisplayScore_Crib,
+      EndOfGame
     };
 
     ViewState viewState = ViewState::DealCards;
@@ -71,9 +73,10 @@ class PlayGameState : public BaseState {
     void resetPlay(StateMachine & machine);
     void saveMessage(String message, uint8_t lines, BubbleAlignment alignment);
     void saveMessage(String message, uint8_t lines, uint8_t width, BubbleAlignment alignment);
+    void saveMessage(String message, uint8_t lines, uint8_t width, uint8_t xPos, BubbleAlignment alignment);
     void saveMessageWithScore(uint8_t playedValue, uint8_t points, BubbleAlignment alignment);
     uint8_t getScore(StateMachine & machine, Player &player, bool player2Go);
-    bool isEndOfHand(StateMachine & machine);
+    bool isEndOfGame(StateMachine & machine);
 
     uint8_t getBoardValue();
     uint8_t getScoresTotal(StateMachine & machine);
@@ -81,12 +84,15 @@ class PlayGameState : public BaseState {
     void drawPlayer_Upper(uint8_t oldPosition, uint8_t newPosition, bool flash);
     void drawPlayer_Lower(uint8_t oldPosition, uint8_t newPosition, bool flash);
     uint8_t addHandScoreToPlayerTotal(StateMachine & machine);
+    void skipSequence(StateMachine & machine, uint8_t counter);
+    void moveToEOG(StateMachine & machine);
+
 
     uint8_t player1Counter = 0;
     uint8_t player2Counter = 0;
     uint8_t scoreUpperRow = 0;
   	uint8_t scoresTotal = 0;
-
+    bool eog = false;
 
 };
 

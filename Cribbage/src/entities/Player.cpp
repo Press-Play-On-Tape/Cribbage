@@ -45,6 +45,7 @@ void Player::setGo(bool value) {
 void Player::addScore(uint8_t score) {
 
   this->score += score;
+  if (this->score > 121) this->score = 121;
 
 }
 
@@ -559,7 +560,7 @@ uint8_t Player::removeFromHand(uint8_t index) {
 
 }
 
-void Player::resetHand() {
+void Player::resetHand(bool clearScores) {
 
   this->handIdx = 0;
   this->cribIdx = 0;
@@ -568,6 +569,11 @@ void Player::resetHand() {
   memset(this->crib, 0, (sizeof(this->crib) / sizeof(this->crib[0])));
 
   this->go = false;
+
+  if (clearScores) {
+    this->score = 0;
+    this->prevScore = 0;
+  }
 
 }
 

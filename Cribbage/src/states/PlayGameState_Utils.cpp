@@ -29,8 +29,8 @@ void PlayGameState::resetHand(StateMachine & machine) {
 	auto & player2 = gameStats.player2;
 	auto & deck = gameStats.deck;
 
-	player1.resetHand();
-	player2.resetHand();
+	player1.resetHand(false);
+	player2.resetHand(false);
 	deck.shuffle();
 
 	for (uint8_t x = 0; x < 8; x++) {
@@ -45,15 +45,22 @@ void PlayGameState::resetHand(StateMachine & machine) {
 
 void PlayGameState::saveMessage(String message, uint8_t lines, BubbleAlignment alignment) {
 
-	saveMessage(message, lines, 72, alignment);
+	saveMessage(message, lines, 72, 255, alignment);
 
 }
 
 void PlayGameState::saveMessage(String message, uint8_t lines, uint8_t width, BubbleAlignment alignment) {
 
+	saveMessage(message, lines, width, 255, alignment);
+
+}
+
+void PlayGameState::saveMessage(String message, uint8_t lines, uint8_t width, uint8_t xPos, BubbleAlignment alignment) {
+
 	this->message.message = message;
 	this->message.lines= lines;
 	this->message.width= width;
+	this->message.xPos= xPos;
 	this->message.alignment = alignment;
 	this->message.renderRequired = true;
 
@@ -289,13 +296,13 @@ void PlayGameState::saveMessageWithScore(uint8_t playedValue, uint8_t points, Bu
 }
 
 
-bool PlayGameState::isEndOfHand(StateMachine & machine) {
+bool PlayGameState::isEndOfGame(StateMachine & machine) {
 
 	auto & gameStats = machine.getContext().gameStats;
 	auto & player1 = gameStats.player1;
 	auto & player2 = gameStats.player2;
 	
-	return (!(player1.canPlay(this->playedCards) || player2.canPlay(this->playedCards)));
+	return (player1.getScore() >= 121|| player2.getScore() >= 121); //SJH
 
 }
 
@@ -371,5 +378,33 @@ uint8_t PlayGameState::addHandScoreToPlayerTotal(StateMachine & machine) {
 	}
 
 	return scoresTotal;
+
+}
+
+void PlayGameState::skipSequence(StateMachine & machine, uint8_t counter) {
+
+	auto & arduboy = machine.getContext().arduboy;
+	auto justPressed = arduboy.justPressedButtons();
+
+	if (justPressed & A_BUTTON) {
+
+		if (isEndOfGame(machine)) {
+			this->counter = 0;
+			this->viewState = ViewState::EndOfGame;
+		}
+		else {
+			this->counter = counter;
+		}
+
+	}
+
+}
+
+void PlayGameState::moveToEOG(StateMachine & machine) {
+
+	if (isEndOfGame(machine)) {
+		this->counter = 0;
+		this->eog = true;
+	}
 
 }

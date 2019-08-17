@@ -14,6 +14,7 @@ class GameOverState : public BaseState {
     uint8_t r = 0;
     uint8_t g = 12;
     uint8_t b = 24;
+    uint8_t counter = 0;
     
   public:	
   

@@ -70,7 +70,7 @@ void TitleScreenState::render(StateMachine & machine) {
 	SpritesB::drawOverwrite(7, 16, Images::TitleScreen_Words, 0);
 
 	for (int16_t x = -20; x < 154; x = x + 28) {
-		SpritesB::drawOverwrite(x - counter, 44, Images::TitleScreen_Cards, 0);
+		SpritesB::drawOverwrite(x - this->counter, 44, Images::TitleScreen_Cards, 0);
 	}
 
 }

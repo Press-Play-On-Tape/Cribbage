@@ -40,7 +40,7 @@ class Player {
     void playCard(uint8_t playedCards[], bool canOpponentPlay, uint8_t &card, uint8_t &points);
 
     uint8_t removeFromHand(uint8_t index);
-    void resetHand();
+    void resetHand(bool clearScores);
     void printHand(uint8_t playerNo);
     bool canPlay(uint8_t playedCards[]);
 

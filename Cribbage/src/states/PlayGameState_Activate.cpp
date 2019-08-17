@@ -10,10 +10,17 @@ void PlayGameState::activate(StateMachine & machine) {
 
 	auto & arduboy = machine.getContext().arduboy;
 	auto & gameStats = machine.getContext().gameStats;
+	auto & player1 = gameStats.player1;
+	auto & player2 = gameStats.player2;
 
+	player1.resetHand(true);
+	player2.resetHand(true);
 	resetHand(machine);
 
 	this->cribState = CribState::Empty;
+	this->viewState = ViewState::DealCards;
+	this->eog = false;
+
 	gameStats.playerDealer = WhichPlayer::Player1;
 	gameStats.playersTurn = WhichPlayer::Player1;
 

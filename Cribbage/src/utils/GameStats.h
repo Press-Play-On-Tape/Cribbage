@@ -73,8 +73,8 @@ class GameStats {
 
   void resetGame() {
 
-    player1.resetHand();
-    player2.resetHand();
+    player1.resetHand(true);
+    player2.resetHand(true);
 
   }
 

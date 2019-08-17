@@ -17,14 +17,19 @@ void PlayGameState::update(StateMachine & machine) {
   auto justPressed = arduboy.justPressedButtons();
   auto pressed = arduboy.pressedButtons();
 
+
+	// Has the EOG flag been set?
+
+	if (this->eog) this->viewState = ViewState::EndOfGame;
+
 	switch (this->viewState) {
 
 		case ViewState::DealCards:
 
 			if (arduboy.everyXFrames(16) && player1.getHandCardCount() == 0) {
 				
-				player1.resetHand();
-				player2.resetHand();
+				player1.resetHand(false);
+				player2.resetHand(false);
 
 				this->cribState = CribState::Empty;
 				this->highlightCard = 0;
@@ -109,7 +114,7 @@ void PlayGameState::update(StateMachine & machine) {
 			switch (this->counter) {
 
 				case 0 ... 45:
-					if (justPressed & A_BUTTON) this->counter = 45;
+					skipSequence(machine, 45);
 					saveMessage(F("   I will throw\nthese two cards."), 2, BubbleAlignment::Computer);
 					break;
 
@@ -133,6 +138,7 @@ void PlayGameState::update(StateMachine & machine) {
 					break;
 
 				case 47 ... 60:
+					skipSequence(machine, 60);
 					break;
 
 				case 61:
@@ -155,6 +161,7 @@ void PlayGameState::update(StateMachine & machine) {
 					break;
 
 				case 62 ... 105:
+					skipSequence(machine, 105);
 					break;
 
 				case 106:
@@ -200,14 +207,17 @@ void PlayGameState::update(StateMachine & machine) {
 					break;
 
 				case 27 ... 72:
+					skipSequence(machine, 125);
 					this->message.renderRequired = true;
 					break;
 
 				case 73 ... 77:
+					skipSequence(machine, 125);
 					break;
 
 				case 78 ... 125:
-					if (justPressed & A_BUTTON) this->counter = 126;
+					moveToEOG(machine);
+					skipSequence(machine, 125);
 					if (gameStats.playerDealer == WhichPlayer::Player2) {
 						saveMessage(F("Your turn to start@"), 1, 81, BubbleAlignment::Computer);
 					}
@@ -260,10 +270,12 @@ void PlayGameState::update(StateMachine & machine) {
 					break;
 
 				case 7 ... 52:
+					skipSequence(machine, 52);
 					this->message.renderRequired = true;
 					break;
 
 				case 53:
+					moveToEOG(machine);
 					this->counter = 0;
 					if (player2.getGo()) {
 						resetPlay(machine);
@@ -318,12 +330,14 @@ void PlayGameState::update(StateMachine & machine) {
 					break;
 
 				case 1 ... 45:
+					skipSequence(machine, 46);
 					this->counter++;
 					this->message.renderRequired = true;
 					break;
 
 				case 46:
 					{
+						moveToEOG(machine);
 						uint8_t board = getBoardValue();
 						this->counter = 0;
 
@@ -424,12 +438,13 @@ void PlayGameState::update(StateMachine & machine) {
 					break;
 
 				case 17 ... 60:
-					if (justPressed & A_BUTTON) this->counter = 60;
+					skipSequence(machine, 60);
 					this->message.renderRequired = true;
 					break;
 
 				case 61:				
 					{
+						moveToEOG(machine);
 						this->counter = 0;
 						uint8_t board = getBoardValue();
 
@@ -704,21 +719,90 @@ void PlayGameState::update(StateMachine & machine) {
 
 			}
 
-		break;
+			break;
+
+		case ViewState::EndOfGame:
+Serial.print("EOG ");
+Serial.println(this->counter);
+
+			if (this->counter <= 65) {
+
+				if (player1.getScore() >= 121) {
+					saveMessage(F("Congratulations!\n          You Won!"), 2, 76, 48, BubbleAlignment::Player);
+				}
+				else {
+					saveMessage(F("I am sorry@ you\n lost the game.\n       I won!"), 3, 67, 48, BubbleAlignment::Player);
+				}
+				this->counter++;
+
+			}
+			else {
+
+				if (arduboy.everyXFrames(16)) {
+
+					switch (this->counter) {
+
+						case 66:
+
+							if (this->player1Counter < player1.getPrevScore()) this->player1Counter = player1.getPrevScore();
+							if (this->player2Counter < player2.getPrevScore()) this->player2Counter = player2.getPrevScore();
+
+							if (this->player1Counter < player1.getScore() || this->player2Counter < player2.getScore()) {
+								if (this->player1Counter < player1.getScore()) {
+									this->player1Counter++;
+								}
+								if (this->player2Counter < player2.getScore()) {
+									this->player2Counter++;
+								}
+							}
+							else {
+								this->counter++;
+							}
+							break;
+
+						case 67:
+						case 69:
+						case 71:
+						case 73:
+							this->highlight = false;
+							this->counter++;
+							break;
+
+						case 68:
+						case 70:
+						case 72:
+						case 74:
+							this->highlight = true;
+							this->counter++;
+							break;
+
+						default: break;
+
+					}
+
+				}
+
+			}
+
+			if (justPressed & A_BUTTON) {
+				machine.changeState(GameStateType::GameOver); 
+			}
+
+			break;
 
 	}
 
-	if (justPressed & B_BUTTON) {
-//			machine.changeState(GameStateType_Board); 
+// 	if (justPressed & A_BUTTON) {
+// //			machine.changeState(GameStateType_Board); 
 
-		this->player1Counter = 0;
-		this->player2Counter = 0;
+// 		this->player1Counter = 0;
+// 		this->player2Counter = 0;
 
-		this->counter = 0;
-		this->highlight = true;
-		prevViewState = viewState;
-		viewState = ViewState::DisplayScore_Board;
+// 		this->counter = 0;
+// 		this->highlight = true;
+// 		prevViewState = viewState;
+// 		viewState = ViewState::DisplayScore_Board;
 
-	}
+// 	}
 
 }

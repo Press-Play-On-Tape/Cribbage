@@ -41,6 +41,7 @@ void PlayGameState::render(StateMachine & machine) {
     case ViewState::DisplayScore_Other:
     case ViewState::DisplayScore_Dealer:
     case ViewState::DisplayScore_Crib:
+    case ViewState::EndOfGame:
       break;
 
     default:
@@ -86,6 +87,7 @@ void PlayGameState::render(StateMachine & machine) {
 			break;
 
     case ViewState::DisplayScore_Board:
+    case ViewState::EndOfGame:
       {
         SpritesB::drawOverwrite(0, 22, Images::Dealer, 0);
         SpritesB::drawSelfMasked(43, 0, Images::Divider, 0);
@@ -178,6 +180,7 @@ void PlayGameState::render(StateMachine & machine) {
     case ViewState::DisplayScore_Other:
     case ViewState::DisplayScore_Dealer:
     case ViewState::DisplayScore_Crib:
+    case ViewState::EndOfGame:
       break;
 
     default:
@@ -193,7 +196,7 @@ void PlayGameState::render(StateMachine & machine) {
   }
 
   if (this->message.renderRequired) {
-    drawMessageBox(machine, this->message.message, this->message.lines, this->message.width, this->message.alignment);
+    drawMessageBox(machine, this->message.message, this->message.lines, this->message.width, this->message.xPos, this->message.alignment);
     this->message.renderRequired = false;
   }
 
