@@ -42,30 +42,39 @@ class GameStats {
     Player player2;
     Deck deck;
 
+    uint8_t playerDealer = 1;
     uint8_t playersTurn = 0;
     Score scores[Constants::PlayerHandScores];
 
 
-  //     Player player3;
-  //     Player player4;
+  uint8_t getNumberOfScores() {
 
-  //     Player * players[4] = { &player1, &player2, &player3, &player4 };
+    uint8_t count = 0;
 
-  //     uint8_t numberOfPlayers = 1;
-  //     uint8_t playerBeingEdited = 1;
+    for (uint8_t i = 0; i < Constants::PlayerHandScores; i++) {
+      if (scores[i].getCard(0) != Constants::NoCard) count++;
+    }
+
+    return count;
+    
+  }
+
+  uint8_t getScoresTotal() {
+
+    uint8_t total = 0;
+
+    for (uint8_t i = 0; i < Constants::PlayerHandScores; i++) {
+      if (scores[i].getCard(0) != Constants::NoCard) total = total + scores[i].getScore();
+    }
+
+    return total;
+    
+  }
 
   void resetGame() {
 
     player1.resetHand();
     player2.resetHand();
-
-  //       numberOfPlayers = 1;
-  //       playerBeingEdited = 1;
-
-  //       player1.setIcon(1);
-  //       player2.setIcon(0);
-  //       player3.setIcon(0);
-  //       player4.setIcon(0);
 
   }
 

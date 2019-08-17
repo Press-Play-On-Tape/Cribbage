@@ -28,7 +28,10 @@ class PlayGameState : public BaseState {
       PlayersTurn_Normal,
       PlayersTurn_Go,
       ComputersTurn,
-      DisplayScore
+      DisplayScore_Board,
+      DisplayScore_Other,
+      DisplayScore_Dealer,
+      DisplayScore_Crib,
     };
 
     ViewState viewState = ViewState::DealCards;
@@ -61,26 +64,29 @@ class PlayGameState : public BaseState {
     void drawTurnUp(StateMachine & machine, TurnUpState turnUpState);
     void drawComputerCard(uint8_t xPos, uint8_t yPos, bool fullSizeCard);
     void drawPlay();
+    void drawHandScores(StateMachine & machine);
+    void drawScores(StateMachine & machine);
 
     void resetHand(StateMachine & machine);
     void resetPlay(StateMachine & machine);
     void saveMessage(String message, uint8_t lines, BubbleAlignment alignment);
     void saveMessage(String message, uint8_t lines, uint8_t width, BubbleAlignment alignment);
     void saveMessageWithScore(uint8_t playedValue, uint8_t points, BubbleAlignment alignment);
-    uint8_t getScore();
+    uint8_t getScore(StateMachine & machine, Player &player, bool player2Go);
     bool isEndOfHand(StateMachine & machine);
 
     uint8_t getBoardValue();
-    void drawPlayer_1(uint8_t position, PlayerTile playerTile);
+    uint8_t getScoresTotal(StateMachine & machine);
 
+    void drawPlayer_Upper(uint8_t oldPosition, uint8_t newPosition, bool flash);
+    void drawPlayer_Lower(uint8_t oldPosition, uint8_t newPosition, bool flash);
+    uint8_t addHandScoreToPlayerTotal(StateMachine & machine);
 
-
-
-
-
-    uint8_t player1StartPos = 0;
-    uint8_t player1EndPos = 0;
     uint8_t player1Counter = 0;
+    uint8_t player2Counter = 0;
+    uint8_t scoreUpperRow = 0;
+  	uint8_t scoresTotal = 0;
+
 
 };
 

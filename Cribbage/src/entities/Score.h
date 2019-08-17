@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Arduboy2.h>
+#include "../utils/Enums.h"
 
 class Score { 
     
@@ -8,11 +9,13 @@ class Score {
 
     Score();
 
-    uint8_t getHand(uint8_t index);
+    uint8_t getCard(uint8_t index);
     uint8_t getScore();
+    ScoreType getType();
 
     void setHand(uint8_t index, uint8_t card);
     void setScore(uint8_t score);
+    void setType(ScoreType score);
 
     void reset();
 
@@ -20,5 +23,6 @@ class Score {
 
     uint8_t hand[5];
     uint8_t score;
+    ScoreType type;
 
 };

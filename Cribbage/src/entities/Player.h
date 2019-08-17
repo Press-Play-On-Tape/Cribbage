@@ -35,7 +35,7 @@ class Player {
     void addToHand(uint8_t card);
     void addToCrib(uint8_t card);
 
-    void playCard(uint8_t playedCards[], uint8_t &card, uint8_t &points);
+    void playCard(uint8_t playedCards[], bool canOpponentPlay, uint8_t &card, uint8_t &points);
 
     uint8_t removeFromHand(uint8_t index);
     void resetHand();
@@ -52,6 +52,7 @@ class Player {
     uint8_t cribIdx;
 
     uint8_t hand[6];
+    uint8_t orig[4];
     uint8_t crib[4];
 
     uint8_t score = 0;

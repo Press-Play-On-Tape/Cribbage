@@ -3,7 +3,7 @@
 
 Score::Score() {}
 
-uint8_t Score::getHand(uint8_t index) {
+uint8_t Score::getCard(uint8_t index) {
 
   return this->hand[index];
 
@@ -12,6 +12,12 @@ uint8_t Score::getHand(uint8_t index) {
 uint8_t Score::getScore() {
 
   return this->score;
+
+}
+
+ScoreType Score::getType() {
+
+  return this->type;
 
 }
 
@@ -24,6 +30,12 @@ void Score::setHand(uint8_t index, uint8_t card) {
 void Score::setScore(uint8_t score) {
 
   this->score = score;
+
+}
+
+void Score::setType(ScoreType type) {
+
+  this->type = type;
 
 }
 

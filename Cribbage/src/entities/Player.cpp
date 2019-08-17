@@ -92,193 +92,279 @@ uint8_t Player::getCribCardCount() {
 
 void Player::calculateHandScore(Score scores[], uint8_t turnUp) {
 
-  CardUtils::sort(this->hand, 4);
-  calculateScores(scores, this->hand);
+  uint8_t calcScore[5];
+  memcpy(calcScore, this->orig, 4);
+  calcScore[4] = turnUp;
+  CardUtils::sort(calcScore, 5);
+  calculateScores(scores, calcScore);
 
 }
 
 void Player::calculateCribScore(Score scores[], uint8_t turnUp) {
 
-  CardUtils::sort(this->crib, 4);
-  calculateScores(scores, this->crib);
+  uint8_t calcScore[5];
+  memcpy(calcScore, this->crib, 4);
+  calcScore[4] = turnUp;
+  CardUtils::sort(calcScore, 5);
+  calculateScores(scores, calcScore);
 
 }
 
 void Player::calculateScores(Score scores[], uint8_t calcScore[]) {
 
+
+  // Clear scores collection ..
+
+  for (uint8_t k = 0; k < Constants::PlayerHandScores; k++) {
+    scores[k].reset();
+
+  }
+
   uint8_t scoreIdx = 0;
 
-  for (uint8_t i = 1; i < 31; i++) {
+  for (uint8_t i = 31; i > 0; i--) {
 
-    uint8_t possibility[5];
+    uint8_t possibility[5] = { Constants::NoCard, Constants::NoCard, Constants::NoCard, Constants::NoCard, Constants::NoCard };
     uint8_t possIdx = 0;
 
-    for (uint8_t j = 0; j < 4; j++) {
+    for (uint8_t j = 0; j < 5; j++) {
 
-      if ((j ^ 2) & i) {
-
+      if ((1<<j) & i) {
         possibility[possIdx] = calcScore[j];
         possIdx++;
 
       }
+      else {
+
+      }
+
+    }
 
 
-      // Check for pairs ..
+    // Check for pairs ..
 
-      if (possIdx == 2) {
+    if (possIdx == 2) {
 
-        if (CardUtils::getCardValue(possibility[0], false) == CardUtils::getCardValue(possibility[1], false)) {
+      uint8_t card1 = CardUtils::getCardValue(possibility[0], false);
+      uint8_t card2 = CardUtils::getCardValue(possibility[1], false);
+      
+      if (card1 == card2) {
 
-          for (uint8_t k = 0; k < 5; k++) {
+        bool pairsFound = false;
 
-            scores[scoreIdx].setHand(k, possibility[k]);
+        for (uint8_t i = 0; i < Constants::PlayerHandScores; i++) {
+
+          if (scores[i].getType() == ScoreType::Pair && card1 == CardUtils::getCardValue(scores[i].getCard(0), false)) {
+
+            pairsFound = true;
+
+
+            // Add card 1 if it isn't in the set ..
+
+            bool found = false;
+            uint8_t nextIdx = 0;
+
+            for (uint8_t k = 0; k < 5; k++) {
+
+              if (scores[i].getCard(k) == possibility[0])                       { found = true; }
+              if ((scores[i].getCard(k) == Constants::NoCard) && nextIdx == 0)  { nextIdx = k; }
+
+            }
+
+            if (!found) scores[i].setHand(nextIdx, possibility[0]);
+
+
+            // Add card 2 if it isn't in the set ..
+
+            found = false;
+            nextIdx = 0;
+
+            for (uint8_t k = 0; k < 5; k++) {
+
+              if (scores[i].getCard(k) == possibility[1])                       { found = true; }
+              if ((scores[i].getCard(k) == Constants::NoCard) && nextIdx == 0)  { nextIdx = k; }
+
+            }
+
+            if (!found) scores[i].setHand(nextIdx + 1, possibility[1]);
+
+
+            // Calculate score
+
+            nextIdx = 0;
+            for (uint8_t k = 0; k < 5; k++) {
+
+              if (scores[i].getCard(k) != Constants::NoCard) nextIdx = k;
+
+            }
+
+            const uint8_t pairScores[] = { 2, 6, 12 };
+            scores[i].setScore(pairScores[nextIdx - 1]);
+
+            break;
 
           }
 
+        }
+          
+        if (!pairsFound) {
+
+          for (uint8_t k = 0; k < 5; k++) {
+            scores[scoreIdx].setHand(k, possibility[k]);
+          }
+
           scores[scoreIdx].setScore(2);
+          scores[scoreIdx].setType(ScoreType::Pair);
           scoreIdx++;
 
         }
 
       }
 
+    }
 
-      // Check for 15 ..
 
-      {
-        uint8_t total = 0;
+    // Check for 15 ..
 
-        for (uint8_t k = 0; k < possIdx; k++) {
+    {
+      uint8_t total = 0;
 
-          total = total + CardUtils::getCardValue(possibility[k], true);
+      for (uint8_t k = 0; k < possIdx; k++) {
 
-        }
-
-        if (total == 15) {
-
-          for (uint8_t k = 0; k < 5; k++) {
-
-            scores[scoreIdx].setHand(k, possibility[k]);
-
-          }
-
-          scores[scoreIdx].setScore(2);
-          scoreIdx++;
-
-        }
+        total = total + CardUtils::getCardValue(possibility[k], true);
 
       }
 
+      if (total == 15) {
 
-      // Check for run of 3 ..
+        for (uint8_t k = 0; k < 5; k++) {
+          scores[scoreIdx].setHand(k, possibility[k]);
+        }
 
-      if (possIdx == 3) {
+        scores[scoreIdx].setScore(2);
+        scores[scoreIdx].setType(ScoreType::Fifteen);
+        scoreIdx++;
 
-        if (CardUtils::getCardValue(possibility[0], false) + 1 == CardUtils::getCardValue(possibility[1], false) &&   
-            CardUtils::getCardValue(possibility[1], false) + 1 == CardUtils::getCardValue(possibility[2], false)) {
+      }
 
-          for (uint8_t k = 0; k < 3; k++) {
+    }
 
+
+    // Check for run of 3 ..
+
+    if (possIdx == 3) {
+
+      if (CardUtils::getCardValue(possibility[0], false) + 1 == CardUtils::getCardValue(possibility[1], false) && 
+          CardUtils::getCardValue(possibility[1], false) + 1 == CardUtils::getCardValue(possibility[2], false)) {
+
+        bool found = false;
+
+        for (uint8_t k = 0; k < Constants::PlayerHandScores; k++) {
+
+          if ((scores[k].getType() == ScoreType::RunOf4 || scores[k].getType() == ScoreType::RunOf5) &&
+          
+              ((scores[k].getCard(0) == possibility[0] &&
+                scores[k].getCard(1) == possibility[1] &&
+                scores[k].getCard(2) == possibility[2]) ||
+
+               (scores[k].getCard(1) == possibility[0] &&
+                scores[k].getCard(2) == possibility[1] &&
+                scores[k].getCard(3) == possibility[2]) ||
+
+               (scores[k].getCard(2) == possibility[0] &&
+                scores[k].getCard(3) == possibility[1] &&
+                scores[k].getCard(4) == possibility[2]))) {
+
+            found = true;
+
+          }
+
+        }
+
+        if (!found){
+
+          for (uint8_t k = 0; k < 5; k++) {
             scores[scoreIdx].setHand(k, possibility[k]);
 
           }
 
           scores[scoreIdx].setScore(3);
+          scores[scoreIdx].setType(ScoreType::RunOf3);
           scoreIdx++;
 
         }
 
       }
 
+    }
 
-      // Check for run of 4 ..
 
-      if (possIdx == 4) {
+    // Check for run of 4 ..
 
-        if (CardUtils::getCardValue(possibility[0], false) + 1 == CardUtils::getCardValue(possibility[1], false) && 
-            CardUtils::getCardValue(possibility[1], false) + 1 == CardUtils::getCardValue(possibility[2], false) && 
-            CardUtils::getCardValue(possibility[2], false) + 1 == CardUtils::getCardValue(possibility[3], false)) {
+    if (possIdx == 4) {
 
-          bool found = false;
-          uint8_t foundIdx = 0;
+      if (CardUtils::getCardValue(possibility[0], false) + 1 == CardUtils::getCardValue(possibility[1], false) && 
+          CardUtils::getCardValue(possibility[1], false) + 1 == CardUtils::getCardValue(possibility[2], false) && 
+          CardUtils::getCardValue(possibility[2], false) + 1 == CardUtils::getCardValue(possibility[3], false)) {
 
-          for (uint8_t k = 0; k < Constants::PlayerHandScores; k++) {
+        bool found = false;
 
-            if (scores[k].getHand(0) == possibility[0] &&
-                scores[k].getHand(1) == possibility[1] &&
-                scores[k].getHand(2) == possibility[2]) {
+        for (uint8_t k = 0; k < Constants::PlayerHandScores; k++) {
 
-              foundIdx = k;
-              found = true;
+          if (scores[k].getType() == ScoreType::RunOf5 &&
+          
+              ((scores[k].getCard(0) == possibility[0] &&
+                scores[k].getCard(1) == possibility[1] &&
+                scores[k].getCard(2) == possibility[2] &&
+                scores[k].getCard(3) == possibility[3]) ||
 
-            }
+               (scores[k].getCard(1) == possibility[0] &&
+                scores[k].getCard(2) == possibility[1] &&
+                scores[k].getCard(3) == possibility[2] &&
+                scores[k].getCard(4) == possibility[3]))) {
+
+            found = true;
 
           }
 
-          if (!found){
+        }
 
-            foundIdx = scoreIdx;
-            scoreIdx++;
+        if (!found) {
 
-          }
-
-          for (uint8_t k = 0; k < 4; k++) {
-
-            scores[foundIdx].setHand(k, possibility[k]);
+          for (uint8_t k = 0; k < 5; k++) {
+            scores[scoreIdx].setHand(k, possibility[k]);
 
           }
 
           scores[scoreIdx].setScore(4);
+          scores[scoreIdx].setType(ScoreType::RunOf4);
           scoreIdx++;
 
         }
 
       }
 
+    }
 
-      // Check for run of 5 ..
 
-      if (possIdx == 5) {
+    // Check for run of 5 ..
 
-        if (CardUtils::getCardValue(possibility[0], false) + 1 == CardUtils::getCardValue(possibility[1], false) && 
-            CardUtils::getCardValue(possibility[1], false) + 1 == CardUtils::getCardValue(possibility[2], false) && 
-            CardUtils::getCardValue(possibility[2], false) + 1 == CardUtils::getCardValue(possibility[3], false) && 
-            CardUtils::getCardValue(possibility[3], false) + 1 == CardUtils::getCardValue(possibility[4], false)) {
+    if (possIdx == 5) {
 
-          bool found = false;
-          uint8_t foundIdx = 0;
+      if (CardUtils::getCardValue(possibility[0], false) + 1 == CardUtils::getCardValue(possibility[1], false) && 
+          CardUtils::getCardValue(possibility[1], false) + 1 == CardUtils::getCardValue(possibility[2], false) && 
+          CardUtils::getCardValue(possibility[2], false) + 1 == CardUtils::getCardValue(possibility[3], false) && 
+          CardUtils::getCardValue(possibility[3], false) + 1 == CardUtils::getCardValue(possibility[4], false)) {
 
-          for (uint8_t k = 0; k < Constants::PlayerHandScores; k++) {
+        for (uint8_t k = 0; k < 5; k++) {
 
-            if (scores[k].getHand(0) == possibility[0] &&
-                scores[k].getHand(1) == possibility[1] &&
-                scores[k].getHand(2) == possibility[2] &&
-                scores[k].getHand(3) == possibility[4]) {
-
-              foundIdx = k;
-              found = true;
-
-            }
-
-          }
-
-          if (!found){
-
-            foundIdx = scoreIdx;
-            scoreIdx++;
-
-          }
-
-          for (uint8_t k = 0; k < 4; k++) {
-
-            scores[foundIdx].setHand(k, possibility[k]);
-
-          }
-
-          scores[scoreIdx].setScore(5);
-          scoreIdx++;
+          scores[scoreIdx].setHand(k, possibility[k]);
 
         }
+
+        scores[scoreIdx].setScore(5);
+        scores[scoreIdx].setType(ScoreType::RunOf5);
+        scoreIdx++;
 
       }
 
@@ -441,6 +527,10 @@ uint8_t Player::removeFromHand(uint8_t index) {
   this->hand[5] = Constants::NoCard;
   this->handIdx--;
 
+  if (this->handIdx == 4) {
+    memcpy(this->orig, this->hand, 4);
+  }
+
   return card;
 
 }
@@ -454,12 +544,6 @@ void Player::resetHand() {
   memset(this->crib, 0, (sizeof(this->crib) / sizeof(this->crib[0])));
 
   this->go = false;
-
-  // for (uint8_t x = 0; x < Constants::PlayerHandScores; x++) {
-
-  //   this->scores[x].reset();
-
-  // }
 
 }
 
@@ -475,17 +559,8 @@ void Player::printHand(uint8_t playerNo) {
     Serial.print("(");
     Serial.print(this->hand[x]);
     Serial.print(") ");
-    Serial.print(CardUtils::getCardValue(this->hand[x], false));
-    Suit suit = CardUtils::getCardSuit(this->hand[x]);
-
-    switch (suit) {
-
-      case Suit::Spades:    Serial.print("S, "); break;
-      case Suit::Clubs:     Serial.print("C, "); break;
-      case Suit::Diamonds:  Serial.print("D, "); break;
-      case Suit::Hearts:    Serial.print("H, "); break;
-
-    }
+    CardUtils::printCard(this->hand[x]);
+    Serial.print(" ");
 
   }
 
@@ -494,44 +569,44 @@ void Player::printHand(uint8_t playerNo) {
 }
 
 
-void Player::playCard(uint8_t playedCards[], uint8_t &card, uint8_t &points) {
+void Player::playCard(uint8_t playedCards[], bool canOpponentPlay, uint8_t &card, uint8_t &points) {
 
   uint8_t discards[6] = {255, 255, 255, 255, 255, 255 };
 
   uint8_t pointsToDate = 0;
   uint8_t cardsPlayed = 0;
 
+
+  // Calculate the number of points scored so far ..
+
   for (uint8_t x = 0; x < 8; x++) {
+  
     if (playedCards[x] != Constants::NoCard) {
-      cardsPlayed = x + 1;
+      cardsPlayed++;
       pointsToDate = pointsToDate + CardUtils::getCardValue(playedCards[x], true);
     }
+  
   }
 
 
+  // Convert a pair to a Double Royal pair ..
 
-
-  // Cards already played ..
-
-Serial.print("Hand Idx: ");
-Serial.println(this->handIdx);
-
-  // Convert a pair to a Royal pair ..
-
-  if (cardsPlayed >= 2) {
+  if (cardsPlayed >= 3) {
   
-    uint8_t card1 = CardUtils::getCardValue(playedCards[cardsPlayed - 2], false);
-    uint8_t card2 = CardUtils::getCardValue(playedCards[cardsPlayed - 1], false);
-    uint8_t cardVal = CardUtils::getCardValue(playedCards[cardsPlayed - 2], true);
+    uint8_t card1 = CardUtils::getCardValue(playedCards[cardsPlayed - 3], false);
+    uint8_t card2 = CardUtils::getCardValue(playedCards[cardsPlayed - 2], false);
+    uint8_t card3 = CardUtils::getCardValue(playedCards[cardsPlayed - 1], false);
+    uint8_t cardVal = CardUtils::getCardValue(playedCards[cardsPlayed - 3], true);
+    uint8_t total = pointsToDate + cardVal;
 
-    if ((card1 == card2) && (pointsToDate + cardVal <= 31)) {
+    if (card1 == card2 && card1 == card3 && (total <= 31)) {
   
       for (uint8_t y = 0; y < this->handIdx; y++) {
 
         if (card1 == CardUtils::getCardValue(this->hand[y], false)) {
-Serial.println("Royal Pair");
+//Serial.println("Double Royal Pair");
           card = removeFromHand(y);
-          points = 6;
+          points = 12 + (total == 15 ? 2 : 0) + (total == 31 ? 2 : 0);
           return;
 
         }
@@ -543,27 +618,110 @@ Serial.println("Royal Pair");
   }
 
 
+  // Convert a pair to a Royal pair ..
 
-  // Convert a pair to a Double Royal pair ..
-
-  if (cardsPlayed >= 3) {
+  if (cardsPlayed >= 2) {
   
-    uint8_t card1 = CardUtils::getCardValue(playedCards[cardsPlayed - 3], false);
-    uint8_t card2 = CardUtils::getCardValue(playedCards[cardsPlayed - 2], false);
-    uint8_t card3 = CardUtils::getCardValue(playedCards[cardsPlayed - 1], false);
-    uint8_t cardVal = CardUtils::getCardValue(playedCards[cardsPlayed - 3], true);
+    uint8_t card1 = CardUtils::getCardValue(playedCards[cardsPlayed - 2], false);
+    uint8_t card2 = CardUtils::getCardValue(playedCards[cardsPlayed - 1], false);
+    uint8_t cardVal = CardUtils::getCardValue(playedCards[cardsPlayed - 2], true);
+    uint8_t total = pointsToDate + cardVal;
 
-    if (card1 == card2 && card1 == card3 && (pointsToDate + cardVal <= 31)) {
+    if ((card1 == card2) && (total <= 31)) {
   
       for (uint8_t y = 0; y < this->handIdx; y++) {
 
         if (card1 == CardUtils::getCardValue(this->hand[y], false)) {
-Serial.println("Double Royal Pair");
+//Serial.println("Royal Pair");
           card = removeFromHand(y);
-          points = 12;
+          points = 6 + (total == 15 ? 2 : 0) + (total == 31 ? 2 : 0);
           return;
 
         }
+
+      }
+
+    }
+
+  }
+
+
+  // Check for run of four ..
+
+  if (cardsPlayed >= 3) {
+
+    uint8_t card1 = CardUtils::getCardValue(playedCards[cardsPlayed - 3], false);
+    uint8_t card2 = CardUtils::getCardValue(playedCards[cardsPlayed - 2], false);
+    uint8_t card3 = CardUtils::getCardValue(playedCards[cardsPlayed - 1], false);
+        
+    for (uint8_t y = 0; y < this->handIdx; y++) {
+
+      uint8_t card4 = CardUtils::getCardValue(this->hand[y], false);
+      uint8_t cardVal = CardUtils::getCardValue(this->hand[y], true);
+      uint8_t total = pointsToDate + cardVal;
+
+      if (total <= 31 &&
+        (card1 != card2 && card1 != card3 && card1 != card4 && card2 != card3 && card2 != card4 && card3 != card4) &&
+        diffT(card1, card2) <= 3 && diffT(card1, card3) <=3 && diffT(card1, card4) <=3 && 
+        diffT(card2, card3) <=3 && diffT(card2, card4) <=3 && 
+        diffT(card3, card4) <=3) {
+//Serial.println("Run of four");
+        card = removeFromHand(y);
+        points = 4 + (total == 15 ? 2 : 0) + (total == 31 ? 2 : 0);
+        return;
+
+      }
+
+    }
+
+  }           
+
+
+  // Check for run of three ..
+
+  if (cardsPlayed >= 2) {
+
+    uint8_t card1 = CardUtils::getCardValue(playedCards[cardsPlayed - 2], false);
+    uint8_t card2 = CardUtils::getCardValue(playedCards[cardsPlayed - 1], false);
+    
+    for (uint8_t y = 0; y < this->handIdx; y++) {
+    
+      uint8_t card3 = CardUtils::getCardValue(this->hand[y], false);
+      uint8_t cardVal = CardUtils::getCardValue(this->hand[y], true);
+      uint8_t total = pointsToDate + cardVal;
+
+      if (total <= 31 &&
+          (card1 != card2 && card1 != card3 && card2 != card3) &&
+          diffT(card1, card2) <= 2 && diffT(card1, card3) <=2) {
+//Serial.println("Run of three");
+        card = removeFromHand(y);
+        points = 3 + (total == 15 ? 2 : 0) + (total == 31 ? 2 : 0);
+        return;
+
+      }
+
+    }
+
+  }
+
+
+  // Check for a pair ..
+
+  if (!canOpponentPlay && cardsPlayed >= 1) {
+
+    uint8_t card1 = CardUtils::getCardValue(playedCards[cardsPlayed - 1], false);
+    
+    for (uint8_t y = 0; y < this->handIdx; y++) {
+    
+      uint8_t card2 = CardUtils::getCardValue(this->hand[y], false);
+      uint8_t cardVal = CardUtils::getCardValue(this->hand[y], true);
+      uint8_t total = pointsToDate + cardVal;
+
+      if (total <= 31 && (card1 == card2)) {
+//Serial.println("Pair when other player cannot play");
+        card = removeFromHand(y);
+        points = 2 + (total == 15 ? 2 : 0) + (total == 31 ? 2 : 0);
+        return;
 
       }
 
@@ -579,7 +737,7 @@ Serial.println("Double Royal Pair");
     uint8_t total = pointsToDate + CardUtils::getCardValue(this->hand[y], true);
 
     if (total == 15 || total == 31) {
-Serial.println("15 or 31");
+//Serial.println("15 or 31");
       card = removeFromHand(y);
       points = 2;
       return;
@@ -587,61 +745,6 @@ Serial.println("15 or 31");
     }
 
   }
-
-
-  // Check for run of three ..
-
-  if (cardsPlayed >= 3) {
-
-    uint8_t card1 = CardUtils::getCardValue(playedCards[cardsPlayed - 2], false);
-    uint8_t card2 = CardUtils::getCardValue(playedCards[cardsPlayed - 1], false);
-    
-    for (uint8_t y = 0; y < this->handIdx; y++) {
-    
-      uint8_t card3 = CardUtils::getCardValue(this->hand[y], false);
-      uint8_t cardVal = CardUtils::getCardValue(this->hand[y], true);
-
-      if (pointsToDate + cardVal <= 31 &&
-          (card1 != card2 && card1 != card3 && card2 != card3) &&
-          diffT(card1, card2) <= 2 && diffT(card1, card3) <=2) {
-Serial.println("Run of three");
-        card = removeFromHand(y);
-        points = 3;
-        return;
-
-      }
-
-    }
-
-  }
-
-
-  // Check for run of four ..
-
-  if (cardsPlayed >= 4) {
-
-    uint8_t card1 = CardUtils::getCardValue(playedCards[cardsPlayed - 3], false);
-    uint8_t card2 = CardUtils::getCardValue(playedCards[cardsPlayed - 2], false);
-    uint8_t card3 = CardUtils::getCardValue(playedCards[cardsPlayed - 1], false);
-        
-    for (uint8_t y = 0; y < this->handIdx; y++) {
-
-      uint8_t card4 = CardUtils::getCardValue(this->hand[y], false);
-      uint8_t cardVal = CardUtils::getCardValue(this->hand[y], true);
-
-      if (pointsToDate + cardVal <= 31 &&
-        (card1 != card2 && card1 != card3 && card1 != card4 && card2 != card3 && card2 != card4 && card3 != card4) &&
-        diffT(card1, card2) <= 3 && diffT(card1, card3) <=3 && diffT(card1, card4) <=3 && diffT(card2, card3) <=3 && diffT(card2, card4) <=3 && diffT(card3, card4) <=3) {
-Serial.println("Run of four");
-        card = removeFromHand(y);
-        points = 4;
-        return;
-
-      }
-
-    }
-
-  }           
 
 
   // Make an 11 if you have another 10 in the hand ..
@@ -675,7 +778,13 @@ Serial.println("Run of four");
 
     for (uint8_t x = 0; x < this->handIdx; x++) {
 
-      if (CardUtils::getCardValue(hand[x], false) == 4) discards[x] = 50;
+      if (CardUtils::getCardValue(hand[x], false) == 4) {
+          
+        card = removeFromHand(x);
+        points = 0;
+        return;
+
+      }
 
     }
 
@@ -709,14 +818,31 @@ Serial.println("Run of four");
   for (uint8_t x = 0; x < this->handIdx; x++) {
 
     if ((discards[x] == Constants::NoCard) && (pointsToDate + CardUtils::getCardValue(this->hand[x], true) <= 31)) {
-      discards[x] = 20 - CardUtils::getCardValue(this->handIdx, false);
+      discards[x] = 20 + CardUtils::getCardValue(this->hand[x], false);
     }
 
   }
 
 
+#ifdef DEBUG_DISPLAY_DISCARDS
+  Serial.println("-------------");
+  Serial.print("Hand :");
+  for (uint8_t j = 0; j < 4; j++) {
+    Serial.print(CardUtils::getCardValue(this->hand[j], true));
+    Serial.print(" ");
+  }
+  Serial.println("");
+  Serial.print("Discards :");
+  for (uint8_t j = 0; j < 4; j++) {
+    Serial.print(discards[j]);
+    Serial.print(" ");
+  }
+  Serial.println("");
+#endif
+
+
   // Return a card ..
-Serial.println("Return a card");
+
   for (uint8_t j = 255; j > 0; j--) {
 
     for (uint8_t i = 0; i < this->handIdx; i++) {
@@ -724,7 +850,8 @@ Serial.println("Return a card");
       if (discards[i] == j && (pointsToDate + CardUtils::getCardValue(this->hand[i], true) <= 31)) {
 
         card = removeFromHand(i);
-        points = 0;
+        
+        points = (cardsPlayed >= 1 && (CardUtils::getCardValue(playedCards[cardsPlayed - 1], false) == CardUtils::getCardValue(card, false) ? 2 : 0));
         return;
 
       }
@@ -746,10 +873,12 @@ bool Player::canPlay(uint8_t playedCards[]) {
   uint8_t cardsPlayed = 0;
 
   for (uint8_t x = 0; x < 8; x++) {
+
     if (playedCards[x] != Constants::NoCard) {
       cardsPlayed = x + 1;
       pointsToDate = pointsToDate + CardUtils::getCardValue(playedCards[x], true);
     }
+
   }
 
   for (uint8_t i = 0; i < this->handIdx; i++) {
