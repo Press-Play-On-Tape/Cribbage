@@ -262,7 +262,7 @@ void PlayGameState::drawHandScores(StateMachine & machine) {
 
     // Render upper arrow if needed ..
 
-    if (numberOfScores > 4) {
+    if (numberOfScores > 5) {
       SpritesB::drawSelfMasked(120, 1, Images::Arrow_Up, !this->scoreUpperRow);
     }
 
@@ -285,7 +285,9 @@ void PlayGameState::drawHandScores(StateMachine & machine) {
 
         } 
 
-        arduboy.drawHorizontalDottedLine(50 + (handWidth * 14), 114, 15 + (renderLine * 8));
+        if (handWidth < 5) {
+          arduboy.drawHorizontalDottedLine(50 + (handWidth * 14), 114, 15 + (renderLine * 8));
+        }
 
         uint8_t score = gameStats.scores[i].getScore();
         font3x5.setCursor(120, 10 + (renderLine * 8) - 1);
@@ -299,7 +301,7 @@ void PlayGameState::drawHandScores(StateMachine & machine) {
 
 
     // Render lower arrow ..
-    if (numberOfScores > 4) {
+    if (numberOfScores > 5) {
       SpritesB::drawSelfMasked(120, 60, Images::Arrow_Down, !(this->scoreUpperRow + 5 < numberOfScores));
     }
     if (this->scoreUpperRow + 5 >= numberOfScores) {
