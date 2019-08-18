@@ -16,6 +16,7 @@ class PlayGameState : public BaseState {
       uint8_t lines;
       uint8_t width;
       uint8_t xPos;
+      DealerFace dealerFace = DealerFace::Normal;
       BubbleAlignment alignment = BubbleAlignment::None;
       bool renderRequired = false;
     };
@@ -63,19 +64,20 @@ class PlayGameState : public BaseState {
     void drawSmallCard(uint8_t xPos, uint8_t yPos, uint8_t card, bool leftAlign);
     void drawCrib(StateMachine & machine, CribState cribState);
     void drawHighlight(StateMachine & machine, uint8_t hghlightCard);
-    void drawTurnUp(StateMachine & machine, TurnUpState turnUpState);
+    void drawTurnUp(TurnUpState turnUpState);
     void drawComputerCard(uint8_t xPos, uint8_t yPos, bool fullSizeCard);
     void drawPlay();
     void drawHandScores(StateMachine & machine);
     void drawScores(StateMachine & machine);
+    void drawDealer(StateMachine & machine, uint8_t xPos, uint8_t yPos, DealerFace dealerFace);
 
     void resetHand(StateMachine & machine);
     void resetPlay(StateMachine & machine);
-    void saveMessage(String message, uint8_t lines, BubbleAlignment alignment);
-    void saveMessage(String message, uint8_t lines, uint8_t width, BubbleAlignment alignment);
-    void saveMessage(String message, uint8_t lines, uint8_t width, uint8_t xPos, BubbleAlignment alignment);
-    void saveMessageWithScore(uint8_t playedValue, uint8_t points, BubbleAlignment alignment);
-    uint8_t getScore(StateMachine & machine, Player &player, bool player2Go);
+    void saveMessage(String message, uint8_t lines, DealerFace dealerFace, BubbleAlignment alignment);
+    void saveMessage(String message, uint8_t lines, uint8_t width, DealerFace dealerFace, BubbleAlignment alignment);
+    void saveMessage(String message, uint8_t lines, uint8_t width, uint8_t xPos, DealerFace dealerFace, BubbleAlignment alignment);
+    void saveMessageWithScore(uint8_t playedValue, uint8_t points, DealerFace dealerFace, BubbleAlignment alignment);
+    uint8_t getScore(Player &player, bool player2Go);
     bool isEndOfGame(StateMachine & machine);
 
     uint8_t getBoardValue();

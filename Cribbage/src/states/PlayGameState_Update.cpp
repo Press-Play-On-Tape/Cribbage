@@ -15,7 +15,6 @@ void PlayGameState::update(StateMachine & machine) {
 	auto & deck = gameStats.deck;
 
   auto justPressed = arduboy.justPressedButtons();
-  auto pressed = arduboy.pressedButtons();
 
 
 	// Has the EOG flag been set?
@@ -100,7 +99,7 @@ void PlayGameState::update(StateMachine & machine) {
 
 				case 0 ... 45:
 					skipSequence(machine, 45);
-					saveMessage(F("   I will throw\nthese two cards."), 2, BubbleAlignment::Computer);
+					saveMessage(F("   I will throw\nthese two cards."), 2, DealerFace::Normal, BubbleAlignment::Normal_Computer);
 					break;
 
 				case 46:
@@ -183,11 +182,11 @@ void PlayGameState::update(StateMachine & machine) {
 				case 26:
 					if (gameStats.playerDealer == WhichPlayer::Player1) {
 						player1.addScore(2);
-						saveMessage(F("Two for his heels!"), 1, 78, BubbleAlignment::Player);
+						saveMessage(F("Two for his heels!"), 1, 78, DealerFace::Sad, BubbleAlignment::Normal_Player);
 					}
 					else {
 						player2.addScore(2);
-						saveMessage(F("Two for his heels!"), 1, 78, BubbleAlignment::Computer);
+						saveMessage(F("Two for his heels!"), 1, 78, DealerFace::Happy, BubbleAlignment::Normal_Computer);
 					}
 					break;
 
@@ -204,10 +203,10 @@ void PlayGameState::update(StateMachine & machine) {
 					moveToEOG(machine);
 					skipSequence(machine, 125);
 					if (gameStats.playerDealer == WhichPlayer::Player2) {
-						saveMessage(F("Your turn to start@"), 1, 81, BubbleAlignment::Computer);
+						saveMessage(F("Your turn to start@"), 1, 81, DealerFace::Normal, BubbleAlignment::Normal_Computer);
 					}
 					else {
-						saveMessage(F("My turn to start@"), 1, 71, BubbleAlignment::Computer);
+						saveMessage(F("My turn to start@"), 1, 71, DealerFace::Normal, BubbleAlignment::Normal_Computer);
 					}
 					break;
 
@@ -248,10 +247,10 @@ void PlayGameState::update(StateMachine & machine) {
 				case 6:
 					if (player2.getGo() || player2.getHandCardCount() == 0) {
 						player1.addScore(1);
-						saveMessage(F(" Go for 1. "), 1, 45, BubbleAlignment::Player);
+						saveMessage(F(" Go for 1. "), 1, 45, DealerFace::Sad, BubbleAlignment::Normal_Player);
 					}
 					else {
-						saveMessage(F("  Go!  "), 1, 34, BubbleAlignment::Player);
+						saveMessage(F("  Go!  "), 1, 34, DealerFace::Normal, BubbleAlignment::Normal_Player);
 					}
 					break;
 
@@ -311,9 +310,9 @@ void PlayGameState::update(StateMachine & machine) {
 							if (this->highlightCard == player1.getHandCardCount()) this->highlightCard--;
 
 							uint8_t playedValue = getBoardValue();
-							uint8_t score = getScore(machine, player1, player2.getGo() | player2.getHandCardCount() == 0);
+							uint8_t score = getScore(player1, (player2.getGo() || player2.getHandCardCount() == 0));
 							player1.addScore(score);
-							saveMessageWithScore(playedValue, score, BubbleAlignment::Player);
+							saveMessageWithScore(playedValue, score,  DealerFace::Sad, BubbleAlignment::Normal_Player);
 							this->counter++;
 				
 						}
@@ -417,17 +416,17 @@ void PlayGameState::update(StateMachine & machine) {
 							}
 
 							player2.addScore(points);
-							saveMessageWithScore(playedValue, points, BubbleAlignment::Computer);
+							saveMessageWithScore(playedValue, points,  DealerFace::Happy, BubbleAlignment::Normal_Computer);
 						
 						}
 						else {
 
 							if (player1.getGo()) {
 								player2.addScore(1);
-								saveMessage(F(" Go for 1. "), 1, 45, BubbleAlignment::Computer);
+								saveMessage(F(" Go for 1. "), 1, 45, DealerFace::Happy, BubbleAlignment::Normal_Computer);
 							}
 							else {
-								saveMessage(F("  Go!  "), 1, 34, BubbleAlignment::Computer);
+								saveMessage(F("  Go!  "), 1, 34, DealerFace::Normal, BubbleAlignment::Normal_Computer);
 							}
 
 						}
@@ -588,28 +587,28 @@ void PlayGameState::update(StateMachine & machine) {
 
 							case ViewState::DisplayScore_Other:
 								if (gameStats.playerDealer == WhichPlayer::Player1) {
-									saveMessage(F(" My hand@"), 1, 52, BubbleAlignment::Player);
+									saveMessage(F(" My hand@"), 1, 52, DealerFace::Happy, BubbleAlignment::Score_Computer);
 								}
 								else {
-									saveMessage(F(" Your hand@"), 1, 52, BubbleAlignment::Player);
+									saveMessage(F(" Your hand@"), 1, 52, DealerFace::Sad, BubbleAlignment::Score_Computer);
 								}
 								break;
 								
 							case ViewState::DisplayScore_Dealer:
 								if (gameStats.playerDealer == WhichPlayer::Player2) {
-									saveMessage(F("  My hand@"), 1, 50, BubbleAlignment::Player);
+									saveMessage(F("  My hand@"), 1, 50, DealerFace::Happy, BubbleAlignment::Score_Computer);
 								}
 								else {
-									saveMessage(F(" Your hand@"), 1, 52, BubbleAlignment::Player);
+									saveMessage(F(" Your hand@"), 1, 52, DealerFace::Sad, BubbleAlignment::Score_Computer);
 								}
 								break;
 
 							case ViewState::DisplayScore_Crib:
 								if (gameStats.playerDealer == WhichPlayer::Player2) {
-									saveMessage(F("  My crib@"), 1, 50, BubbleAlignment::Player);
+									saveMessage(F("  My crib@"), 1, 50, DealerFace::Happy, BubbleAlignment::Score_Computer);
 								}
 								else {
-									saveMessage(F(" Your crib@"), 1, 52, BubbleAlignment::Player);
+									saveMessage(F(" Your crib@"), 1, 52, DealerFace::Sad, BubbleAlignment::Score_Computer);
 								}
 								break;
 
@@ -725,10 +724,10 @@ void PlayGameState::update(StateMachine & machine) {
 			if (this->counter <= 65) {
 
 				if (player1.getScore() >= 121) {
-					saveMessage(F("Congratulations!\n          You Won!"), 2, 76, 48, BubbleAlignment::Player);
+					saveMessage(F("Congratulations!\n          You Won!"), 2, 76, 48, DealerFace::Sad, BubbleAlignment::Score_Computer);
 				}
 				else {
-					saveMessage(F("I am sorry@ you\n lost the game.\n       I won!"), 3, 67, 48, BubbleAlignment::Player);
+					saveMessage(F("I am sorry@ you\n lost the game.\n       I won!"), 3, 67, 48, DealerFace::Happy, BubbleAlignment::Score_Computer);
 				}
 				this->counter++;
 

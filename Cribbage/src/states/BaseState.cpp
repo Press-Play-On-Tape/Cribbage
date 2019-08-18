@@ -9,7 +9,7 @@ void BaseState::drawMessageBox(StateMachine &machine, String message, uint8_t li
 
 	auto & arduboy = machine.getContext().arduboy;
 
-	uint8_t x = (alignment == BubbleAlignment::Player ? 0 : 128 - width);
+	uint8_t x = (alignment == BubbleAlignment::Normal_Player || alignment == BubbleAlignment::Score_Computer ? 0 : 128 - width);
 	if (xPos != 255) x = xPos;
 	int8_t y = -1;
 	uint8_t yBottom = y + (lines * 8) + 4;
@@ -24,7 +24,7 @@ void BaseState::drawMessageBox(StateMachine &machine, String message, uint8_t li
 	SpritesB::drawExternalMask(x, y, Images::Talk_Top_Left, Images::Talk_Top_Left_Mask, 0, 0);
 	SpritesB::drawExternalMask(x + width - 8, y, Images::Talk_Top_Right, Images::Talk_Top_Right_Mask, 0, 0);
 
-	if (alignment == BubbleAlignment::Player) {
+	if (alignment == BubbleAlignment::Normal_Player || alignment == BubbleAlignment::Score_Computer) {
 
 		SpritesB::drawExternalMask(x, yBottom - 1, Images::Talk_Bubble_Left, Images::Talk_Bubble_Left_Mask, 0, 0);
 		SpritesB::drawExternalMask(x + width - 8, yBottom, Images::Talk_Bottom_Right, Images::Talk_Bottom_Right_Mask, 0, 0);

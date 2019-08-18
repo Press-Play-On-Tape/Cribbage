@@ -47,7 +47,16 @@ enum class GameStateType : uint8_t {
 };
 
 enum class BubbleAlignment : uint8_t {
-	Player,
-	Computer,
+	Normal_Player,
+	Normal_Computer,
+	Score_Player,
+	Score_Computer,
   None
+};
+
+
+enum class DealerFace : uint8_t {
+	Normal,
+	Happy,
+	Sad,
 };

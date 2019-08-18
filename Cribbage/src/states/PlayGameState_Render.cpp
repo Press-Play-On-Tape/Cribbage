@@ -22,6 +22,32 @@ constexpr const static uint8_t CARD_LARGE_TOP_DEALER = 0;
 constexpr const static uint8_t PLAY_CENTER = 62;
 
 
+void PlayGameState::drawDealer(StateMachine & machine, uint8_t xPos, uint8_t yPos, DealerFace dealerFace) {
+
+	auto & arduboy = machine.getContext().arduboy;
+
+  bool blink = (arduboy.getFrameCount(128) < 4);
+  uint8_t talking = arduboy.getFrameCount(36) / 12;
+
+  SpritesB::drawOverwrite(xPos, yPos, Images::Dealer, 0);
+  SpritesB::drawSelfMasked(xPos + 13, yPos + 17, Images::Dealer_Eyes, blink);
+  SpritesB::drawSelfMasked(xPos + 13, yPos + 7, Images::Dealer_Forehead, dealerFace == DealerFace::Happy ? 1 : 0);
+
+  if (this->message.renderRequired && (this->message.alignment == BubbleAlignment::Normal_Computer || this->message.alignment == BubbleAlignment::Score_Computer)) {
+
+    uint8_t index = (talking == 0 ? talking : talking + 2);
+    SpritesB::drawSelfMasked(xPos + 15, yPos + 24, Images::Dealer_Mouth, index);
+
+  }
+  else {
+
+    SpritesB::drawSelfMasked(xPos + 15, yPos + 24, Images::Dealer_Mouth, static_cast<uint8_t>(dealerFace));
+
+  }
+
+}
+  
+
 // ---------------------------------------------------------------------------------------------------------------------------
 //  Render the state .. 
 // ---------------------------------------------------------------------------------------------------------------------------
@@ -45,7 +71,7 @@ void PlayGameState::render(StateMachine & machine) {
       break;
 
     default:
-      SpritesB::drawOverwrite(87, 18, Images::Dealer, 0);
+      drawDealer(machine, 87, 18, this->message.dealerFace);
       drawPlayerHands(machine);
       arduboy.drawFastHLine(0, 61, 128);
       arduboy.drawFastHLine(0, 60, 128, BLACK);
@@ -70,26 +96,26 @@ void PlayGameState::render(StateMachine & machine) {
 			break;
 
     case ViewState::TurnUp:
-      drawTurnUp(machine, (this->turnUp != Constants::NoCard ? TurnUpState::Visible : TurnUpState::Hidden));
+      drawTurnUp((this->turnUp != Constants::NoCard ? TurnUpState::Visible : TurnUpState::Hidden));
 			break;
 
     case ViewState::PlayersTurn:
     case ViewState::PlayersTurn_Go:
     case ViewState::PlayersTurn_Normal:
-      drawTurnUp(machine, TurnUpState::Visible);
+      drawTurnUp(TurnUpState::Visible);
       if (this->counter == 0) drawHighlight(machine, this->highlightCard);
       drawPlay();
 			break;
 
     case ViewState::ComputersTurn:
-      drawTurnUp(machine, TurnUpState::Visible);
+      drawTurnUp(TurnUpState::Visible);
       drawPlay();
 			break;
 
     case ViewState::DisplayScore_Board:
     case ViewState::EndOfGame:
       {
-        SpritesB::drawOverwrite(0, 22, Images::Dealer, 0);
+        drawDealer(machine, 0, 22, player1.getScore() < player2.getScore() ? DealerFace::Happy : DealerFace::Sad);
         SpritesB::drawSelfMasked(43, 0, Images::Divider, 0);
         SpritesB::drawSelfMasked(51, 4, Images::Board, 0);
 
@@ -106,7 +132,12 @@ void PlayGameState::render(StateMachine & machine) {
     case ViewState::DisplayScore_Dealer:
     case ViewState::DisplayScore_Crib:
       {
-        SpritesB::drawOverwrite(0, 22, Images::Dealer, 0);
+
+        bool happy = (this->viewState == ViewState::DisplayScore_Other && gameStats.playerDealer == WhichPlayer::Player1) ||
+                     (this->viewState == ViewState::DisplayScore_Dealer && gameStats.playerDealer == WhichPlayer::Player2) ||
+                     (this->viewState == ViewState::DisplayScore_Crib && gameStats.playerDealer == WhichPlayer::Player2);
+
+        drawDealer(machine, 0, 22, happy ? (gameStats.getNumberOfScores() != 0 ? DealerFace::Happy : DealerFace::Sad) : DealerFace::Sad);
         SpritesB::drawSelfMasked(43, 0, Images::Divider, 0);
 
 
@@ -121,28 +152,28 @@ void PlayGameState::render(StateMachine & machine) {
 
             case ViewState::DisplayScore_Other:
               if (gameStats.playerDealer == WhichPlayer::Player1) {
-                this->drawScores_TopLeft(machine, true, flashScore | this->counter > 184);
+                this->drawScores_TopLeft(machine, true, flashScore | (this->counter > 184));
               }
               else {
-                this->drawScores_TopLeft(machine, flashScore | this->counter > 184, true);
+                this->drawScores_TopLeft(machine, flashScore | (this->counter > 184), true);
               }
               break;
 
             case ViewState::DisplayScore_Dealer:
               if (gameStats.playerDealer == WhichPlayer::Player1) {
-                this->drawScores_TopLeft(machine, flashScore | this->counter > 184, true);
+                this->drawScores_TopLeft(machine, flashScore | (this->counter > 184), true);
               }
               else {
-                this->drawScores_TopLeft(machine, true, flashScore | this->counter > 184);
+                this->drawScores_TopLeft(machine, true, flashScore | (this->counter > 184));
               }
               break;
 
             case ViewState::DisplayScore_Crib: 
               if (gameStats.playerDealer == WhichPlayer::Player1) {
-                this->drawScores_TopLeft(machine, flashScore | this->counter > 184, true);
+                this->drawScores_TopLeft(machine, flashScore | (this->counter > 184), true);
               }
               else {
-                this->drawScores_TopLeft(machine, true, flashScore | this->counter > 184);
+                this->drawScores_TopLeft(machine, true, flashScore | (this->counter > 184));
               }
               break;
 
@@ -187,7 +218,7 @@ void PlayGameState::render(StateMachine & machine) {
 
       // Only show top score if there is no dealer message to be shown ..
       
-      if (!this->message.renderRequired || (this->message.renderRequired && this->message.alignment == BubbleAlignment::Player)) {
+      if (!this->message.renderRequired || (this->message.renderRequired && (this->message.alignment == BubbleAlignment::Normal_Player|| this->message.alignment == BubbleAlignment::Score_Computer))) {
         drawScore(machine, 114, -1, player2.getScore(), true);
       }
       drawScore(machine, 114, 52, player1.getScore(), true);
@@ -249,7 +280,7 @@ void PlayGameState::drawHandScores(StateMachine & machine) {
   }
 
 
-  if (gameStats.scores[0].getCard(0) == Constants::NoCard) {
+  if (gameStats.getNumberOfScores() == 0) {
 
     font3x5.setCursor(72, 28);
     font3x5.print(F("Nothing !"));
@@ -483,9 +514,7 @@ void PlayGameState::drawCrib(StateMachine & machine, CribState cribState) {
 
 }
 
-void PlayGameState::drawTurnUp(StateMachine & machine, TurnUpState turnUpState) {
-
-  auto & gameStats = machine.getContext().gameStats;
+void PlayGameState::drawTurnUp(TurnUpState turnUpState) {
 
   switch (turnUpState) {
 
@@ -498,6 +527,8 @@ void PlayGameState::drawTurnUp(StateMachine & machine, TurnUpState turnUpState) 
       drawSmallCard(0, 12, this->turnUp, false);
       SpritesB::drawSelfMasked(5, 16, Images::TurnUp_Deck, 0);
       break;
+
+    default: break;
 
   }
 

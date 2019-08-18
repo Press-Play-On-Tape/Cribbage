@@ -4,34 +4,6 @@
 #include "Utils.h"
 #include "../entities/Entities.h"
 
-
-// struct Player {
-
-//   public: 
-   
-//     Player() {
-
-//       for (uint8_t x = 1; x < NAME_LENGTH; x++) {
-//         name[x] = ' ';
-//       }
-
-//       name[NAME_LENGTH - 1] = 0;
-
-//     };
-
-//     uint8_t getIcon() {
-//       return static_cast<uint8_t>(this->name[0]);
-//     }
-
-//     void setIcon(uint8_t val) {
-//       this->name[0] = static_cast<char>(val);
-//     }
-
-//     char name[NAME_LENGTH + 1];
-//     int16_t score = 0;
-
-// };
-
 class GameStats {
 
   public: 
