@@ -740,7 +740,7 @@ void Player::playCard(uint8_t playedCards[], bool canOpponentPlay, uint8_t &card
 
   // Check for a pair ..
 
-  if (!canOpponentPlay && cardsPlayed >= 1) {
+  if ((!canOpponentPlay || random(0, 3) == 1) && cardsPlayed >= 1) {
 
     uint8_t card1 = CardUtils::getCardValue(playedCards[cardsPlayed - 1], false);
     

@@ -681,7 +681,9 @@ void PlayGameState::update(StateMachine & machine) {
 						this->highlight = false;
 						break;
 
-					default: break;
+					default: 
+						moveToEOG(machine);
+						break;
 
 				}
 
