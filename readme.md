@@ -4,11 +4,11 @@ The rules of cribbage are simple - it's one of the easiest card games to learn a
 
 Cribbage belongs to the family of card games known as 'adders' - that is, games in which the idea is to add successive card values to a running total with the aim of making certain totals - in this case, 31. In the first phase of the hand, players take turns playing a card from their hand which is added to the running total. Two points are scored for making the total 15 or 31. Pairs and sequences also earn points. Once the hands have been played out in this way, the players then score points based on the pairs and sequences in their hands, plus the combinations that add up to 15, and record the score on the cribbage board. 
 
-## Cribbage tutorial
+## Cribbage Tutorial
 
 The interweaving of luck and skill in cribbage is particularly interesting. Although you have no control over the cards you receive (and thus the points you score in the second phase), there is much opportunity for skilful play in the first, or pegging, phase. A good player can make many more points from a given hand than a novice. However, the element of chance is such that a single high-scoring hand can strongly affect the outcome of the whole game. Thus a rank beginner can comfortably beat an expert, given only a little luck. Over many games, though, the luck of the deal should average out and the skilful player's edge will become apparent. 
 
-## The basics
+## The Basics
 
 ### The cards and cribbage board
 
@@ -48,7 +48,7 @@ If the last 3 cards played form a sequence, the player making the sequence score
 
 The cribbage rules for scoring 'go' sometimes cause confusion. You earn a point for go when your opponent cannot go. This may be (a) because he has no cards (sometimes called 'One for last'), or (b) because he cannot play without going over 31 ('One for the go'). In either case if you make the total 31 you score only 2 points on the cribbage board, not 3 (because the go is included, as described above). However, you may well make 15 with the last card (in which case you do score 3).
 
-### Scoring
+## Scoring
 
 Having played out all the cards, both players then score their hands, pone first - this time including the turn-up card as part of both hands. The dealer's crib also includes the turn-up. Again, points are scored for 15s, runs, and pairs; you can also score for a flush (all cards of the same suit) - see the cribbage scoring chart below for a handy reference. It is a key part of the rules of cribbage that the non-dealer should score first - at the end of the game, both players may have enough points to win, and the right to score first will determine victory. The cribbage board's positions usually alternate during the game, with first one player leading, then the other. The trick is to be in the first-scoring position when you are close enough to win!
 
@@ -69,11 +69,11 @@ You also score 1 point if you have the Jack of the same suit as the starter card
 Sequence do not have to be in order. For example, if the play goes 7-9-6, you can then play an 8 to score 4 for a run of 4.
 
 
-# Cribbage Strategy
+## Cribbage Strategy
 
 Cribbage strategy is a key part of playing and winning cribbage. 
 
-## General cribbage strategy
+### General cribbage strategy
 
 * Don't lead a 5 or a 10-card. If you do, you give your opponent the chance to score 15-2.
 
@@ -87,7 +87,7 @@ Cribbage strategy is a key part of playing and winning cribbage.
 
 * Approaching the end of the game, hang on to low cards and don't discard them. You'll have more opportunities to score points for go. 
 
-## Discard strategy
+### Discard strategy
 
 Cribbage rules and cribbage strategy make the discard one of the key elements of skill in cribbage. You must try to maximise the remaining points in your hand, while leaving yourself useful cards to play in different tactical situations during the pegging, and without giving your opponent cards which may help her in the crib. When discarding to your own crib, you will be trying to anticipate what kind of cards your opponent is likely to give you, and discard cards which will work with them to create big scores in the crib.
 Cribbage discard hints
@@ -110,7 +110,7 @@ It's a common cribbage maxim that you should choose your discard in such a way a
 
 Let's look at an example hand of 4-5-6-Q-Q-K. You could either discard so as to keep the 5 and face cards, or to keep the 4-5-6. Although in the first case your hand scores 8, and in the second case only 7, the numbers show that following the cut, the run hand averages 10.15 points, while the 5 hand averages only 9.91 points. Don't forget to work out which cuts will help you, and make sure you have a basic grasp of the odds involved.
 
-## Leading stategy
+### Leading stategy
 
 Basic lead strategy in cribbage:
 
@@ -120,7 +120,7 @@ Basic lead strategy in cribbage:
 
 * Conversely, making 11 is generally a good move, providing of course you hold the necessary ten-card to follow up your opponent's.
 
-## Replying to the strategy
+### Replying to the strategy
 
 As there are so few cards played in a hand of cribbage, strategy is important with each play. Your choice of reply to the opponent's lead can be critical.
 
@@ -135,6 +135,6 @@ As there are so few cards played in a hand of cribbage, strategy is important wi
 * Watch for runs! Don't play a card with a value 1 or 2 away from your opponent's card - for example a 9 on a 7 - as he is likely to complete the run. The exception, of course, is when you hold the necessary card to extend the run yourself and top your opponent's points. Beware of 'banging your head' on 31, though - calculate beforehand whether you will be able to play onto the run without going over 31.
 
 
-## Play yor 5s early
+### Play your 5s early
 
 If you hold 5s, play them as early as you can to avoid them being trapped. For example, if you hold 5-J-Q-K and your opponent holds 3-6-7-8, the play might go like this. You lead one of the ten-cards; opponent replies with 8, hoping you will play another ten-card so that he can make 31 with the 3. If you do, he will reply 6 to your next ten-lead, resulting in: 10 - 6 - 5 - 7 for a three-point run and go. That's a six-point trap which you would do well to avoid. Use this rule: if your opponent does not have a 5-shaped hand (hasn't played any 10s or 5s), your 5 should be a safe lead.
