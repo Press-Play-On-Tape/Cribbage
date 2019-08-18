@@ -38,6 +38,7 @@ The dealer then plays a card, the value of which is added to the current running
 <tr><td valign="top"><b>Pairs</b></td><td>If your card is the same rank as the last card played, you score two for a pair. If your opponent plays a third card of the same rank, he scores 6 for a "pair royal" (three of a kind). Four of a kind scores 12 ("double pair royal").</td></tr>
 <tr><td valign="top"><b>Runs</b></td><td>If the last 3 cards played form a sequence, the player making the sequence scores 3 for a "run". For example, 3-4-5 makes a run of 3 and so scores 3 for the player laying down the 5. If the opponent then plays a 6 (or a 2) to extend the sequence to 4 cards, she scores 4, and so on as long as the sequence is unbroken.</td></tr>
 </table>
+<br><br>
 
 ### The go
 
@@ -53,7 +54,7 @@ Having played out all the cards, both players then score their hands, pone first
 <tr><td valign="top"><b>Cribbage nobs</b></td><td>You also score 1 point if you have the Jack of the same suit as the starter card (known as 'his nob' or just 'nobs').</td><tr>
 <tr><td valign="top">&nbsp;</td><td>Sequence do not have to be in order. For example, if the play goes 7-9-6, you can then play an 8 to score 4 for a run of 4.</td></tr>
 </table>
-
+<br><br>
 ## Cribbage Strategy
 
 Cribbage strategy is a key part of playing and winning cribbage. 
