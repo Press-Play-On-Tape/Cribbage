@@ -33,10 +33,10 @@ Following the deal, the discard and the turn-up, the hand proper begins.
 In the playing phase of Cribbage, the players take it in turns to lay down a card, trying to make the running total equal to certain values. The non-dealer plays first and states the value of her card (for example, "ten" for a Jack). Court cards count ten (together with the face 10 they are known as the 'ten-cards'). Ace counts as one.
 
 <table>
-<tr><td><b>15&nbsp;and&nbsp;31</td><td>
+<tr><td valign="top"><b>15&nbsp;and&nbsp;31</td><td>
 The dealer then plays a card, the value of which is added to the current running total. The player who makes the total exactly 15 scores two points ("fifteen for two"). Two points are also awarded for making 31. Additionally, you score a point if your opponent cannot play without going over 31 ("Go for one"). You must play if you can (reneging is against the rules).</td></tr>
-<tr><td><b>Pairs</b></td><td>If your card is the same rank as the last card played, you score two for a pair. If your opponent plays a third card of the same rank, he scores 6 for a "pair royal" (three of a kind). Four of a kind scores 12 ("double pair royal").</td></tr>
-<tr><td><b>Runs</b></td><td>If the last 3 cards played form a sequence, the player making the sequence scores 3 for a "run". For example, 3-4-5 makes a run of 3 and so scores 3 for the player laying down the 5. If the opponent then plays a 6 (or a 2) to extend the sequence to 4 cards, she scores 4, and so on as long as the sequence is unbroken.</td></tr>
+<tr><td valign="top"><b>Pairs</b></td><td>If your card is the same rank as the last card played, you score two for a pair. If your opponent plays a third card of the same rank, he scores 6 for a "pair royal" (three of a kind). Four of a kind scores 12 ("double pair royal").</td></tr>
+<tr><td valign="top"><b>Runs</b></td><td>If the last 3 cards played form a sequence, the player making the sequence scores 3 for a "run". For example, 3-4-5 makes a run of 3 and so scores 3 for the player laying down the 5. If the opponent then plays a 6 (or a 2) to extend the sequence to 4 cards, she scores 4, and so on as long as the sequence is unbroken.</td></tr>
 </table>
 
 ### The go
@@ -49,9 +49,9 @@ Having played out all the cards, both players then score their hands, pone first
 
 <table>
 <tr><td valign="top"><b>Cribbage&nbsp;pairs</b></td><td>2 points are scored for a pair in cribbage, and 6 for a pair royal - that is, three cards of the same rank. This can be considered as 3 different pairs worth 2 points each. Similarly, double pair royal (four of a kind) scores 12 as there are 6 ways of picking two cards from four. You begin to see why mathematicians love this game. <br><br>Combinations of cards making 15 score two points each - for example, 8 and 7. As many ways as you can make 15 with your cards, you score 2 points for each of them. For example, 8-7-7-A can make 15 three ways: the 8 and one 7, the 8 and the other 7, and the 7-7-A. Consequently it scores 6 points (for 15s, and a further 2 for the pair of 7s).</td></tr>
-</tr><td><b>Cribbage runs</b></td><td>Runs score as many points as there are cards in them. For example, a four-card run 9-T-J-Q scores 4.</td></tr>
+</tr><td valign="top"><b>Cribbage runs</b></td><td>Runs score as many points as there are cards in them. For example, a four-card run 9-T-J-Q scores 4.</td></tr>
 <tr><td valign="top"><b>Cribbage nobs</b></td><td>You also score 1 point if you have the Jack of the same suit as the starter card (known as 'his nob' or just 'nobs').</td><tr>
-<tr><td></td><td>Sequence do not have to be in order. For example, if the play goes 7-9-6, you can then play an 8 to score 4 for a run of 4.</td></tr>
+<tr><td valign="top">&nbsp;</td><td>Sequence do not have to be in order. For example, if the play goes 7-9-6, you can then play an 8 to score 4 for a run of 4.</td></tr>
 </table>
 
 ## Cribbage Strategy
