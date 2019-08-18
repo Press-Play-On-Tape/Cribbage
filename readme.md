@@ -52,15 +52,12 @@ The cribbage rules for scoring 'go' sometimes cause confusion. You earn a point 
 
 Having played out all the cards, both players then score their hands, pone first - this time including the turn-up card as part of both hands. The dealer's crib also includes the turn-up. Again, points are scored for 15s, runs, and pairs; you can also score for a flush (all cards of the same suit) - see the cribbage scoring chart below for a handy reference. It is a key part of the rules of cribbage that the non-dealer should score first - at the end of the game, both players may have enough points to win, and the right to score first will determine victory. The cribbage board's positions usually alternate during the game, with first one player leading, then the other. The trick is to be in the first-scoring position when you are close enough to win!
 
-### Cribbage pairs
-
+| --- | --- |
+### Cribbage pairs |
 2 points are scored for a pair in cribbage, and 6 for a pair royal - that is, three cards of the same rank. This can be considered as 3 different pairs worth 2 points each. Similarly, double pair royal (four of a kind) scores 12 as there are 6 ways of picking two cards from four. You begin to see why mathematicians love this game.
-
 Combinations of cards making 15 score two points each - for example, 8 and 7. As many ways as you can make 15 with your cards, you score 2 points for each of them. For example, 8-7-7-A can make 15 three ways: the 8 and one 7, the 8 and the other 7, and the 7-7-A. Consequently it scores 6 points (for 15s, and a further 2 for the pair of 7s).
 
-### Cribbage runs
-
-Runs score as many points as there are cards in them. For example, a four-card run 9-T-J-Q scores 4.
+### Cribbage runs | Runs score as many points as there are cards in them. For example, a four-card run 9-T-J-Q scores 4.
 
 ### Cribbage nobs
 
