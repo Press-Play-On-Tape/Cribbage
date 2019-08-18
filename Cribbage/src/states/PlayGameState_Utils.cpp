@@ -39,7 +39,14 @@ void PlayGameState::resetHand(StateMachine & machine) {
 
 	}
 
+	this->cribState = CribState::Empty;
+	this->highlightCard = 0;
+	this->counter = 0;
+	this->computerDiscard1 = 0;
+	this->computerDiscard2 = 0;
+	this->playIdx = 0;
 	this->turnUp = Constants::NoCard;
+	this->highlight = true;
 
 }
 

@@ -5,6 +5,10 @@ Deck::Deck() {}
 
 uint8_t Deck::getCard() {
 
+Serial.print("getCard() - idx: ");
+Serial.print(index);
+Serial.print(", card: ");
+Serial.println(this->deck[this->index]);
   return this->deck[this->index++];
 
 }

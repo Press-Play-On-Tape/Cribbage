@@ -28,22 +28,7 @@ void PlayGameState::update(StateMachine & machine) {
 
 			if (arduboy.everyXFrames(16) && player1.getHandCardCount() == 0) {
 				
-				player1.resetHand(false);
-				player2.resetHand(false);
-
-				this->cribState = CribState::Empty;
-				this->highlightCard = 0;
-				this->counter = 0;
-				this->computerDiscard1 = 0;
-				this->computerDiscard2 = 0;
-				this->playIdx = 0;
-				this->turnUp = Constants::NoCard;
-				this->highlight = true;
-
-				for (uint8_t x =0; x < 8; x++) {
-					this->playedCards[x] = Constants::NoCard;
-				}
-
+				resetHand(machine);
 				gameStats.playerDealer = (gameStats.playerDealer == WhichPlayer::Player2 ? WhichPlayer::Player1 : WhichPlayer::Player2);
 				
 			}
@@ -235,6 +220,23 @@ void PlayGameState::update(StateMachine & machine) {
 						this->viewState = ViewState::ComputersTurn;
 					}
 
+player1.setHandCard(0, 8);
+player1.setHandCard(1, 47);
+player1.setHandCard(2, 9);
+player1.setHandCard(3, 10);
+
+player2.setHandCard(0, 42);
+player2.setHandCard(1, 19);
+player2.setHandCard(2, 33);
+player2.setHandCard(3, 24);
+
+this->turnUp = 25;
+gameStats.playerDealer = WhichPlayer::Player1;
+gameStats.playersTurn = WhichPlayer::Player2;
+this->viewState = ViewState::ComputersTurn;
+
+					break;
+
 			}
 
 			break;
@@ -260,7 +262,7 @@ void PlayGameState::update(StateMachine & machine) {
 					break;
 
 				case 6:
-					if (player2.getGo()) {
+					if (player2.getGo() || player2.getHandCardCount() == 0) {
 						player1.addScore(1);
 						saveMessage(F(" Go for 1. "), 1, 45, BubbleAlignment::Player);
 					}
@@ -279,7 +281,13 @@ void PlayGameState::update(StateMachine & machine) {
 					this->counter = 0;
 					if (player2.getGo()) {
 						resetPlay(machine);
-						this->viewState = ViewState::ComputersTurn;
+
+						if (player1.getHandCardCount() > 0) {
+							this->viewState = ViewState::PlayersTurn;
+						}
+						else {
+							this->viewState = ViewState::DisplayScore_Board;
+						}
 					}
 					else {
 						this->viewState = ViewState::PlayersTurn;
@@ -319,7 +327,7 @@ void PlayGameState::update(StateMachine & machine) {
 							if (this->highlightCard == player1.getHandCardCount()) this->highlightCard--;
 
 							uint8_t playedValue = getBoardValue();
-							uint8_t score = getScore(machine, player1, player2.getGo());
+							uint8_t score = getScore(machine, player1, player2.getGo() | player2.getHandCardCount() == 0);
 							player1.addScore(score);
 							saveMessageWithScore(playedValue, score, BubbleAlignment::Player);
 							this->counter++;
@@ -330,7 +338,7 @@ void PlayGameState::update(StateMachine & machine) {
 					break;
 
 				case 1 ... 45:
-					skipSequence(machine, 46);
+					skipSequence(machine, 45);
 					this->counter++;
 					this->message.renderRequired = true;
 					break;
@@ -358,7 +366,7 @@ void PlayGameState::update(StateMachine & machine) {
 						else {
 
 							this->viewState = ViewState::ComputersTurn;
-							if (!player1.getGo() && player2.getGo()) {
+							if (!player1.getGo() && (player2.getGo() || player2.getHandCardCount() == 0)) {
 
 								if (!player1.canPlay(this->playedCards)) {
 
@@ -367,7 +375,14 @@ void PlayGameState::update(StateMachine & machine) {
 										this->viewState = ViewState::ComputersTurn;
 									}
 									else {
-										this->viewState = ViewState::PlayersTurn_Normal;
+
+										if (player1.getHandCardCount() > 0) {
+											this->viewState = ViewState::PlayersTurn_Normal;
+										}
+										else {
+											this->viewState = ViewState::DisplayScore_Board;
+										}
+
 									}
 
 								}
@@ -722,8 +737,6 @@ void PlayGameState::update(StateMachine & machine) {
 			break;
 
 		case ViewState::EndOfGame:
-Serial.print("EOG ");
-Serial.println(this->counter);
 
 			if (this->counter <= 65) {
 
