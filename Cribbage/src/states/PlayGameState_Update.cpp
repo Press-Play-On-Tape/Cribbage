@@ -219,22 +219,6 @@ void PlayGameState::update(StateMachine & machine) {
 					else {
 						this->viewState = ViewState::ComputersTurn;
 					}
-
-player1.setHandCard(0, 8);
-player1.setHandCard(1, 47);
-player1.setHandCard(2, 9);
-player1.setHandCard(3, 10);
-
-player2.setHandCard(0, 42);
-player2.setHandCard(1, 19);
-player2.setHandCard(2, 33);
-player2.setHandCard(3, 24);
-
-this->turnUp = 25;
-gameStats.playerDealer = WhichPlayer::Player1;
-gameStats.playersTurn = WhichPlayer::Player2;
-this->viewState = ViewState::ComputersTurn;
-
 					break;
 
 			}
