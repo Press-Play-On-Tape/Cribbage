@@ -60,7 +60,7 @@ Having played out all the cards, both players then score their hands, pone first
 
 Cribbage strategy is a key part of playing and winning cribbage. 
 
-## General Cribbage Strategy
+#### General Cribbage Strategy
 
 * Don't lead a 5 or a 10-card. If you do, you give your opponent the chance to score 15-2.
 
@@ -74,7 +74,7 @@ Cribbage strategy is a key part of playing and winning cribbage.
 
 * Approaching the end of the game, hang on to low cards and don't discard them. You'll have more opportunities to score points for go. 
 
-## Discard Strategy
+#### Discard Strategy
 
 Cribbage rules and cribbage strategy make the discard one of the key elements of skill in cribbage. You must try to maximise the remaining points in your hand, while leaving yourself useful cards to play in different tactical situations during the pegging, and without giving your opponent cards which may help her in the crib. When discarding to your own crib, you will be trying to anticipate what kind of cards your opponent is likely to give you, and discard cards which will work with them to create big scores in the crib.
 Cribbage discard hints
@@ -97,7 +97,7 @@ It's a common cribbage maxim that you should choose your discard in such a way a
 
 Let's look at an example hand of 4-5-6-Q-Q-K. You could either discard so as to keep the 5 and face cards, or to keep the 4-5-6. Although in the first case your hand scores 8, and in the second case only 7, the numbers show that following the cut, the run hand averages 10.15 points, while the 5 hand averages only 9.91 points. Don't forget to work out which cuts will help you, and make sure you have a basic grasp of the odds involved.
 
-## Leading Strategy
+#### Leading Strategy
 
 Basic lead strategy in cribbage:
 
@@ -107,7 +107,7 @@ Basic lead strategy in cribbage:
 
 * Conversely, making 11 is generally a good move, providing of course you hold the necessary ten-card to follow up your opponent's.
 
-## Replying to the Lead Strategy
+#### Replying to the Lead Strategy
 
 As there are so few cards played in a hand of cribbage, strategy is important with each play. Your choice of reply to the opponent's lead can be critical.
 
@@ -121,7 +121,6 @@ As there are so few cards played in a hand of cribbage, strategy is important wi
 
 * Watch for runs! Don't play a card with a value 1 or 2 away from your opponent's card - for example a 9 on a 7 - as he is likely to complete the run. The exception, of course, is when you hold the necessary card to extend the run yourself and top your opponent's points. Beware of 'banging your head' on 31, though - calculate beforehand whether you will be able to play onto the run without going over 31.
 
-
-### Play your 5s early
+#### Play your 5s early
 
 If you hold 5s, play them as early as you can to avoid them being trapped. For example, if you hold 5-J-Q-K and your opponent holds 3-6-7-8, the play might go like this. You lead one of the ten-cards; opponent replies with 8, hoping you will play another ten-card so that he can make 31 with the 3. If you do, he will reply 6 to your next ten-lead, resulting in: 10 - 6 - 5 - 7 for a three-point run and go. That's a six-point trap which you would do well to avoid. Use this rule: if your opponent does not have a 5-shaped hand (hasn't played any 10s or 5s), your 5 should be a safe lead.
