@@ -10,30 +10,30 @@ The interweaving of luck and skill in cribbage is particularly interesting. Alth
 
 ## The Basics
 
-### The cards and cribbage board
+#### The Cards and Cribbage Board
 
 Cribbage is played with an ordinary 52-card deck with the jokers removed. The cribbage boards used to keep score are traditionally made of wood, with 30, 60 or 120 holes per player.
 
-### The deal
+#### The Deal
 
 In this version of Cribbage the computer always deals first and alternates with each hand. The dealer then deals six cards to each player.
 
-### The discard
+#### The Discard
 
 Following the deal, each player throws away two cards from his hand into the 'crib' - a third hand that is scored by the dealer. Since the crib scores points for its owner, your choice of discard will generally be different depending on whether the crib is yours or your opponent's. 
 
-### The turn-up
+#### The Turn-Up
 
 The game of cribbage then begins with the dealer turning up the top card on the remaining pile after the cards have been dealt to each player. This card is called the turn-up or starter. If the turn-up card is a Jack, the dealer immediately scores two points ("two for his heels").
 
-### The count
+#### The Count
 
 Following the deal, the discard and the turn-up, the hand proper begins.
 
 In the playing phase of Cribbage, the players take it in turns to lay down a card, trying to make the running total equal to certain values. The non-dealer plays first and states the value of her card (for example, "ten" for a Jack). Court cards count ten (together with the face 10 they are known as the 'ten-cards'). Ace counts as one.
 
 <table>
-<tr><td valign="top"><b>15&nbsp;and&nbsp;31</td><td>
+<tr><td valign="top"><b>15&nbsp;and&nbsp;31&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>
 The dealer then plays a card, the value of which is added to the current running total. The player who makes the total exactly 15 scores two points ("fifteen for two"). Two points are also awarded for making 31. Additionally, you score a point if your opponent cannot play without going over 31 ("Go for one"). You must play if you can (reneging is against the rules).</td></tr>
 <tr><td valign="top"><b>Pairs</b></td><td>If your card is the same rank as the last card played, you score two for a pair. If your opponent plays a third card of the same rank, he scores 6 for a "pair royal" (three of a kind). Four of a kind scores 12 ("double pair royal").</td></tr>
 <tr><td valign="top"><b>Runs</b></td><td>If the last 3 cards played form a sequence, the player making the sequence scores 3 for a "run". For example, 3-4-5 makes a run of 3 and so scores 3 for the player laying down the 5. If the opponent then plays a 6 (or a 2) to extend the sequence to 4 cards, she scores 4, and so on as long as the sequence is unbroken.</td></tr>
@@ -59,7 +59,7 @@ Having played out all the cards, both players then score their hands, pone first
 
 Cribbage strategy is a key part of playing and winning cribbage. 
 
-### General cribbage strategy
+## General Cribbage Strategy
 
 * Don't lead a 5 or a 10-card. If you do, you give your opponent the chance to score 15-2.
 
@@ -73,7 +73,7 @@ Cribbage strategy is a key part of playing and winning cribbage.
 
 * Approaching the end of the game, hang on to low cards and don't discard them. You'll have more opportunities to score points for go. 
 
-### Discard strategy
+## Discard Strategy
 
 Cribbage rules and cribbage strategy make the discard one of the key elements of skill in cribbage. You must try to maximise the remaining points in your hand, while leaving yourself useful cards to play in different tactical situations during the pegging, and without giving your opponent cards which may help her in the crib. When discarding to your own crib, you will be trying to anticipate what kind of cards your opponent is likely to give you, and discard cards which will work with them to create big scores in the crib.
 Cribbage discard hints
@@ -96,7 +96,7 @@ It's a common cribbage maxim that you should choose your discard in such a way a
 
 Let's look at an example hand of 4-5-6-Q-Q-K. You could either discard so as to keep the 5 and face cards, or to keep the 4-5-6. Although in the first case your hand scores 8, and in the second case only 7, the numbers show that following the cut, the run hand averages 10.15 points, while the 5 hand averages only 9.91 points. Don't forget to work out which cuts will help you, and make sure you have a basic grasp of the odds involved.
 
-### Leading stategy
+## Leading Strategy
 
 Basic lead strategy in cribbage:
 
@@ -106,7 +106,7 @@ Basic lead strategy in cribbage:
 
 * Conversely, making 11 is generally a good move, providing of course you hold the necessary ten-card to follow up your opponent's.
 
-### Replying to the strategy
+## Replying to the Lead Strategy
 
 As there are so few cards played in a hand of cribbage, strategy is important with each play. Your choice of reply to the opponent's lead can be critical.
 
