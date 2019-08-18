@@ -265,7 +265,7 @@ void PlayGameState::update(StateMachine & machine) {
 					if (player2.getGo()) {
 						resetPlay(machine);
 
-						if (player1.getHandCardCount() > 0) {
+						if (player2.getHandCardCount() > 0) {
 							this->viewState = ViewState::PlayersTurn;
 						}
 						else {

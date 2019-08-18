@@ -30,7 +30,7 @@ The game of cribbage then begins with the dealer turning up the top card on the 
 
 Following the deal, the discard and the turn-up, the hand proper begins.
 
-In the playing phase of Cribbage, the players take it in turns to lay down a card, trying to make the running total equal to certain values. The non-dealer plays first and states the value of her card (for example, "ten" for a Jack). Court cards count ten (together with the face 10 they are known as the 'ten-cards', or 'tenth cards'). Ace counts one.
+In the playing phase of Cribbage, the players take it in turns to lay down a card, trying to make the running total equal to certain values. The non-dealer plays first and states the value of her card (for example, "ten" for a Jack). Court cards count ten (together with the face 10 they are known as the 'ten-cards'). Ace counts as one.
 
 #### 15 and 31
 
@@ -40,7 +40,7 @@ The dealer then plays a card, the value of which is added to the current running
 
 If your card is the same rank as the last card played, you score two for a pair. If your opponent plays a third card of the same rank, he scores 6 for a "pair royal" (three of a kind). Four of a kind scores 12 ("double pair royal").
 
-### Runs
+#### Runs
 
 If the last 3 cards played form a sequence, the player making the sequence scores 3 for a "run". For example, 3-4-5 makes a run of 3 and so scores 3 for the player laying down the 5. If the opponent then plays a 6 (or a 2) to extend the sequence to 4 cards, she scores 4, and so on as long as the sequence is unbroken.
 
