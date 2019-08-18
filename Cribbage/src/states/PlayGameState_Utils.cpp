@@ -48,7 +48,9 @@ void PlayGameState::resetHand(StateMachine & machine) {
 	this->playIdx = 0;
 	this->turnUp = Constants::NoCard;
 	this->highlight = true;
-
+	this->player1Counter = 0;
+	this->player2Counter = 0;
+	
 }
 
 

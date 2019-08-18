@@ -54,7 +54,13 @@ void PlayGameState::update(StateMachine & machine) {
 
 		case ViewState::DiscardCribPlayer:
 
+			this->counter++;
+
 			if (player1.getHandCardCount() > 4) {
+
+				if (this->counter < 45) {
+					saveMessage(F("Throw two cards\nout to the crib."), 2, 70, DealerFace::Normal, BubbleAlignment::Normal_Computer);
+				}
 
 				if ((justPressed & LEFT_BUTTON) && (this->highlightCard > 0))															this->highlightCard--;
 				if ((justPressed & RIGHT_BUTTON) && this->highlightCard < player1.getHandCardCount() - 1)	this->highlightCard++;
@@ -291,6 +297,10 @@ void PlayGameState::update(StateMachine & machine) {
 				case 0:
 					if ((justPressed & LEFT_BUTTON) && (this->highlightCard > 0))															this->highlightCard--;
 					if ((justPressed & RIGHT_BUTTON) && this->highlightCard < player1.getHandCardCount() - 1)	this->highlightCard++;
+
+					// if (justPressed & B_BUTTON) {
+					// 	player1.addScore(118);
+					// }
 
 					if (justPressed & A_BUTTON) {
 

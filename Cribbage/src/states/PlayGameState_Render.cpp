@@ -117,7 +117,7 @@ void PlayGameState::render(StateMachine & machine) {
       {
         drawDealer(machine, 0, 22, player1.getScore() < player2.getScore() ? DealerFace::Happy : DealerFace::Sad);
         SpritesB::drawSelfMasked(43, 0, Images::Divider, 0);
-        SpritesB::drawSelfMasked(51, 4, Images::Board, 0);
+        SpritesB::drawSelfMasked(51, 7, Images::Board, 0);
 
         bool playerFlash1 = (player1.getPrevScore() != player1.getScore()) && this->highlight;
         bool playerFlash2 = (player2.getPrevScore() != player2.getScore()) && this->highlight;
@@ -191,7 +191,7 @@ void PlayGameState::render(StateMachine & machine) {
 
           default:
 
-            SpritesB::drawSelfMasked(51, 4, Images::Board, 0);
+            SpritesB::drawSelfMasked(51, 7, Images::Board, 0);
             bool playerFlash1 = (player1.getPrevScore() != player1.getScore()) && this->highlight;
             bool playerFlash2 = (player2.getPrevScore() != player2.getScore()) && this->highlight;
             this->drawPlayer_Upper(player2.getPrevScore(), this->player2Counter, playerFlash2);
@@ -555,10 +555,10 @@ void PlayGameState::drawPlay() {
 void PlayGameState::drawPlayer_Upper(uint8_t oldPosition, uint8_t newPosition, bool flash) {
 
   uint8_t oldX = pgm_read_byte(&Board_Positions_Player_1[oldPosition * 2]);
-  uint8_t oldY = pgm_read_byte(&Board_Positions_Player_1[oldPosition * 2] + 1);
+  uint8_t oldY = pgm_read_byte(&Board_Positions_Player_1[oldPosition * 2] + 1) + 3;
 
   uint8_t newX = pgm_read_byte(&Board_Positions_Player_1[newPosition * 2]);
-  uint8_t newY = pgm_read_byte(&Board_Positions_Player_1[newPosition * 2] + 1);
+  uint8_t newY = pgm_read_byte(&Board_Positions_Player_1[newPosition * 2] + 1) + 3;
 
   uint8_t oldFrame = 0;
   uint8_t newFrame = 0;
@@ -581,10 +581,10 @@ void PlayGameState::drawPlayer_Upper(uint8_t oldPosition, uint8_t newPosition, b
 void PlayGameState::drawPlayer_Lower(uint8_t oldPosition, uint8_t newPosition, bool flash) {
 
   uint8_t oldX = pgm_read_byte(&Board_Positions_Player_2[oldPosition * 2]);
-  uint8_t oldY = pgm_read_byte(&Board_Positions_Player_2[oldPosition * 2] + 1);
+  uint8_t oldY = pgm_read_byte(&Board_Positions_Player_2[oldPosition * 2] + 1) + 3;
 
   uint8_t newX = pgm_read_byte(&Board_Positions_Player_2[newPosition * 2]);
-  uint8_t newY = pgm_read_byte(&Board_Positions_Player_2[newPosition * 2] + 1);
+  uint8_t newY = pgm_read_byte(&Board_Positions_Player_2[newPosition * 2] + 1) + 3;
 
   uint8_t oldFrame = 0;
   uint8_t newFrame = 0;

@@ -1,5 +1,7 @@
 ## Simple Cribbage Rules
 
+The following rules have been taken from [Cribbage Corner](http://cribbagecorner.com)
+
 The rules of cribbage are simple - it's one of the easiest card games to learn and certainly one of the most satisfying. Once you've read through these simple rules for cribbage, you'll be playing in no time!
 
 Cribbage belongs to the family of card games known as 'adders' - that is, games in which the idea is to add successive card values to a running total with the aim of making certain totals - in this case, 31. In the first phase of the hand, players take turns playing a card from their hand which is added to the running total. Two points are scored for making the total 15 or 31. Pairs and sequences also earn points. Once the hands have been played out in this way, the players then score points based on the pairs and sequences in their hands, plus the combinations that add up to 15, and record the score on the cribbage board. 

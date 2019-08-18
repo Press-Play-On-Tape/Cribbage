@@ -13,13 +13,15 @@ void PlayGameState::activate(StateMachine & machine) {
 	auto & player1 = gameStats.player1;
 	auto & player2 = gameStats.player2;
 
+	resetHand(machine);
 	player1.resetHand(true);
 	player2.resetHand(true);
-	resetHand(machine);
 
 	this->cribState = CribState::Empty;
 	this->viewState = ViewState::DealCards;
 	this->eog = false;
+	this->player1Counter = 0;
+	this->player2Counter = 0;
 
 	gameStats.playerDealer = WhichPlayer::Player1;
 	gameStats.playersTurn = WhichPlayer::Player1;
