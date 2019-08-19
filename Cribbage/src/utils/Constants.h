@@ -1,8 +1,13 @@
 #pragma once
 
 #define _DEBUG
-#ifdef DEBUG
-  #define COMPUTER_DISCARDS
+
+#define DEBUG_PRINT
+#ifdef DEBUG_PRINT
+  #define DEBUG_PRINT_CARDS
+  #define DEBUG_PRINT_HANDS
+  #define _DEBUG_PRINT_DISCARDS
+  #define _DEBUG_PRINT_COMPUTER_DISCARDS
 #endif
 
 #define EEPROM_START                  100

@@ -110,7 +110,7 @@ Font3x5::Font3x5(uint8_t lineHeight) {
   _letterSpacing = 1;
 
   _cursorX = _cursorY = _baseX = 0;
-  _textColor = 1;
+  _textColor = 0;
 
 }
 

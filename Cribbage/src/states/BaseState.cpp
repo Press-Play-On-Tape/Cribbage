@@ -38,9 +38,7 @@ void BaseState::drawMessageBox(StateMachine &machine, String message, uint8_t li
 	}
 
   font3x5.setCursor(x + 6, y + 6);
-  font3x5.setTextColor(BLACK);
   font3x5.print(message);
-  font3x5.setTextColor(WHITE);
 
 }
 
@@ -53,12 +51,10 @@ void BaseState::drawScore(StateMachine & machine, uint8_t x, int8_t y, uint8_t s
   if (score >= 10)  xPos = x + 4; 
   if (score >= 100) xPos = x + 2; 
 
-  font3x5.setTextColor(BLACK);
   arduboy.fillRect(x, y, 14, 8, BLACK);
   arduboy.fillRect(x + 1, y + 1, 13, 7);
   font3x5.setCursor(xPos, y + 1);
   if (renderText) font3x5.print(score);
-  font3x5.setTextColor(WHITE);
 
 }
 

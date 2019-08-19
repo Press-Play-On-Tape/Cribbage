@@ -20,32 +20,6 @@ constexpr const static uint8_t CARD_LARGE_TOP_PLAYER = 41;
 constexpr const static uint8_t CARD_SMALL_TOP_PLAYER = 37;
 constexpr const static uint8_t CARD_LARGE_TOP_DEALER = 0;
 constexpr const static uint8_t PLAY_CENTER = 62;
-
-
-void PlayGameState::drawDealer(StateMachine & machine, uint8_t xPos, uint8_t yPos, DealerFace dealerFace) {
-
-	auto & arduboy = machine.getContext().arduboy;
-
-  bool blink = (arduboy.getFrameCount(128) < 4);
-  uint8_t talking = arduboy.getFrameCount(36) / 12;
-
-  SpritesB::drawOverwrite(xPos, yPos, Images::Dealer, 0);
-  SpritesB::drawSelfMasked(xPos + 13, yPos + 17, Images::Dealer_Eyes, blink);
-  SpritesB::drawSelfMasked(xPos + 13, yPos + 7, Images::Dealer_Forehead, dealerFace == DealerFace::Happy ? 1 : 0);
-
-  if (this->message.renderRequired && (this->message.alignment == BubbleAlignment::Normal_Computer || this->message.alignment == BubbleAlignment::Score_Computer)) {
-
-    uint8_t index = (talking == 0 ? talking : talking + 2);
-    SpritesB::drawSelfMasked(xPos + 15, yPos + 24, Images::Dealer_Mouth, index);
-
-  }
-  else {
-
-    SpritesB::drawSelfMasked(xPos + 15, yPos + 24, Images::Dealer_Mouth, static_cast<uint8_t>(dealerFace));
-
-  }
-
-}
   
 
 // ---------------------------------------------------------------------------------------------------------------------------
@@ -83,15 +57,12 @@ void PlayGameState::render(StateMachine & machine) {
 	switch (this->viewState) {
 
 		case ViewState::DealCards:
+		case ViewState::DiscardCribComputer:
       drawCrib(machine, this->cribState);
 			break;
 
 		case ViewState::DiscardCribPlayer:
       drawHighlight(machine, this->highlightCard);
-      drawCrib(machine, this->cribState);
-			break;
-
-		case ViewState::DiscardCribComputer:
       drawCrib(machine, this->cribState);
 			break;
 
@@ -185,7 +156,7 @@ void PlayGameState::render(StateMachine & machine) {
 
         switch (this->counter) {
 
-          case 50:
+          case 78:
             drawHandScores(machine);
             break;
 
@@ -231,11 +202,24 @@ void PlayGameState::render(StateMachine & machine) {
     this->message.renderRequired = false;
   }
 
+  if (this->showTotal) {
+
+    arduboy.fillRect(42, 26, 42, 11, BLACK);
+    arduboy.fillRect(43, 27, 40, 9, WHITE);
+    font3x5.setCursor(45, 28);
+    font3x5.print(F(" Score: "));
+    font3x5.print(this->getBoardValue()< 10 ? "0" : "");
+    font3x5.print(this->getBoardValue());
+
+  }
+
 }
 
 
-// Draw scoring sequences from hand or crib in RHS ..
-
+// ---------------------------------------------------------------------------------------------------------------------------
+//  Render the scoring sequences from hand or crib in RHS ..
+// ---------------------------------------------------------------------------------------------------------------------------
+// 
 void PlayGameState::drawHandScores(StateMachine & machine) {
 
 	auto & arduboy = machine.getContext().arduboy;
@@ -245,34 +229,32 @@ void PlayGameState::drawHandScores(StateMachine & machine) {
   // Render hand details ..
 
   font3x5.setCursor(50, 0);
+  font3x5.setTextColor(WHITE);
 
   switch (this->viewState) {
 
     case ViewState::DisplayScore_Other:
-      if (gameStats.playerDealer == WhichPlayer::Player1) {
-        font3x5.print(F("My Hand@"));
-      }
-      else {
-        font3x5.print(F("Your Hand@"));
-      }
-      break;
-
     case ViewState::DisplayScore_Dealer:
-      if (gameStats.playerDealer == WhichPlayer::Player1) {
-        font3x5.print(F("Your Hand@"));
-      }
-      else {
+
+      if ((gameStats.playerDealer == WhichPlayer::Player1 && this->viewState == ViewState::DisplayScore_Other) ||
+          (gameStats.playerDealer == WhichPlayer::Player2 && this->viewState == ViewState::DisplayScore_Dealer)) {
         font3x5.print(F("My Hand@"));
       }
+      else {
+        font3x5.print(F("Your Hand@"));
+      }
+
       break;
 
     case ViewState::DisplayScore_Crib: 
+
       if (gameStats.playerDealer == WhichPlayer::Player1) {
         font3x5.print(F("Your Crib@"));
       }
       else {
         font3x5.print(F("My Crib@"));
       }
+
       break;
 
     default: break;
@@ -332,11 +314,12 @@ void PlayGameState::drawHandScores(StateMachine & machine) {
 
 
     // Render lower arrow ..
+
     if (numberOfScores > 5) {
       SpritesB::drawSelfMasked(120, 60, Images::Arrow_Down, !(this->scoreUpperRow + 5 < numberOfScores));
     }
+
     if (this->scoreUpperRow + 5 >= numberOfScores) {
-      font3x5.setTextColor(WHITE);
       font3x5.setCursor(93, 10 + (renderLine * 8));
       font3x5.print(F("Total:"));
       font3x5.setCursor(120, 10 + (renderLine * 8));
@@ -345,60 +328,76 @@ void PlayGameState::drawHandScores(StateMachine & machine) {
     }
 
   }
+      
+  font3x5.setTextColor(BLACK);
 
 }
 
 
+// ---------------------------------------------------------------------------------------------------------------------------
+//  Render the player's anc domuter's hand ..
+// ---------------------------------------------------------------------------------------------------------------------------
+// 
 void PlayGameState::drawPlayerHands(StateMachine & machine) {
 
   auto & gameStats = machine.getContext().gameStats;
 
-  uint8_t leftHand = 0;
-  uint8_t widthTot = (gameStats.player1.getHandCardCount() * CARD_LARGE_SPACING) + (CARD_LARGE_SPACING_FULL - CARD_LARGE_SPACING);
 
+  // Player ..
 
-  // Determine left hand side of each hand ..
+  {
+    uint8_t cardCount = gameStats.player1.getHandCardCount();
+    uint8_t widthTot = (cardCount * CARD_LARGE_SPACING) + (CARD_LARGE_SPACING_FULL - CARD_LARGE_SPACING);
+    uint8_t leftHand = CARD_PLAYER_CENTER - (widthTot / 2);
 
-  leftHand = CARD_PLAYER_CENTER - (widthTot / 2);
+    for (uint8_t x = 0; x < cardCount; x++) {
+      
+      uint8_t card = gameStats.player1.getHandCard(x);
 
-
-  // Render hand ..
-
-  for (uint8_t x = 0; x < gameStats.player1.getHandCardCount(); x++) {
-    
-    if (x < gameStats.player1.getHandCardCount() - 1) {
-      drawCard(leftHand + (x * CARD_LARGE_SPACING), CARD_LARGE_TOP_PLAYER, gameStats.player1.getHandCard(x), false);   
+      if (x < cardCount - 1) {
+        drawCard(leftHand + (x * CARD_LARGE_SPACING), CARD_LARGE_TOP_PLAYER, card, false);   
+      }
+      else {
+        drawCard(leftHand + (x * CARD_LARGE_SPACING), CARD_LARGE_TOP_PLAYER, card, true);   
+      }
+      
     }
-    else {
-      drawCard(leftHand + (x * CARD_LARGE_SPACING), CARD_LARGE_TOP_PLAYER, gameStats.player1.getHandCard(x), true);   
-    }
-    
+
   }
 
 
 
   // Computer ..
 
-  uint8_t width = (gameStats.player2.getHandCardCount() * CARD_LARGE_SPACING_DEALER) + (CARD_LARGE_SPACING_FULL - CARD_LARGE_SPACING_DEALER);
-  uint8_t rightHandSide = CARD_DEALER_CENTER + (width / 2);
+  {
+    uint8_t cardCount = gameStats.player2.getHandCardCount();
+    uint8_t width = (cardCount * CARD_LARGE_SPACING_DEALER) + (CARD_LARGE_SPACING_FULL - CARD_LARGE_SPACING_DEALER);
+    uint8_t rightHandSide = CARD_DEALER_CENTER + (width / 2);
 
-  for (uint8_t x = 0; x < gameStats.player2.getHandCardCount(); x++) {
-			
-		if (x < gameStats.player2.getHandCardCount() - 1) {
+    for (uint8_t x = 0; x < cardCount; x++) {
+        
+      if (x < cardCount - 1) {
 
-			drawComputerCard(rightHandSide - (x * CARD_LARGE_SPACING_DEALER), CARD_LARGE_TOP_DEALER, false);   
+        drawComputerCard(rightHandSide - (x * CARD_LARGE_SPACING_DEALER), CARD_LARGE_TOP_DEALER, false);   
 
-		}
-		else {
+      }
+      else {
 
-			drawComputerCard(rightHandSide - (x * CARD_LARGE_SPACING_DEALER) + 2, CARD_LARGE_TOP_DEALER, true);   
+        drawComputerCard(rightHandSide - (x * CARD_LARGE_SPACING_DEALER) + 2, CARD_LARGE_TOP_DEALER, true);   
 
-		}
-    
+      }
+      
+    }
+
   }
       
 }
 
+
+// ---------------------------------------------------------------------------------------------------------------------------
+//  Draw a large card in the nominated top position.  If the card is the end card, draw full size otherwise partial.
+// ---------------------------------------------------------------------------------------------------------------------------
+// 
 void PlayGameState::drawComputerCard(uint8_t xPos, uint8_t yPos, bool fullSizeCard) {
 
 	if (fullSizeCard) {
@@ -414,6 +413,11 @@ void PlayGameState::drawComputerCard(uint8_t xPos, uint8_t yPos, bool fullSizeCa
 
 }
 
+
+// ---------------------------------------------------------------------------------------------------------------------------
+//  Draw a large card in the nominated lower position.  If the card is the end card, draw full size otherwise partial.
+// ---------------------------------------------------------------------------------------------------------------------------
+// 
 void PlayGameState::drawCard(uint8_t xPos, uint8_t yPos, uint8_t card, bool fullSizeCard) {
 
 	uint8_t cardNumber = card % 13;
@@ -435,6 +439,11 @@ void PlayGameState::drawCard(uint8_t xPos, uint8_t yPos, uint8_t card, bool full
 
 }
 
+
+// ---------------------------------------------------------------------------------------------------------------------------
+//  Draw a small card in the nominated position ..
+// ---------------------------------------------------------------------------------------------------------------------------
+// 
 void PlayGameState::drawSmallCard(uint8_t xPos, uint8_t yPos, uint8_t card, bool leftAlign) {
 
 	uint8_t cardNumber = CardUtils::getCardValue(card, false);
@@ -448,6 +457,11 @@ void PlayGameState::drawSmallCard(uint8_t xPos, uint8_t yPos, uint8_t card, bool
 
 }
 
+
+// ---------------------------------------------------------------------------------------------------------------------------
+//  Draw the selection hand ..
+// ---------------------------------------------------------------------------------------------------------------------------
+// 
 void PlayGameState::drawHighlight(StateMachine & machine, uint8_t hghlightCard) {
 
   auto & gameStats = machine.getContext().gameStats;
@@ -459,18 +473,15 @@ void PlayGameState::drawHighlight(StateMachine & machine, uint8_t hghlightCard) 
   // Determine left hand side of each hand ..
 
   leftHand = CARD_PLAYER_CENTER - (widthTot / 2);
-
-  // if (gameStats.player1.getHandCardCount() - 1 == hghlightCard) {
-  //   SpritesB::drawOverwrite(leftHand + (hghlightCard * CARD_LARGE_SPACING) - 1, 60, Images::Highlight_Large, 0);
-  // }
-  // else {
-  //   SpritesB::drawOverwrite(leftHand + (hghlightCard * CARD_LARGE_SPACING) - 1, 60, Images::Highlight_Small, 0);
-  // }
-
   SpritesB::drawExternalMask(leftHand + (hghlightCard * CARD_LARGE_SPACING) + 1, 51, Images::Hand, Images::Hand_Mask, 0, 0);
 
 }
 
+
+// ---------------------------------------------------------------------------------------------------------------------------
+//  Draw the crib card(s) ..
+// ---------------------------------------------------------------------------------------------------------------------------
+// 
 void PlayGameState::drawCrib(StateMachine & machine, CribState cribState) {
 
   auto & gameStats = machine.getContext().gameStats;
@@ -514,6 +525,11 @@ void PlayGameState::drawCrib(StateMachine & machine, CribState cribState) {
 
 }
 
+
+// ---------------------------------------------------------------------------------------------------------------------------
+//  Draw the turn up card ..
+// ---------------------------------------------------------------------------------------------------------------------------
+// 
 void PlayGameState::drawTurnUp(TurnUpState turnUpState) {
 
   switch (turnUpState) {
@@ -534,6 +550,11 @@ void PlayGameState::drawTurnUp(TurnUpState turnUpState) {
 
 }
 
+
+// ---------------------------------------------------------------------------------------------------------------------------
+//  Render the cards currently in play ..
+// ---------------------------------------------------------------------------------------------------------------------------
+// 
 void PlayGameState::drawPlay() {
 
   uint8_t xLeft = PLAY_CENTER - ((16 + (playIdx * 10)) / 2);
@@ -552,6 +573,11 @@ void PlayGameState::drawPlay() {
 
 }
 
+
+// ---------------------------------------------------------------------------------------------------------------------------
+//  Render the upper player's progress on the cribbage board ..
+// ---------------------------------------------------------------------------------------------------------------------------
+// 
 void PlayGameState::drawPlayer_Upper(uint8_t oldPosition, uint8_t newPosition, bool flash) {
 
   uint8_t oldX = pgm_read_byte(&Board_Positions_Player_1[oldPosition * 2]);
@@ -578,6 +604,11 @@ void PlayGameState::drawPlayer_Upper(uint8_t oldPosition, uint8_t newPosition, b
 
 }
 
+
+// ---------------------------------------------------------------------------------------------------------------------------
+//  Render the lower player's progress on the cribbage board ..
+// ---------------------------------------------------------------------------------------------------------------------------
+// 
 void PlayGameState::drawPlayer_Lower(uint8_t oldPosition, uint8_t newPosition, bool flash) {
 
   uint8_t oldX = pgm_read_byte(&Board_Positions_Player_2[oldPosition * 2]);
@@ -601,5 +632,35 @@ void PlayGameState::drawPlayer_Lower(uint8_t oldPosition, uint8_t newPosition, b
 
   SpritesB::drawExternalMask(oldX, oldY, Images::Peg, Images::Peg_Mask, 1, oldFrame);
   if (flash) SpritesB::drawExternalMask(newX, newY, Images::Peg, Images::Peg_Mask, 1, newFrame);
+
+}
+
+
+// ---------------------------------------------------------------------------------------------------------------------------
+//  Render the dealer in the nominated position .. 
+// ---------------------------------------------------------------------------------------------------------------------------
+// 
+void PlayGameState::drawDealer(StateMachine & machine, uint8_t xPos, uint8_t yPos, DealerFace dealerFace) {
+
+	auto & arduboy = machine.getContext().arduboy;
+
+  bool blink = (arduboy.getFrameCount(128) < 4);
+  uint8_t talking = arduboy.getFrameCount(36) / 12;
+
+  SpritesB::drawOverwrite(xPos, yPos, Images::Dealer, 0);
+  SpritesB::drawSelfMasked(xPos + 13, yPos + 17, Images::Dealer_Eyes, blink);
+  SpritesB::drawSelfMasked(xPos + 13, yPos + 7, Images::Dealer_Forehead, dealerFace == DealerFace::Happy ? 1 : 0);
+
+  if (this->message.renderRequired && (this->message.alignment == BubbleAlignment::Normal_Computer || this->message.alignment == BubbleAlignment::Score_Computer)) {
+
+    uint8_t index = (talking == 0 ? talking : talking + 2);
+    SpritesB::drawSelfMasked(xPos + 15, yPos + 24, Images::Dealer_Mouth, index);
+
+  }
+  else {
+
+    SpritesB::drawSelfMasked(xPos + 15, yPos + 24, Images::Dealer_Mouth, static_cast<uint8_t>(dealerFace));
+
+  }
 
 }

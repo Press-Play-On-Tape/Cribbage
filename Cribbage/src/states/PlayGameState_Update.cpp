@@ -15,6 +15,7 @@ void PlayGameState::update(StateMachine & machine) {
 	auto & deck = gameStats.deck;
 
   auto justPressed = arduboy.justPressedButtons();
+  auto pressed = arduboy.pressedButtons();
 
 
 	// Has the EOG flag been set?
@@ -38,8 +39,6 @@ void PlayGameState::update(StateMachine & machine) {
 
 					player1.addToHand(deck.getCard());
 					player2.addToHand(deck.getCard());
-					player1.printHand(1);
-					player2.printHand(2);
 
 				}
 
@@ -54,11 +53,11 @@ void PlayGameState::update(StateMachine & machine) {
 
 		case ViewState::DiscardCribPlayer:
 
-			this->counter++;
+			if (this->counter < 71) this->counter++;
 
 			if (player1.getHandCardCount() > 4) {
 
-				if (this->counter < 45) {
+				if (this->counter < 70) {
 					saveMessage(F("Throw two cards\nout to the crib."), 2, 70, DealerFace::Normal, BubbleAlignment::Normal_Computer);
 				}
 
@@ -89,7 +88,10 @@ void PlayGameState::update(StateMachine & machine) {
 			else {
 
 				player2.discardToCrib(this->computerDiscard1, this->computerDiscard2);
-				
+// Serial.print("Discards :");
+// Serial.print(this->computerDiscard1);				
+// Serial.print(",");
+// Serial.println(this->computerDiscard2);				
 				this->viewState = ViewState::DiscardCribComputer;
 				this->counter = 0;
 
@@ -101,63 +103,34 @@ void PlayGameState::update(StateMachine & machine) {
 
 			this->counter++;
 
-			switch (this->counter) {
+			if (this->counter < 70) {
 
-				case 0 ... 45:
-					skipSequence(machine, 45);
-					saveMessage(F("   I will throw\nthese two cards."), 2, DealerFace::Normal, BubbleAlignment::Normal_Computer);
+				skipSequence(machine, 70);
+				saveMessage(F("   I will throw\nthese two cards."), 2, DealerFace::Normal, BubbleAlignment::Normal_Computer);
+	
+				if (this->counter == 25) {
+					this->computerDiscard(machine, this->computerDiscard1);
+				}
+	
+				if (this->counter == 50) {
+					this->computerDiscard(machine, this->computerDiscard2);
+				}
+
 					break;
 
-				case 46:
-					{
-						uint8_t index = player2.getHandCardIndex(this->computerDiscard1);
-						player2.removeFromHand(index);
+			}
+			else {
 
-						if (gameStats.playerDealer == WhichPlayer::Player1) {
+				if (player2.getHandCardCount() > 5) {
+					this->computerDiscard(machine, this->computerDiscard2);
+				}
 
-							player1.addToCrib(this->computerDiscard1);
+				if (player2.getHandCardCount() > 4) {
+					this->computerDiscard(machine, this->computerDiscard1);
+				}
 
-						}
-						else {
-
-							player2.addToCrib(this->computerDiscard1);
-
-						}
-
-					}
-					break;
-
-				case 47 ... 60:
-					skipSequence(machine, 60);
-					break;
-
-				case 61:
-					{
-						uint8_t index = player2.getHandCardIndex(this->computerDiscard2);
-						player2.removeFromHand(index);
-
-						if (gameStats.playerDealer == WhichPlayer::Player1) {
-
-							player1.addToCrib(this->computerDiscard2);
-
-						}
-						else {
-
-							player2.addToCrib(this->computerDiscard2);
-
-						}
-
-					}
-					break;
-
-				case 62 ... 105:
-					skipSequence(machine, 105);
-					break;
-
-				case 106:
-					this->viewState = ViewState::TurnUp;
-					this->counter = 0;
-					break;
+				this->viewState = ViewState::TurnUp;
+				this->counter = 0;
 
 			}
 
@@ -177,11 +150,21 @@ void PlayGameState::update(StateMachine & machine) {
 					break;
 
 				case 16 ... 25:
-					//this->turnUp = 10; // Uncomment for 'Two for his nob' ..
-					player1.printHand(1);
-					player2.printHand(2);
+					//this->turnUp = 10; // Uncomment for 'Two for his heels' ..
+					#ifdef DEBUG_PRINT_HANDS
+					// player1.printHand(1);
+					// player1.printCrib(1);
+					// player2.printHand(2);
+					// player2.printCrib(2);
+					// Serial.print("Turn Up: (");
+					// Serial.print(this->turnUp);
+					// Serial.print(") ");
+					// CardUtils::printCard(this->turnUp);
+					// Serial.println("");
+					#endif
+
 					if (CardUtils::getCardValue(this->turnUp, false) != 11) {
-						this->counter = 77;
+						this->counter = 167;
 					}
 					break;
 
@@ -196,18 +179,18 @@ void PlayGameState::update(StateMachine & machine) {
 					}
 					break;
 
-				case 27 ... 72:
-					skipSequence(machine, 125);
+				case 27 ... 92:
+					skipSequence(machine, 235);
 					this->message.renderRequired = true;
 					break;
 
-				case 73 ... 77:
-					skipSequence(machine, 125);
+				case 93 ... 167:
+					skipSequence(machine, 235);
 					break;
 
-				case 78 ... 125:
+				case 168 ... 235:
 					moveToEOG(machine);
-					skipSequence(machine, 125);
+					skipSequence(machine, 235);
 					if (gameStats.playerDealer == WhichPlayer::Player2) {
 						saveMessage(F("Your turn to start@"), 1, 81, DealerFace::Normal, BubbleAlignment::Normal_Computer);
 					}
@@ -216,8 +199,26 @@ void PlayGameState::update(StateMachine & machine) {
 					}
 					break;
 
-				case 126:				
+				case 236:				
 					this->counter = 0;
+
+					// player1.setHandCard(0, 39);
+					// player1.setHandCard(1, 30);
+					// player1.setHandCard(2, 9);
+					// player1.setHandCard(3, 12);
+					// player2.setHandCard(0, 5);
+					// player2.setHandCard(1, 44);
+					// player2.setHandCard(2, 23);
+					// player2.setHandCard(3, 36);
+					// // player2.setCribCard(0, 19);
+					// // player2.setCribCard(1, );
+					// // player2.setCribCard(2, 9);
+					// // player2.setCribCard(3, 37);
+					// this->turnUp = 18;
+					// gameStats.playerDealer = WhichPlayer::Player1;
+					// gameStats.playersTurn = WhichPlayer::Player2;
+
+
 					if (gameStats.playerDealer == WhichPlayer::Player2) {
 						this->viewState = ViewState::PlayersTurn;
 					}
@@ -260,29 +261,37 @@ void PlayGameState::update(StateMachine & machine) {
 					}
 					break;
 
-				case 7 ... 52:
-					skipSequence(machine, 52);
+				case 7 ... 72:
+					skipSequence(machine, 72);
 					this->message.renderRequired = true;
 					break;
 
-				case 53:
+				case 73:
 					moveToEOG(machine);
 					this->counter = 0;
-					if (player2.getGo()) {
+//Serial.println("a1");
+					if (player2.getGo() || player2.getHandCardCount() == 0) {
+//Serial.println("a2");
 						resetPlay(machine);
 
-						if (player2.getHandCardCount() > 0) {
-							this->viewState = ViewState::PlayersTurn;
+						if (player2.getHandCardCount() > 0) { //SJH ??? Was player2
+//Serial.println("a3");
+							this->viewState = ViewState::ComputersTurn;
 						}
 						else {
-							this->viewState = ViewState::DisplayScore_Board;
+							if (player1.getHandCardCount() > 0) {
+//Serial.println("a4");
+								this->viewState = ViewState::PlayersTurn;
+							}
+							else {
+//Serial.println("a5");
+								this->viewState = ViewState::DisplayScore_Board;
+							}
 						}
 					}
 					else {
-						this->viewState = ViewState::PlayersTurn;
-						if (!player2.getGo()) {
-							this->viewState = ViewState::ComputersTurn;
-						}
+//Serial.println("a6");
+						this->viewState = ViewState::ComputersTurn;
 					}
 
 					break;
@@ -301,6 +310,12 @@ void PlayGameState::update(StateMachine & machine) {
 					// if (justPressed & B_BUTTON) {
 					// 	player1.addScore(118);
 					// }
+					if (pressed & B_BUTTON) {
+					 	this->showTotal = true;
+					}
+					else {
+						this->showTotal = false;
+					}
 
 					if (justPressed & A_BUTTON) {
 
@@ -330,13 +345,13 @@ void PlayGameState::update(StateMachine & machine) {
 					}
 					break;
 
-				case 1 ... 45:
-					skipSequence(machine, 45);
+				case 1 ... 75:
+					skipSequence(machine, 75);
 					this->counter++;
 					this->message.renderRequired = true;
 					break;
 
-				case 46:
+				case 76:
 					{
 						moveToEOG(machine);
 						uint8_t board = getBoardValue();
@@ -445,12 +460,12 @@ void PlayGameState::update(StateMachine & machine) {
 
 					break;
 
-				case 17 ... 60:
-					skipSequence(machine, 60);
+				case 17 ... 90:
+					skipSequence(machine, 90);
 					this->message.renderRequired = true;
 					break;
 
-				case 61:				
+				case 91:				
 					{
 						moveToEOG(machine);
 						this->counter = 0;
@@ -514,8 +529,6 @@ void PlayGameState::update(StateMachine & machine) {
 
 					}
 
-					player1.printHand(1);
-					player2.printHand(2);
 					break;
 
 			}
@@ -562,7 +575,10 @@ void PlayGameState::update(StateMachine & machine) {
 						this->counter++;
 						break;
 
-					default: break;
+					default: 
+						this->highlight = true;
+						moveToEOG(machine);
+						break;
 
 				}
 
@@ -589,7 +605,7 @@ void PlayGameState::update(StateMachine & machine) {
 						this->counter++;
 						break;
 
-					case 6 ... 48:
+					case 6 ... 76:
 
 						this->counter++;
 
@@ -627,12 +643,12 @@ void PlayGameState::update(StateMachine & machine) {
 						}
 						break;
 
-					case 49:
+					case 77:
 						this->counter++;
 						this->scoresTotal = addHandScoreToPlayerTotal(machine);
 						break;
 
-					case 50:
+					case 78:
 						{
 							uint8_t numberOfScores = gameStats.getNumberOfScores();
 
@@ -652,7 +668,7 @@ void PlayGameState::update(StateMachine & machine) {
 						}
 						break;
 
-					case 51:
+					case 79:
 
 						if (this->player1Counter < player1.getPrevScore()) this->player1Counter = player1.getPrevScore();
 						if (this->player2Counter < player2.getPrevScore()) this->player2Counter = player2.getPrevScore();
@@ -668,7 +684,7 @@ void PlayGameState::update(StateMachine & machine) {
 								}
 							}
 							else {
-								this->counter = 65;
+								this->counter = 95;
 							}
 
 						}
@@ -683,15 +699,16 @@ void PlayGameState::update(StateMachine & machine) {
 						this->highlight = true;
 						break;
 
-					case 65 ... 79:
 					case 95 ... 109:
 					case 125 ... 139:
 					case 155 ... 169:
+					case 185 ... 199:
 						this->counter++;
 						this->highlight = false;
 						break;
 
 					default: 
+						this->highlight = true;
 						moveToEOG(machine);
 						break;
 
@@ -699,9 +716,12 @@ void PlayGameState::update(StateMachine & machine) {
 
 				if (justPressed & A_BUTTON) {
 
-					if (this->counter <= 49) {
+					if (this->counter <= 77) {
 						this->scoresTotal = addHandScoreToPlayerTotal(machine);
 					}
+
+					player1.setPrevScore(player1.getScore());
+					player2.setPrevScore(player2.getScore());
 
 					switch (this->viewState){
 
@@ -733,7 +753,7 @@ void PlayGameState::update(StateMachine & machine) {
 
 		case ViewState::EndOfGame:
 
-			if (this->counter <= 65) {
+			if (this->counter <= 75) {
 
 				if (player1.getScore() >= 121) {
 					saveMessage(F("Congratulations!\n          You Won!"), 2, 76, 48, DealerFace::Sad, BubbleAlignment::Score_Computer);
@@ -750,7 +770,7 @@ void PlayGameState::update(StateMachine & machine) {
 
 					switch (this->counter) {
 
-						case 66:
+						case 76:
 
 							if (this->player1Counter < player1.getPrevScore()) this->player1Counter = player1.getPrevScore();
 							if (this->player2Counter < player2.getPrevScore()) this->player2Counter = player2.getPrevScore();
@@ -768,18 +788,18 @@ void PlayGameState::update(StateMachine & machine) {
 							}
 							break;
 
-						case 67:
-						case 69:
-						case 71:
-						case 73:
+						case 77:
+						case 79:
+						case 81:
+						case 83:
 							this->highlight = false;
 							this->counter++;
 							break;
 
-						case 68:
-						case 70:
-						case 72:
-						case 74:
+						case 78:
+						case 80:
+						case 82:
+						case 84:
 							this->highlight = true;
 							this->counter++;
 							break;

@@ -22,7 +22,7 @@ void GameOverState::update(StateMachine & machine) {
 
 	// Update ticker ..
 
-	if (arduboy.everyXFrames(16)) {
+	if (arduboy.everyXFrames(8)) {
 		this->counter++;
 		if (this->counter == 28) this->counter = 0;
 	}

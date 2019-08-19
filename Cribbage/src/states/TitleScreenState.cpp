@@ -43,7 +43,7 @@ void TitleScreenState::update(StateMachine & machine) {
 
 	// Update ticker ..
 
-	if (arduboy.everyXFrames(16)) {
+	if (arduboy.everyXFrames(8)) {
 		this->counter++;
 		if (this->counter == 28) this->counter = 0;
 	}
@@ -62,9 +62,6 @@ void TitleScreenState::update(StateMachine & machine) {
 //  Render the state .. 
 //
 void TitleScreenState::render(StateMachine & machine) {
-
- 	// auto & ardBitmap = machine.getContext().ardBitmap;
- 	// SpritesB.drawOverwrite(0, 0, Images::Card_Background_Full, 0);
 
 	SpritesB::drawOverwrite(75, 0, Images::TitleScreen_Board, 0);
 	SpritesB::drawOverwrite(7, 16, Images::TitleScreen_Words, 0);

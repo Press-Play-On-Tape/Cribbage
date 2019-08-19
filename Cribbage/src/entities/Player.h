@@ -29,6 +29,7 @@ class Player {
     uint8_t getCribCardCount();
 
     void setHandCard(uint8_t index, uint8_t card);
+    void setCribCard(uint8_t index, uint8_t card);
 
     void calculateHandScore(Score scores[], uint8_t turnUp);
     void calculateCribScore(Score scores[], uint8_t turnUp);
@@ -42,6 +43,7 @@ class Player {
     uint8_t removeFromHand(uint8_t index);
     void resetHand(bool clearScores);
     void printHand(uint8_t playerNo);
+    void printCrib(uint8_t playerNo);
     bool canPlay(uint8_t playedCards[]);
 
   private:

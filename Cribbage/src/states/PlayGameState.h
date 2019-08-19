@@ -70,31 +70,33 @@ class PlayGameState : public BaseState {
     void drawHandScores(StateMachine & machine);
     void drawScores(StateMachine & machine);
     void drawDealer(StateMachine & machine, uint8_t xPos, uint8_t yPos, DealerFace dealerFace);
+    void drawPlayer_Upper(uint8_t oldPosition, uint8_t newPosition, bool flash);
+    void drawPlayer_Lower(uint8_t oldPosition, uint8_t newPosition, bool flash);
 
-    void resetHand(StateMachine & machine);
-    void resetPlay(StateMachine & machine);
     void saveMessage(String message, uint8_t lines, DealerFace dealerFace, BubbleAlignment alignment);
     void saveMessage(String message, uint8_t lines, uint8_t width, DealerFace dealerFace, BubbleAlignment alignment);
     void saveMessage(String message, uint8_t lines, uint8_t width, uint8_t xPos, DealerFace dealerFace, BubbleAlignment alignment);
     void saveMessageWithScore(uint8_t playedValue, uint8_t points, DealerFace dealerFace, BubbleAlignment alignment);
-    uint8_t getScore(Player &player, bool player2Go);
-    bool isEndOfGame(StateMachine & machine);
 
+    uint8_t getScore(Player &player, bool player2Go);
     uint8_t getBoardValue();
     uint8_t getScoresTotal(StateMachine & machine);
-
-    void drawPlayer_Upper(uint8_t oldPosition, uint8_t newPosition, bool flash);
-    void drawPlayer_Lower(uint8_t oldPosition, uint8_t newPosition, bool flash);
     uint8_t addHandScoreToPlayerTotal(StateMachine & machine);
+
+    void resetHand(StateMachine & machine);
+    void resetPlay(StateMachine & machine);
+
+    bool isEndOfGame(StateMachine & machine);
     void skipSequence(StateMachine & machine, uint8_t counter);
     void moveToEOG(StateMachine & machine);
-
+    void computerDiscard(StateMachine & machine, uint8_t card);
 
     uint8_t player1Counter = 0;
     uint8_t player2Counter = 0;
     uint8_t scoreUpperRow = 0;
   	uint8_t scoresTotal = 0;
     bool eog = false;
+    bool showTotal = false;
 
 };
 

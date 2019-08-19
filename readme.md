@@ -1,3 +1,14 @@
+
+
+Graphics&nbsp;&nbsp;  @vampirics<br>
+Code&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@filmote<br>
+
+Source &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Source Code](https://github.com/Press-Play-On-Tape/Cribbage)<br>
+Hex &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Hex File](https://github.com/Press-Play-On-Tape/Cribbage/tree/master/distributable/Cribbage.hex)<br>
+Emulator &nbsp;&nbsp;&nbsp;[Project ABE Emulator](https://felipemanga.github.io/ProjectABE/?hex=https://raw.githubusercontent.com/Press-Play-On-Tape/Cribbage/master/distributable/Cribbage.hex)
+<br>
+<br>
+
 ## Simple Cribbage Rules
 
 The following rules have been taken from [Cribbage Corner](http://cribbagecorner.com)
@@ -40,11 +51,11 @@ The dealer then plays a card, the value of which is added to the current running
 <tr><td valign="top"><b>Pairs</b></td><td>If your card is the same rank as the last card played, you score two for a pair. If your opponent plays a third card of the same rank, he scores 6 for a "pair royal" (three of a kind). Four of a kind scores 12 ("double pair royal").</td></tr>
 <tr><td valign="top"><b>Runs</b></td><td>If the last 3 cards played form a sequence, the player making the sequence scores 3 for a "run". For example, 3-4-5 makes a run of 3 and so scores 3 for the player laying down the 5. If the opponent then plays a 6 (or a 2) to extend the sequence to 4 cards, she scores 4, and so on as long as the sequence is unbroken.</td></tr>
 </table>
-<br>
 
-### The go
 
-The cribbage rules for scoring 'go' sometimes cause confusion. You earn a point for go when your opponent cannot go. This may be (a) because he has no cards (sometimes called 'One for last'), or (b) because he cannot play without going over 31 ('One for the go'). In either case if you make the total 31 you score only 2 points on the cribbage board, not 3 (because the go is included, as described above). However, you may well make 15 with the last card (in which case you do score 3).
+#### The Go
+
+You earn a point for go when your opponent cannot go. This may be (a) because he has no cards (sometimes called 'One for last'), or (b) because he cannot play without going over 31 ('One for the go'). In either case if you make the total 31 you score only 2 points on the cribbage board, not 3 (because the go is included, as described above). However, you may well make 15 with the last card (in which case you do score 3).
 
 ## Scoring
 

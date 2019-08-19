@@ -9,11 +9,7 @@ void PlayGameState::resetPlay(StateMachine & machine) {
 	auto & player1 = gameStats.player1;
 	auto & player2 = gameStats.player2;
 
-	for (uint8_t x = 0; x < 8; x++) {
-
-		this->playedCards[x] = Constants::NoCard;
-
-	}
+  memset(this->playedCards, Constants::NoCard, (sizeof(this->playedCards) / sizeof(this->playedCards[0])));
 
 	this->playIdx = 0;
 
@@ -34,11 +30,7 @@ void PlayGameState::resetHand(StateMachine & machine) {
 	player2.resetHand(false);
 	deck.shuffle();
 
-	for (uint8_t x = 0; x < 8; x++) {
-
-		this->playedCards[x] = Constants::NoCard;
-
-	}
+  memset(this->playedCards, Constants::NoCard, (sizeof(this->playedCards) / sizeof(this->playedCards[0])));
 
 	this->cribState = CribState::Empty;
 	this->highlightCard = 0;
@@ -107,6 +99,7 @@ void PlayGameState::saveMessageWithScore(uint8_t playedValue, uint8_t points, De
 		else {
 	    memcpy(&messageText[messageIdx], pointText, 7);
 		}
+		
     saveMessage(messageText, 1, dealerFace, alignment);
 
   }
@@ -420,6 +413,28 @@ void PlayGameState::moveToEOG(StateMachine & machine) {
 	if (isEndOfGame(machine)) {
 		this->counter = 0;
 		this->eog = true;
+	}
+
+}
+
+void PlayGameState::computerDiscard(StateMachine & machine, uint8_t card) {
+
+	auto & gameStats = machine.getContext().gameStats;
+	auto & player1 = gameStats.player1;
+	auto & player2 = gameStats.player2;
+
+	uint8_t index = player2.getHandCardIndex(card);
+	player2.removeFromHand(index);
+
+	if (gameStats.playerDealer == WhichPlayer::Player1) {
+
+		player1.addToCrib(card);
+
+	}
+	else {
+
+		player2.addToCrib(card);
+
 	}
 
 }
