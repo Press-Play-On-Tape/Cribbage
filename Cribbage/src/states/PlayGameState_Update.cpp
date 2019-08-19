@@ -670,9 +670,12 @@ void PlayGameState::update(StateMachine & machine) {
 
 				if (justPressed & A_BUTTON) {
 
-					if (this->counter <= 49) {
+					if (this->counter <= 77) {
 						this->scoresTotal = addHandScoreToPlayerTotal(machine);
 					}
+
+					player1.setPrevScore(player1.getScore());
+					player2.setPrevScore(player2.getScore());
 
 					switch (this->viewState){
 
