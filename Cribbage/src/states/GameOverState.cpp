@@ -30,9 +30,16 @@ void GameOverState::update(StateMachine & machine) {
 	
 	// Handle other input ..
 
+	if ((justPressed & LEFT_BUTTON) && this->index == 1) this->index = 0;
+	if ((justPressed & RIGHT_BUTTON) && this->index == 0) this->index = 1;
+
 	if (justPressed & A_BUTTON) {
-		arduboy.setRGBled(0, 0, 0);
-		machine.changeState(GameStateType::TitleScreen); 
+		if (this->index == 0) {
+			machine.changeState(GameStateType::PlayGame); 
+		}
+		else {
+			machine.changeState(GameStateType::TitleScreen); 
+		}
 	}
 
 }
@@ -43,16 +50,22 @@ void GameOverState::update(StateMachine & machine) {
 //
 void GameOverState::render(StateMachine & machine) {
 
-	SpritesB::drawOverwrite(0, 20, Images::GameOver, 0);
+	auto & arduboy = machine.getContext().arduboy;
 
-	for (int16_t x = 154; x > -50; x = x - 28) {
-		SpritesB::drawSelfMasked(x + this->counter, -1, Images::TitleScreen_Cards_Top, 0);
-	}
+	SpritesB::drawOverwrite(0, 0, Images::GameOver, 0);
 
 
 	for (int16_t x = -20; x < 154; x = x + 28) {
 		SpritesB::drawSelfMasked(x - this->counter, 45, Images::TitleScreen_Cards, 0);
 	}
+
+	Message message;
+	this->drawDealer(machine, 87, 18, DealerFace::Normal, message);
+	arduboy.fillRect(0, 60, 128, 63, BLACK);
+	arduboy.drawFastHLine(0, 61, 128);
+	arduboy.drawHorizontalDottedLine(0, 127, 63);
+
+	SpritesB::drawExternalMask((this->index == 0 ? 10 : 58), 34, Images::Hand, Images::Hand_Mask, 0, 0);
 
 }
 

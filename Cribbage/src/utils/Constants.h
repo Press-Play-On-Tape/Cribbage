@@ -2,7 +2,7 @@
 
 #define _DEBUG
 
-#define DEBUG_PRINT
+#define _DEBUG_PRINT
 #ifdef DEBUG_PRINT
   #define DEBUG_PRINT_CARDS
   #define DEBUG_PRINT_HANDS

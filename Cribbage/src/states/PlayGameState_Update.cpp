@@ -310,12 +310,12 @@ void PlayGameState::update(StateMachine & machine) {
 					// if (justPressed & B_BUTTON) {
 					// 	player1.addScore(118);
 					// }
-					if (pressed & B_BUTTON) {
-					 	this->showTotal = true;
-					}
-					else {
-						this->showTotal = false;
-					}
+					// if (pressed & B_BUTTON) {
+					//  	this->showTotal = true;
+					// }
+					// else {
+					// 	this->showTotal = false;
+					// }
 
 					if (justPressed & A_BUTTON) {
 

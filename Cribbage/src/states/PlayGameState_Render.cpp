@@ -45,7 +45,7 @@ void PlayGameState::render(StateMachine & machine) {
       break;
 
     default:
-      drawDealer(machine, 87, 18, this->message.dealerFace);
+      drawDealer(machine, 87, 18, this->message.dealerFace, this->message);
       drawPlayerHands(machine);
       arduboy.drawFastHLine(0, 61, 128);
       arduboy.drawFastHLine(0, 60, 128, BLACK);
@@ -86,7 +86,7 @@ void PlayGameState::render(StateMachine & machine) {
     case ViewState::DisplayScore_Board:
     case ViewState::EndOfGame:
       {
-        drawDealer(machine, 0, 22, player1.getScore() < player2.getScore() ? DealerFace::Happy : DealerFace::Sad);
+        drawDealer(machine, 0, 22, player1.getScore() < player2.getScore() ? DealerFace::Happy : DealerFace::Sad, this->message);
         SpritesB::drawSelfMasked(43, 0, Images::Divider, 0);
         SpritesB::drawSelfMasked(51, 7, Images::Board, 0);
 
@@ -108,7 +108,7 @@ void PlayGameState::render(StateMachine & machine) {
                      (this->viewState == ViewState::DisplayScore_Dealer && gameStats.playerDealer == WhichPlayer::Player2) ||
                      (this->viewState == ViewState::DisplayScore_Crib && gameStats.playerDealer == WhichPlayer::Player2);
 
-        drawDealer(machine, 0, 22, happy ? (gameStats.getNumberOfScores() != 0 ? DealerFace::Happy : DealerFace::Sad) : DealerFace::Sad);
+        drawDealer(machine, 0, 22, happy ? (gameStats.getNumberOfScores() != 0 ? DealerFace::Happy : DealerFace::Sad) : DealerFace::Sad, this->message);
         SpritesB::drawSelfMasked(43, 0, Images::Divider, 0);
 
 
@@ -202,16 +202,16 @@ void PlayGameState::render(StateMachine & machine) {
     this->message.renderRequired = false;
   }
 
-  if (this->showTotal) {
+  // if (this->showTotal) {
 
-    arduboy.fillRect(42, 26, 42, 11, BLACK);
-    arduboy.fillRect(43, 27, 40, 9, WHITE);
-    font3x5.setCursor(45, 28);
-    font3x5.print(F(" Score: "));
-    font3x5.print(this->getBoardValue()< 10 ? "0" : "");
-    font3x5.print(this->getBoardValue());
+  //   arduboy.fillRect(42, 26, 42, 11, BLACK);
+  //   arduboy.fillRect(43, 27, 40, 9, WHITE);
+  //   font3x5.setCursor(45, 28);
+  //   font3x5.print(F(" Score: "));
+  //   font3x5.print(this->getBoardValue()< 10 ? "0" : "");
+  //   font3x5.print(this->getBoardValue());
 
-  }
+  // }
 
 }
 
@@ -636,31 +636,3 @@ void PlayGameState::drawPlayer_Lower(uint8_t oldPosition, uint8_t newPosition, b
 }
 
 
-// ---------------------------------------------------------------------------------------------------------------------------
-//  Render the dealer in the nominated position .. 
-// ---------------------------------------------------------------------------------------------------------------------------
-// 
-void PlayGameState::drawDealer(StateMachine & machine, uint8_t xPos, uint8_t yPos, DealerFace dealerFace) {
-
-	auto & arduboy = machine.getContext().arduboy;
-
-  bool blink = (arduboy.getFrameCount(128) < 4);
-  uint8_t talking = arduboy.getFrameCount(36) / 12;
-
-  SpritesB::drawOverwrite(xPos, yPos, Images::Dealer, 0);
-  SpritesB::drawSelfMasked(xPos + 13, yPos + 17, Images::Dealer_Eyes, blink);
-  SpritesB::drawSelfMasked(xPos + 13, yPos + 7, Images::Dealer_Forehead, dealerFace == DealerFace::Happy ? 1 : 0);
-
-  if (this->message.renderRequired && (this->message.alignment == BubbleAlignment::Normal_Computer || this->message.alignment == BubbleAlignment::Score_Computer)) {
-
-    uint8_t index = (talking == 0 ? talking : talking + 2);
-    SpritesB::drawSelfMasked(xPos + 15, yPos + 24, Images::Dealer_Mouth, index);
-
-  }
-  else {
-
-    SpritesB::drawSelfMasked(xPos + 15, yPos + 24, Images::Dealer_Mouth, static_cast<uint8_t>(dealerFace));
-
-  }
-
-}

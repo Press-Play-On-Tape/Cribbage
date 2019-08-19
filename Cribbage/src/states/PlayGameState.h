@@ -11,16 +11,6 @@ class PlayGameState : public BaseState {
 
   private:
 
-    struct Message {
-      String message;
-      uint8_t lines;
-      uint8_t width;
-      uint8_t xPos;
-      DealerFace dealerFace = DealerFace::Normal;
-      BubbleAlignment alignment = BubbleAlignment::None;
-      bool renderRequired = false;
-    };
-
     enum class ViewState : uint8_t {
       DealCards,
       DiscardCribPlayer,
@@ -69,7 +59,6 @@ class PlayGameState : public BaseState {
     void drawPlay();
     void drawHandScores(StateMachine & machine);
     void drawScores(StateMachine & machine);
-    void drawDealer(StateMachine & machine, uint8_t xPos, uint8_t yPos, DealerFace dealerFace);
     void drawPlayer_Upper(uint8_t oldPosition, uint8_t newPosition, bool flash);
     void drawPlayer_Lower(uint8_t oldPosition, uint8_t newPosition, bool flash);
 

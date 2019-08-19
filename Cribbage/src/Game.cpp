@@ -38,8 +38,6 @@ void Game::setup(void) {
     arduboy.initRandomSeed();
 #endif
 
-	arduboy.setRGBled(0, 0, 0);
-
   EEPROM_Utils::initEEPROM(false);
 
   // EEPROM_Utils::getName(gameStats.player1.name, EEPROM_PLAYER1);

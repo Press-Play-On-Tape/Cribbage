@@ -15,6 +15,7 @@ class BaseState : public GameState<GameContext, GameStateType> {
     void drawScores_TopLeft(StateMachine & machine, bool renderText_Player1, bool renderText_Player2);
 
     void drawMessageBox(StateMachine & machine, String message, uint8_t lines, uint8_t width, uint8_t xPos, BubbleAlignment alignment);
+    void drawDealer(StateMachine & machine, uint8_t xPos, uint8_t yPos, DealerFace dealerFace, Message message);
 
 	private:
    
