@@ -1,7 +1,7 @@
 
 
-Graphics&nbsp;&nbsp;  @vampirics
-Code&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@filmote  
+Graphics&nbsp;&nbsp;  @vampirics<br>
+Code&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@filmote<br>
 
 Source &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Source Code](https://github.com/Press-Play-On-Tape/Cribbage)
 Hex &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Hex File](https://github.com/Press-Play-On-Tape/Cribbage/tree/master/distributable/Cribbage.hex)
