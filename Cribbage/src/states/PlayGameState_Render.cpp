@@ -185,7 +185,7 @@ void PlayGameState::render(StateMachine & machine) {
 
         switch (this->counter) {
 
-          case 50:
+          case 78:
             drawHandScores(machine);
             break;
 

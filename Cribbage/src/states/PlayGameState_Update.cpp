@@ -101,63 +101,34 @@ void PlayGameState::update(StateMachine & machine) {
 
 			this->counter++;
 
-			switch (this->counter) {
+			if (this->counter < 70) {
 
-				case 0 ... 70:
-					skipSequence(machine, 70);
-					saveMessage(F("   I will throw\nthese two cards."), 2, DealerFace::Normal, BubbleAlignment::Normal_Computer);
+				skipSequence(machine, 70);
+				saveMessage(F("   I will throw\nthese two cards."), 2, DealerFace::Normal, BubbleAlignment::Normal_Computer);
+	
+				if (this->counter == 25) {
+					this->computerDiscard(machine, this->computerDiscard1);
+				}
+	
+				if (this->counter == 50) {
+					this->computerDiscard(machine, this->computerDiscard2);
+				}
+
 					break;
 
-				case 71:
-					{
-						uint8_t index = player2.getHandCardIndex(this->computerDiscard1);
-						player2.removeFromHand(index);
+			}
+			else {
 
-						if (gameStats.playerDealer == WhichPlayer::Player1) {
+				if (player2.getHandCardCount() > 5) {
+					this->computerDiscard(machine, this->computerDiscard2);
+				}
 
-							player1.addToCrib(this->computerDiscard1);
+				if (player2.getHandCardCount() > 4) {
+					this->computerDiscard(machine, this->computerDiscard1);
+				}
 
-						}
-						else {
-
-							player2.addToCrib(this->computerDiscard1);
-
-						}
-
-					}
-					break;
-
-				case 72 ... 100:
-					skipSequence(machine, 100);
-					break;
-
-				case 101:
-					{
-						uint8_t index = player2.getHandCardIndex(this->computerDiscard2);
-						player2.removeFromHand(index);
-
-						if (gameStats.playerDealer == WhichPlayer::Player1) {
-
-							player1.addToCrib(this->computerDiscard2);
-
-						}
-						else {
-
-							player2.addToCrib(this->computerDiscard2);
-
-						}
-
-					}
-					break;
-
-				case 102 ... 130:
-					skipSequence(machine, 130);
-					break;
-
-				case 131:
-					this->viewState = ViewState::TurnUp;
-					this->counter = 0;
-					break;
+				this->viewState = ViewState::TurnUp;
+				this->counter = 0;
 
 			}
 
@@ -181,7 +152,7 @@ void PlayGameState::update(StateMachine & machine) {
 					player1.printHand(1);
 					player2.printHand(2);
 					if (CardUtils::getCardValue(this->turnUp, false) != 11) {
-						this->counter = 77;
+						this->counter = 167;
 					}
 					break;
 

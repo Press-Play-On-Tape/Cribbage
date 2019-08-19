@@ -88,6 +88,7 @@ class PlayGameState : public BaseState {
     uint8_t addHandScoreToPlayerTotal(StateMachine & machine);
     void skipSequence(StateMachine & machine, uint8_t counter);
     void moveToEOG(StateMachine & machine);
+    void computerDiscard(StateMachine & machine, uint8_t card);
 
 
     uint8_t player1Counter = 0;
