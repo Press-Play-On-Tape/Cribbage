@@ -52,7 +52,8 @@ void GameOverState::render(StateMachine & machine) {
 
 	auto & arduboy = machine.getContext().arduboy;
 
-	SpritesB::drawOverwrite(0, 0, Images::GameOver, 0);
+	SpritesB::drawOverwrite(0, 0, Images::GameOver_01, 0);
+	SpritesB::drawOverwrite(1, 19, Images::GameOver_02, 0);
 
 
 	for (int16_t x = -20; x < 154; x = x + 28) {
