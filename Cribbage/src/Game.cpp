@@ -32,7 +32,6 @@ void Game::setup(void) {
 	arduboy.audio.begin();
 	arduboy.setFrameRate(60);
 
-
 #ifdef DEBUG  
     randomSeed(3);          // Seed with a constant to enable debugging with a repeatable bone set. 
 #else

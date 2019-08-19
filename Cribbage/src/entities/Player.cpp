@@ -522,7 +522,7 @@ void Player::discardToCrib(uint8_t &card1, uint8_t &card2) {
 
   }
 
-  #ifdef COMPUTER_DISCARDS
+  #ifdef DEBUG_PRINT_COMPUTER_DISCARDS
     Serial.print("Comp Discards: ");
     for (uint8_t x=0; x < 6; x++) {      
       Serial.print(discards[x]);
@@ -595,7 +595,7 @@ void Player::resetHand(bool clearScores) {
 
 void Player::printHand(uint8_t playerNo) {
 
-  #ifndef DEBUG_PRINT_HAND
+  #ifdef DEBUG_PRINT_HANDS
 
   Serial.print("Player ");
   Serial.print(playerNo);
@@ -895,7 +895,7 @@ void Player::playCard(uint8_t playedCards[], bool canOpponentPlay, uint8_t &card
   }
 
 
-#ifdef DEBUG_DISPLAY_DISCARDS
+#ifdef DEBUG_PRINT_DISCARDS
   Serial.println("-------------");
   Serial.print("Hand :");
   for (uint8_t j = 0; j < 4; j++) {

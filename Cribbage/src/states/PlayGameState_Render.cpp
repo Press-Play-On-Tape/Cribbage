@@ -57,15 +57,12 @@ void PlayGameState::render(StateMachine & machine) {
 	switch (this->viewState) {
 
 		case ViewState::DealCards:
+		case ViewState::DiscardCribComputer:
       drawCrib(machine, this->cribState);
 			break;
 
 		case ViewState::DiscardCribPlayer:
       drawHighlight(machine, this->highlightCard);
-      drawCrib(machine, this->cribState);
-			break;
-
-		case ViewState::DiscardCribComputer:
       drawCrib(machine, this->cribState);
 			break;
 
@@ -221,34 +218,32 @@ void PlayGameState::drawHandScores(StateMachine & machine) {
   // Render hand details ..
 
   font3x5.setCursor(50, 0);
+  font3x5.setTextColor(WHITE);
 
   switch (this->viewState) {
 
     case ViewState::DisplayScore_Other:
-      if (gameStats.playerDealer == WhichPlayer::Player1) {
-        font3x5.print(F("My Hand@"));
-      }
-      else {
-        font3x5.print(F("Your Hand@"));
-      }
-      break;
-
     case ViewState::DisplayScore_Dealer:
-      if (gameStats.playerDealer == WhichPlayer::Player1) {
-        font3x5.print(F("Your Hand@"));
-      }
-      else {
+
+      if ((gameStats.playerDealer == WhichPlayer::Player1 && this->viewState == ViewState::DisplayScore_Other) ||
+          (gameStats.playerDealer == WhichPlayer::Player2 && this->viewState == ViewState::DisplayScore_Dealer)) {
         font3x5.print(F("My Hand@"));
       }
+      else {
+        font3x5.print(F("Your Hand@"));
+      }
+
       break;
 
     case ViewState::DisplayScore_Crib: 
+
       if (gameStats.playerDealer == WhichPlayer::Player1) {
         font3x5.print(F("Your Crib@"));
       }
       else {
         font3x5.print(F("My Crib@"));
       }
+
       break;
 
     default: break;
@@ -308,11 +303,12 @@ void PlayGameState::drawHandScores(StateMachine & machine) {
 
 
     // Render lower arrow ..
+
     if (numberOfScores > 5) {
       SpritesB::drawSelfMasked(120, 60, Images::Arrow_Down, !(this->scoreUpperRow + 5 < numberOfScores));
     }
+
     if (this->scoreUpperRow + 5 >= numberOfScores) {
-      font3x5.setTextColor(WHITE);
       font3x5.setCursor(93, 10 + (renderLine * 8));
       font3x5.print(F("Total:"));
       font3x5.setCursor(120, 10 + (renderLine * 8));
@@ -321,6 +317,8 @@ void PlayGameState::drawHandScores(StateMachine & machine) {
     }
 
   }
+      
+  font3x5.setTextColor(BLACK);
 
 }
 
@@ -333,48 +331,53 @@ void PlayGameState::drawPlayerHands(StateMachine & machine) {
 
   auto & gameStats = machine.getContext().gameStats;
 
-  uint8_t leftHand = 0;
-  uint8_t widthTot = (gameStats.player1.getHandCardCount() * CARD_LARGE_SPACING) + (CARD_LARGE_SPACING_FULL - CARD_LARGE_SPACING);
 
+  // Player ..
 
-  // Determine left hand side of each hand ..
+  {
+    uint8_t cardCount = gameStats.player1.getHandCardCount();
+    uint8_t widthTot = (cardCount * CARD_LARGE_SPACING) + (CARD_LARGE_SPACING_FULL - CARD_LARGE_SPACING);
+    uint8_t leftHand = CARD_PLAYER_CENTER - (widthTot / 2);
 
-  leftHand = CARD_PLAYER_CENTER - (widthTot / 2);
+    for (uint8_t x = 0; x < cardCount; x++) {
+      
+      uint8_t card = gameStats.player1.getHandCard(x);
 
-
-  // Render hand ..
-
-  for (uint8_t x = 0; x < gameStats.player1.getHandCardCount(); x++) {
-    
-    if (x < gameStats.player1.getHandCardCount() - 1) {
-      drawCard(leftHand + (x * CARD_LARGE_SPACING), CARD_LARGE_TOP_PLAYER, gameStats.player1.getHandCard(x), false);   
+      if (x < cardCount - 1) {
+        drawCard(leftHand + (x * CARD_LARGE_SPACING), CARD_LARGE_TOP_PLAYER, card, false);   
+      }
+      else {
+        drawCard(leftHand + (x * CARD_LARGE_SPACING), CARD_LARGE_TOP_PLAYER, card, true);   
+      }
+      
     }
-    else {
-      drawCard(leftHand + (x * CARD_LARGE_SPACING), CARD_LARGE_TOP_PLAYER, gameStats.player1.getHandCard(x), true);   
-    }
-    
+
   }
 
 
 
   // Computer ..
 
-  uint8_t width = (gameStats.player2.getHandCardCount() * CARD_LARGE_SPACING_DEALER) + (CARD_LARGE_SPACING_FULL - CARD_LARGE_SPACING_DEALER);
-  uint8_t rightHandSide = CARD_DEALER_CENTER + (width / 2);
+  {
+    uint8_t cardCount = gameStats.player2.getHandCardCount();
+    uint8_t width = (cardCount * CARD_LARGE_SPACING_DEALER) + (CARD_LARGE_SPACING_FULL - CARD_LARGE_SPACING_DEALER);
+    uint8_t rightHandSide = CARD_DEALER_CENTER + (width / 2);
 
-  for (uint8_t x = 0; x < gameStats.player2.getHandCardCount(); x++) {
-			
-		if (x < gameStats.player2.getHandCardCount() - 1) {
+    for (uint8_t x = 0; x < cardCount; x++) {
+        
+      if (x < cardCount - 1) {
 
-			drawComputerCard(rightHandSide - (x * CARD_LARGE_SPACING_DEALER), CARD_LARGE_TOP_DEALER, false);   
+        drawComputerCard(rightHandSide - (x * CARD_LARGE_SPACING_DEALER), CARD_LARGE_TOP_DEALER, false);   
 
-		}
-		else {
+      }
+      else {
 
-			drawComputerCard(rightHandSide - (x * CARD_LARGE_SPACING_DEALER) + 2, CARD_LARGE_TOP_DEALER, true);   
+        drawComputerCard(rightHandSide - (x * CARD_LARGE_SPACING_DEALER) + 2, CARD_LARGE_TOP_DEALER, true);   
 
-		}
-    
+      }
+      
+    }
+
   }
       
 }

@@ -63,9 +63,6 @@ void TitleScreenState::update(StateMachine & machine) {
 //
 void TitleScreenState::render(StateMachine & machine) {
 
- 	// auto & ardBitmap = machine.getContext().ardBitmap;
- 	// SpritesB.drawOverwrite(0, 0, Images::Card_Background_Full, 0);
-
 	SpritesB::drawOverwrite(75, 0, Images::TitleScreen_Board, 0);
 	SpritesB::drawOverwrite(7, 16, Images::TitleScreen_Words, 0);
 

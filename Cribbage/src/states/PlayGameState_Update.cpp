@@ -147,6 +147,7 @@ void PlayGameState::update(StateMachine & machine) {
 
 				case 16 ... 25:
 					//this->turnUp = 10; // Uncomment for 'Two for his heels' ..
+					#ifdef DEBUG_PRINT_HANDS
 					player1.printHand(1);
 					player1.printCrib(1);
 					player2.printHand(2);
@@ -156,6 +157,7 @@ void PlayGameState::update(StateMachine & machine) {
 					Serial.print(") ");
 					CardUtils::printCard(this->turnUp);
 					Serial.println("");
+					#endif
 
 					if (CardUtils::getCardValue(this->turnUp, false) != 11) {
 						this->counter = 167;
