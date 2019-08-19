@@ -42,9 +42,9 @@ The dealer then plays a card, the value of which is added to the current running
 </table>
 <br>
 
-### The go
+#### The Go
 
-The cribbage rules for scoring 'go' sometimes cause confusion. You earn a point for go when your opponent cannot go. This may be (a) because he has no cards (sometimes called 'One for last'), or (b) because he cannot play without going over 31 ('One for the go'). In either case if you make the total 31 you score only 2 points on the cribbage board, not 3 (because the go is included, as described above). However, you may well make 15 with the last card (in which case you do score 3).
+You earn a point for go when your opponent cannot go. This may be (a) because he has no cards (sometimes called 'One for last'), or (b) because he cannot play without going over 31 ('One for the go'). In either case if you make the total 31 you score only 2 points on the cribbage board, not 3 (because the go is included, as described above). However, you may well make 15 with the last card (in which case you do score 3).
 
 ## Scoring
 

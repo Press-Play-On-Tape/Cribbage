@@ -148,7 +148,7 @@ void PlayGameState::update(StateMachine & machine) {
 					break;
 
 				case 16 ... 25:
-					//this->turnUp = 10; // Uncomment for 'Two for his nob' ..
+					//this->turnUp = 10; // Uncomment for 'Two for his heels' ..
 					player1.printHand(1);
 					player2.printHand(2);
 					if (CardUtils::getCardValue(this->turnUp, false) != 11) {
@@ -239,10 +239,10 @@ void PlayGameState::update(StateMachine & machine) {
 				case 73:
 					moveToEOG(machine);
 					this->counter = 0;
-					if (player2.getGo()) {
+					if (player2.getGo() || player2.getHandCardCount() == 0) {
 						resetPlay(machine);
 
-						if (player2.getHandCardCount() > 0) {
+						if (player1.getHandCardCount() > 0) { //SJH ??? Was player2
 							this->viewState = ViewState::PlayersTurn;
 						}
 						else {
@@ -250,10 +250,10 @@ void PlayGameState::update(StateMachine & machine) {
 						}
 					}
 					else {
-						this->viewState = ViewState::PlayersTurn;
-						if (!player2.getGo()) {
+						// this->viewState = ViewState::PlayersTurn;
+						// if (!player2.getGo()) {
 							this->viewState = ViewState::ComputersTurn;
-						}
+						// }
 					}
 
 					break;
@@ -533,7 +533,10 @@ void PlayGameState::update(StateMachine & machine) {
 						this->counter++;
 						break;
 
-					default: break;
+					default: 
+						this->highlight = true;
+						moveToEOG(machine);
+						break;
 
 				}
 
@@ -663,6 +666,7 @@ void PlayGameState::update(StateMachine & machine) {
 						break;
 
 					default: 
+						this->highlight = true;
 						moveToEOG(machine);
 						break;
 
