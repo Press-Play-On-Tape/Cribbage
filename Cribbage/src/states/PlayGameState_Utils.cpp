@@ -9,7 +9,7 @@ void PlayGameState::resetPlay(StateMachine & machine) {
 	auto & player1 = gameStats.player1;
 	auto & player2 = gameStats.player2;
 
-  memset(this->playedCards, 0, (sizeof(this->playedCards) / sizeof(this->playedCards[0])));
+  memset(this->playedCards, Constants::NoCard, (sizeof(this->playedCards) / sizeof(this->playedCards[0])));
 
 	this->playIdx = 0;
 
@@ -30,7 +30,7 @@ void PlayGameState::resetHand(StateMachine & machine) {
 	player2.resetHand(false);
 	deck.shuffle();
 
-  memset(this->playedCards, 0, (sizeof(this->playedCards) / sizeof(this->playedCards[0])));
+  memset(this->playedCards, Constants::NoCard, (sizeof(this->playedCards) / sizeof(this->playedCards[0])));
 
 	this->cribState = CribState::Empty;
 	this->highlightCard = 0;

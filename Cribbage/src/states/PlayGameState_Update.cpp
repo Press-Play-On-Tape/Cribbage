@@ -15,6 +15,7 @@ void PlayGameState::update(StateMachine & machine) {
 	auto & deck = gameStats.deck;
 
   auto justPressed = arduboy.justPressedButtons();
+  auto pressed = arduboy.pressedButtons();
 
 
 	// Has the EOG flag been set?
@@ -87,7 +88,10 @@ void PlayGameState::update(StateMachine & machine) {
 			else {
 
 				player2.discardToCrib(this->computerDiscard1, this->computerDiscard2);
-				
+// Serial.print("Discards :");
+// Serial.print(this->computerDiscard1);				
+// Serial.print(",");
+// Serial.println(this->computerDiscard2);				
 				this->viewState = ViewState::DiscardCribComputer;
 				this->counter = 0;
 
@@ -148,15 +152,15 @@ void PlayGameState::update(StateMachine & machine) {
 				case 16 ... 25:
 					//this->turnUp = 10; // Uncomment for 'Two for his heels' ..
 					#ifdef DEBUG_PRINT_HANDS
-					player1.printHand(1);
-					player1.printCrib(1);
-					player2.printHand(2);
-					player1.printCrib(2);
-					Serial.print("Turn Up: (");
-					Serial.print(this->turnUp);
-					Serial.print(") ");
-					CardUtils::printCard(this->turnUp);
-					Serial.println("");
+					// player1.printHand(1);
+					// player1.printCrib(1);
+					// player2.printHand(2);
+					// player2.printCrib(2);
+					// Serial.print("Turn Up: (");
+					// Serial.print(this->turnUp);
+					// Serial.print(") ");
+					// CardUtils::printCard(this->turnUp);
+					// Serial.println("");
 					#endif
 
 					if (CardUtils::getCardValue(this->turnUp, false) != 11) {
@@ -197,6 +201,24 @@ void PlayGameState::update(StateMachine & machine) {
 
 				case 236:				
 					this->counter = 0;
+
+					// player1.setHandCard(0, 39);
+					// player1.setHandCard(1, 30);
+					// player1.setHandCard(2, 9);
+					// player1.setHandCard(3, 12);
+					// player2.setHandCard(0, 5);
+					// player2.setHandCard(1, 44);
+					// player2.setHandCard(2, 23);
+					// player2.setHandCard(3, 36);
+					// // player2.setCribCard(0, 19);
+					// // player2.setCribCard(1, );
+					// // player2.setCribCard(2, 9);
+					// // player2.setCribCard(3, 37);
+					// this->turnUp = 18;
+					// gameStats.playerDealer = WhichPlayer::Player1;
+					// gameStats.playersTurn = WhichPlayer::Player2;
+
+
 					if (gameStats.playerDealer == WhichPlayer::Player2) {
 						this->viewState = ViewState::PlayersTurn;
 					}
@@ -247,21 +269,29 @@ void PlayGameState::update(StateMachine & machine) {
 				case 73:
 					moveToEOG(machine);
 					this->counter = 0;
+//Serial.println("a1");
 					if (player2.getGo() || player2.getHandCardCount() == 0) {
+//Serial.println("a2");
 						resetPlay(machine);
 
-						if (player1.getHandCardCount() > 0) { //SJH ??? Was player2
-							this->viewState = ViewState::PlayersTurn;
+						if (player2.getHandCardCount() > 0) { //SJH ??? Was player2
+//Serial.println("a3");
+							this->viewState = ViewState::ComputersTurn;
 						}
 						else {
-							this->viewState = ViewState::DisplayScore_Board;
+							if (player1.getHandCardCount() > 0) {
+//Serial.println("a4");
+								this->viewState = ViewState::PlayersTurn;
+							}
+							else {
+//Serial.println("a5");
+								this->viewState = ViewState::DisplayScore_Board;
+							}
 						}
 					}
 					else {
-						// this->viewState = ViewState::PlayersTurn;
-						// if (!player2.getGo()) {
-							this->viewState = ViewState::ComputersTurn;
-						// }
+//Serial.println("a6");
+						this->viewState = ViewState::ComputersTurn;
 					}
 
 					break;
@@ -280,6 +310,12 @@ void PlayGameState::update(StateMachine & machine) {
 					// if (justPressed & B_BUTTON) {
 					// 	player1.addScore(118);
 					// }
+					if (pressed & B_BUTTON) {
+					 	this->showTotal = true;
+					}
+					else {
+						this->showTotal = false;
+					}
 
 					if (justPressed & A_BUTTON) {
 

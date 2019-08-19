@@ -91,6 +91,12 @@ uint8_t Player::getCribCard(uint8_t index) {
 
 }
 
+void Player::setCribCard(uint8_t index, uint8_t card) {
+
+  this->crib[index] = card;
+
+}
+
 uint8_t Player::getCribCardCount() {
 
   return this->cribIdx;
@@ -580,8 +586,8 @@ void Player::resetHand(bool clearScores) {
   this->handIdx = 0;
   this->cribIdx = 0;
   
-  memset(this->hand, 0, (sizeof(this->hand) / sizeof(this->hand[0])));
-  memset(this->crib, 0, (sizeof(this->crib) / sizeof(this->crib[0])));
+  memset(this->hand, Constants::NoCard, (sizeof(this->hand) / sizeof(this->hand[0])));
+  memset(this->crib, Constants::NoCard, (sizeof(this->crib) / sizeof(this->crib[0])));
 
   this->go = false;
 

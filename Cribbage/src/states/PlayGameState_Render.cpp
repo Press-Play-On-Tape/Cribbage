@@ -202,6 +202,17 @@ void PlayGameState::render(StateMachine & machine) {
     this->message.renderRequired = false;
   }
 
+  if (this->showTotal) {
+
+    arduboy.fillRect(42, 26, 42, 11, BLACK);
+    arduboy.fillRect(43, 27, 40, 9, WHITE);
+    font3x5.setCursor(45, 28);
+    font3x5.print(F(" Score: "));
+    font3x5.print(this->getBoardValue()< 10 ? "0" : "");
+    font3x5.print(this->getBoardValue());
+
+  }
+
 }
 
 

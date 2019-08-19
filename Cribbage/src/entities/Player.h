@@ -29,6 +29,7 @@ class Player {
     uint8_t getCribCardCount();
 
     void setHandCard(uint8_t index, uint8_t card);
+    void setCribCard(uint8_t index, uint8_t card);
 
     void calculateHandScore(Score scores[], uint8_t turnUp);
     void calculateCribScore(Score scores[], uint8_t turnUp);

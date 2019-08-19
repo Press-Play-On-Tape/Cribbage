@@ -96,6 +96,7 @@ class PlayGameState : public BaseState {
     uint8_t scoreUpperRow = 0;
   	uint8_t scoresTotal = 0;
     bool eog = false;
+    bool showTotal = false;
 
 };
 

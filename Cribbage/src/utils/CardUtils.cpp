@@ -1,4 +1,5 @@
 #include "CardUtils.h"
+#include "Constants.h"
 
 CardUtils::CardUtils() {}
 
@@ -46,7 +47,7 @@ void CardUtils::sort(uint8_t arr[], uint8_t n) {
 
 static void CardUtils::printCard(uint8_t cardNumber) {
 
-#ifdef DEBUG_PRINT
+#ifdef DEBUG_PRINT_CARDS
   if (cardNumber == 255) {
     Serial.print("--");
     return;
