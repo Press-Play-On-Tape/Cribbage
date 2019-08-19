@@ -1,3 +1,13 @@
+
+
+Graphics&nbsp;&nbsp;  @vampirics
+Code&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@filmote  
+
+Source &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Source Code](https://github.com/Press-Play-On-Tape/Cribbage)
+Hex &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Hex File](https://github.com/Press-Play-On-Tape/Cribbage/tree/master/distributable/Cribbage.hex)
+Emulator &nbsp;&nbsp;&nbsp;[Project ABE Emulator](https://felipemanga.github.io/ProjectABE/?hex=https://raw.githubusercontent.com/Press-Play-On-Tape/Cribbage/master/distributable/Cribbage.hex)
+<br />
+
 ## Simple Cribbage Rules
 
 The following rules have been taken from [Cribbage Corner](http://cribbagecorner.com)
