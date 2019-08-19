@@ -42,6 +42,7 @@ class Player {
     uint8_t removeFromHand(uint8_t index);
     void resetHand(bool clearScores);
     void printHand(uint8_t playerNo);
+    void printCrib(uint8_t playerNo);
     bool canPlay(uint8_t playedCards[]);
 
   private:

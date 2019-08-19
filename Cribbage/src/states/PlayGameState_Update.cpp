@@ -38,8 +38,6 @@ void PlayGameState::update(StateMachine & machine) {
 
 					player1.addToHand(deck.getCard());
 					player2.addToHand(deck.getCard());
-					player1.printHand(1);
-					player2.printHand(2);
 
 				}
 
@@ -150,7 +148,15 @@ void PlayGameState::update(StateMachine & machine) {
 				case 16 ... 25:
 					//this->turnUp = 10; // Uncomment for 'Two for his heels' ..
 					player1.printHand(1);
+					player1.printCrib(1);
 					player2.printHand(2);
+					player1.printCrib(2);
+					Serial.print("Turn Up: (");
+					Serial.print(this->turnUp);
+					Serial.print(") ");
+					CardUtils::printCard(this->turnUp);
+					Serial.println("");
+
 					if (CardUtils::getCardValue(this->turnUp, false) != 11) {
 						this->counter = 167;
 					}
@@ -485,8 +491,6 @@ void PlayGameState::update(StateMachine & machine) {
 
 					}
 
-					player1.printHand(1);
-					player2.printHand(2);
 					break;
 
 			}

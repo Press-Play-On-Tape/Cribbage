@@ -97,6 +97,11 @@ uint8_t Player::getCribCardCount() {
 
 }
 
+
+// ---------------------------------------------------------------------------------------------------------------------------
+//  Calculate the score in the player's hand ..
+// ---------------------------------------------------------------------------------------------------------------------------
+// 
 void Player::calculateHandScore(Score scores[], uint8_t turnUp) {
 
   uint8_t calcScore[5];
@@ -107,6 +112,11 @@ void Player::calculateHandScore(Score scores[], uint8_t turnUp) {
 
 }
 
+
+// ---------------------------------------------------------------------------------------------------------------------------
+//  Calculate the score in the player's crib ..
+// ---------------------------------------------------------------------------------------------------------------------------
+// 
 void Player::calculateCribScore(Score scores[], uint8_t turnUp) {
 
   uint8_t calcScore[5];
@@ -117,6 +127,11 @@ void Player::calculateCribScore(Score scores[], uint8_t turnUp) {
 
 }
 
+
+// ---------------------------------------------------------------------------------------------------------------------------
+//  Calculate the score in the player's nominated hand ..
+// ---------------------------------------------------------------------------------------------------------------------------
+// 
 void Player::calculateScores(Score scores[], uint8_t calcScore[], uint8_t turnUp) {
 
 
@@ -601,6 +616,29 @@ void Player::printHand(uint8_t playerNo) {
   
 }
 
+
+void Player::printCrib(uint8_t playerNo) {
+
+  #ifndef DEBUG_PRINT_HAND
+
+  Serial.print("Player ");
+  Serial.print(playerNo);
+  Serial.print(": ");
+
+  for (uint8_t x=0; x < this->cribIdx; x++) {
+    
+    Serial.print("(");
+    Serial.print(this->crib[x]);
+    Serial.print(") ");
+    CardUtils::printCard(this->crib[x]);
+    Serial.print(" ");
+
+  }
+
+  Serial.println("");
+  #endif
+  
+}
 
 void Player::playCard(uint8_t playedCards[], bool canOpponentPlay, uint8_t &card, uint8_t &points) {
 
