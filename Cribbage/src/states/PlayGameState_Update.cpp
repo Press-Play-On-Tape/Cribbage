@@ -54,11 +54,11 @@ void PlayGameState::update(StateMachine & machine) {
 
 		case ViewState::DiscardCribPlayer:
 
-			this->counter++;
+			if (this->counter < 71) this->counter++;
 
 			if (player1.getHandCardCount() > 4) {
 
-				if (this->counter < 45) {
+				if (this->counter < 70) {
 					saveMessage(F("Throw two cards\nout to the crib."), 2, 70, DealerFace::Normal, BubbleAlignment::Normal_Computer);
 				}
 
@@ -103,12 +103,12 @@ void PlayGameState::update(StateMachine & machine) {
 
 			switch (this->counter) {
 
-				case 0 ... 45:
-					skipSequence(machine, 45);
+				case 0 ... 70:
+					skipSequence(machine, 70);
 					saveMessage(F("   I will throw\nthese two cards."), 2, DealerFace::Normal, BubbleAlignment::Normal_Computer);
 					break;
 
-				case 46:
+				case 71:
 					{
 						uint8_t index = player2.getHandCardIndex(this->computerDiscard1);
 						player2.removeFromHand(index);
@@ -127,11 +127,11 @@ void PlayGameState::update(StateMachine & machine) {
 					}
 					break;
 
-				case 47 ... 60:
-					skipSequence(machine, 60);
+				case 72 ... 100:
+					skipSequence(machine, 100);
 					break;
 
-				case 61:
+				case 101:
 					{
 						uint8_t index = player2.getHandCardIndex(this->computerDiscard2);
 						player2.removeFromHand(index);
@@ -150,11 +150,11 @@ void PlayGameState::update(StateMachine & machine) {
 					}
 					break;
 
-				case 62 ... 105:
-					skipSequence(machine, 105);
+				case 102 ... 130:
+					skipSequence(machine, 130);
 					break;
 
-				case 106:
+				case 131:
 					this->viewState = ViewState::TurnUp;
 					this->counter = 0;
 					break;
@@ -196,18 +196,18 @@ void PlayGameState::update(StateMachine & machine) {
 					}
 					break;
 
-				case 27 ... 72:
-					skipSequence(machine, 125);
+				case 27 ... 92:
+					skipSequence(machine, 235);
 					this->message.renderRequired = true;
 					break;
 
-				case 73 ... 77:
-					skipSequence(machine, 125);
+				case 93 ... 167:
+					skipSequence(machine, 235);
 					break;
 
-				case 78 ... 125:
+				case 168 ... 235:
 					moveToEOG(machine);
-					skipSequence(machine, 125);
+					skipSequence(machine, 235);
 					if (gameStats.playerDealer == WhichPlayer::Player2) {
 						saveMessage(F("Your turn to start@"), 1, 81, DealerFace::Normal, BubbleAlignment::Normal_Computer);
 					}
@@ -216,7 +216,7 @@ void PlayGameState::update(StateMachine & machine) {
 					}
 					break;
 
-				case 126:				
+				case 236:				
 					this->counter = 0;
 					if (gameStats.playerDealer == WhichPlayer::Player2) {
 						this->viewState = ViewState::PlayersTurn;
@@ -260,12 +260,12 @@ void PlayGameState::update(StateMachine & machine) {
 					}
 					break;
 
-				case 7 ... 52:
-					skipSequence(machine, 52);
+				case 7 ... 72:
+					skipSequence(machine, 72);
 					this->message.renderRequired = true;
 					break;
 
-				case 53:
+				case 73:
 					moveToEOG(machine);
 					this->counter = 0;
 					if (player2.getGo()) {
@@ -330,13 +330,13 @@ void PlayGameState::update(StateMachine & machine) {
 					}
 					break;
 
-				case 1 ... 45:
-					skipSequence(machine, 45);
+				case 1 ... 75:
+					skipSequence(machine, 75);
 					this->counter++;
 					this->message.renderRequired = true;
 					break;
 
-				case 46:
+				case 76:
 					{
 						moveToEOG(machine);
 						uint8_t board = getBoardValue();
@@ -445,12 +445,12 @@ void PlayGameState::update(StateMachine & machine) {
 
 					break;
 
-				case 17 ... 60:
-					skipSequence(machine, 60);
+				case 17 ... 90:
+					skipSequence(machine, 90);
 					this->message.renderRequired = true;
 					break;
 
-				case 61:				
+				case 91:				
 					{
 						moveToEOG(machine);
 						this->counter = 0;
@@ -589,7 +589,7 @@ void PlayGameState::update(StateMachine & machine) {
 						this->counter++;
 						break;
 
-					case 6 ... 48:
+					case 6 ... 76:
 
 						this->counter++;
 
@@ -627,12 +627,12 @@ void PlayGameState::update(StateMachine & machine) {
 						}
 						break;
 
-					case 49:
+					case 77:
 						this->counter++;
 						this->scoresTotal = addHandScoreToPlayerTotal(machine);
 						break;
 
-					case 50:
+					case 78:
 						{
 							uint8_t numberOfScores = gameStats.getNumberOfScores();
 
@@ -652,7 +652,7 @@ void PlayGameState::update(StateMachine & machine) {
 						}
 						break;
 
-					case 51:
+					case 79:
 
 						if (this->player1Counter < player1.getPrevScore()) this->player1Counter = player1.getPrevScore();
 						if (this->player2Counter < player2.getPrevScore()) this->player2Counter = player2.getPrevScore();
@@ -668,7 +668,7 @@ void PlayGameState::update(StateMachine & machine) {
 								}
 							}
 							else {
-								this->counter = 65;
+								this->counter = 95;
 							}
 
 						}
@@ -683,10 +683,10 @@ void PlayGameState::update(StateMachine & machine) {
 						this->highlight = true;
 						break;
 
-					case 65 ... 79:
 					case 95 ... 109:
 					case 125 ... 139:
 					case 155 ... 169:
+					case 185 ... 199:
 						this->counter++;
 						this->highlight = false;
 						break;
@@ -733,7 +733,7 @@ void PlayGameState::update(StateMachine & machine) {
 
 		case ViewState::EndOfGame:
 
-			if (this->counter <= 65) {
+			if (this->counter <= 75) {
 
 				if (player1.getScore() >= 121) {
 					saveMessage(F("Congratulations!\n          You Won!"), 2, 76, 48, DealerFace::Sad, BubbleAlignment::Score_Computer);
@@ -750,7 +750,7 @@ void PlayGameState::update(StateMachine & machine) {
 
 					switch (this->counter) {
 
-						case 66:
+						case 76:
 
 							if (this->player1Counter < player1.getPrevScore()) this->player1Counter = player1.getPrevScore();
 							if (this->player2Counter < player2.getPrevScore()) this->player2Counter = player2.getPrevScore();
@@ -768,18 +768,18 @@ void PlayGameState::update(StateMachine & machine) {
 							}
 							break;
 
-						case 67:
-						case 69:
-						case 71:
-						case 73:
+						case 77:
+						case 79:
+						case 81:
+						case 83:
 							this->highlight = false;
 							this->counter++;
 							break;
 
-						case 68:
-						case 70:
-						case 72:
-						case 74:
+						case 78:
+						case 80:
+						case 82:
+						case 84:
 							this->highlight = true;
 							this->counter++;
 							break;
