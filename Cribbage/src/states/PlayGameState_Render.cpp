@@ -339,7 +339,7 @@ void PlayGameState::drawHandScores(StateMachine & machine) {
 
         uint8_t handWidth = 0;
 
-        for (uint8_t j = 0; j < 3; j++) {
+        for (uint8_t j = 0; j < 5; j++) {
 
           if (gameStats.scores[i].getCard(j) != Constants::NoCard) {
 

@@ -146,7 +146,6 @@ void Player::calculateCribScore(Score scores[], uint8_t turnUp) {
 // 
 void Player::calculateScores(Score scores[], uint8_t calcScore[], uint8_t turnUp) {
 
-
   // Clear scores collection ..
 
   for (uint8_t k = 0; k < Constants::PlayerHandScores; k++) {
