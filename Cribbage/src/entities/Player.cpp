@@ -64,6 +64,7 @@ uint8_t Player::getHandCard(uint8_t index) {
 void Player::setHandCard(uint8_t index, uint8_t card) {
 
   this->hand[index] = card;
+  this->orig[index] = card; //SJH < testing only
 
 }
 
@@ -103,6 +104,11 @@ uint8_t Player::getCribCardCount() {
 
 }
 
+uint8_t Player::getOrigCard(uint8_t index) {
+
+  return this->orig[index];
+
+}
 
 // ---------------------------------------------------------------------------------------------------------------------------
 //  Calculate the score in the player's hand ..

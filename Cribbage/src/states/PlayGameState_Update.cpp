@@ -218,6 +218,16 @@ void PlayGameState::update(StateMachine & machine) {
 					// gameStats.playerDealer = WhichPlayer::Player1;
 					// gameStats.playersTurn = WhichPlayer::Player2;
 
+// 5,5,6,7,7
+// player1.setHandCard(0,17);
+// player1.setHandCard(1,30);
+// player1.setHandCard(2,19);
+// player1.setHandCard(3,32);
+// this->turnUp = 44;
+// player1.printHand(1);
+// player1.printCrib(1);
+// player2.printHand(2);
+// player2.printCrib(2);
 
 					if (gameStats.playerDealer == WhichPlayer::Player2) {
 						this->viewState = ViewState::PlayersTurn;
@@ -542,9 +552,11 @@ void PlayGameState::update(StateMachine & machine) {
 				switch (this->counter) {
 
 					case 0:
-
-						if (this->player1Counter < player1.getPrevScore()) this->player1Counter = player1.getPrevScore();
-						if (this->player2Counter < player2.getPrevScore()) this->player2Counter = player2.getPrevScore();
+						{
+							uint8_t player1PrevScore = player1.getPrevScore();
+							uint8_t player2PrevScore = player2.getPrevScore();
+						if (this->player1Counter < player1PrevScore) this->player1Counter = player1PrevScore;
+						if (this->player2Counter < player2PrevScore) this->player2Counter = player2PrevScore;
 
 						if (this->player1Counter < player1.getScore() || this->player2Counter < player2.getScore()) {
 							if (this->player1Counter < player1.getScore()) {
@@ -556,6 +568,7 @@ void PlayGameState::update(StateMachine & machine) {
 						}
 						else {
 							this->counter++;
+						}
 						}
 						break;
 
@@ -663,7 +676,7 @@ void PlayGameState::update(StateMachine & machine) {
 							}
 
 							if (justPressed & UP_BUTTON && this->scoreUpperRow > 0) { this->scoreUpperRow--; }
-							if (justPressed & DOWN_BUTTON && this->scoreUpperRow + 5 < numberOfScores) { this->scoreUpperRow++; }
+							if (justPressed & DOWN_BUTTON && this->scoreUpperRow + 3 < numberOfScores) { this->scoreUpperRow++; }
 
 						}
 						break;

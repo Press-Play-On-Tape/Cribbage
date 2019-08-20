@@ -24,6 +24,7 @@ class Player {
     uint8_t getHandCard(uint8_t index);
     uint8_t getHandCardCount();
     uint8_t getHandCardIndex(uint8_t card);
+    uint8_t getOrigCard(uint8_t index);
 
     uint8_t getCribCard(uint8_t index);
     uint8_t getCribCardCount();

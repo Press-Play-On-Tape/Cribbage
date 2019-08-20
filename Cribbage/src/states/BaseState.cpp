@@ -82,26 +82,25 @@ void BaseState::drawScores_TopLeft(StateMachine & machine, bool renderText_Playe
 //  Render the dealer in the nominated position .. 
 // ---------------------------------------------------------------------------------------------------------------------------
 // 
-void BaseState::drawDealer(StateMachine & machine, uint8_t xPos, uint8_t yPos, DealerFace dealerFace, Message message) {
+void BaseState::drawDealer(StateMachine & machine, int8_t xPos, uint8_t yPos, DealerFace dealerFace, Message message) {
 
 	auto & arduboy = machine.getContext().arduboy;
 
   bool blink = (arduboy.getFrameCount(128) < 4);
-  uint8_t talking = arduboy.getFrameCount(36) / 12;
+  uint8_t talking = arduboy.getFrameCount(48) / 12;
 
   SpritesB::drawExternalMask(xPos, yPos, Images::Dealer, Images::Dealer_Mask, 0, 0);
-  SpritesB::drawSelfMasked(xPos + 13, yPos + 17, Images::Dealer_Eyes, blink);
-  SpritesB::drawSelfMasked(xPos + 13, yPos + 7, Images::Dealer_Forehead, dealerFace == DealerFace::Happy ? 1 : 0);
+  SpritesB::drawSelfMasked(xPos + 12, yPos + 17, Images::Dealer_Eyes, blink);
 
   if (message.renderRequired && (message.alignment == BubbleAlignment::Normal_Computer || message.alignment == BubbleAlignment::Score_Computer)) {
 
     uint8_t index = (talking == 0 ? talking : talking + 2);
-    SpritesB::drawSelfMasked(xPos + 15, yPos + 24, Images::Dealer_Mouth, index);
+    SpritesB::drawSelfMasked(xPos + 17, yPos + 27, Images::Dealer_Mouth, index);
 
   }
   else {
 
-    SpritesB::drawSelfMasked(xPos + 15, yPos + 24, Images::Dealer_Mouth, static_cast<uint8_t>(dealerFace));
+    SpritesB::drawSelfMasked(xPos + 17, yPos + 27, Images::Dealer_Mouth, static_cast<uint8_t>(dealerFace));
 
   }
 

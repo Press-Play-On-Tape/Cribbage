@@ -45,7 +45,7 @@ void PlayGameState::render(StateMachine & machine) {
       break;
 
     default:
-      drawDealer(machine, 87, 18, this->message.dealerFace, this->message);
+      drawDealer(machine, 88, 18, this->message.dealerFace, this->message);
       drawPlayerHands(machine);
       arduboy.drawFastHLine(0, 61, 128);
       arduboy.drawFastHLine(0, 60, 128, BLACK);
@@ -86,7 +86,7 @@ void PlayGameState::render(StateMachine & machine) {
     case ViewState::DisplayScore_Board:
     case ViewState::EndOfGame:
       {
-        drawDealer(machine, 0, 22, player1.getScore() < player2.getScore() ? DealerFace::Happy : DealerFace::Sad, this->message);
+        drawDealer(machine, -1, 22, player1.getScore() < player2.getScore() ? DealerFace::Happy : DealerFace::Sad, this->message);
         SpritesB::drawSelfMasked(43, 0, Images::Divider, 0);
         SpritesB::drawSelfMasked(51, 7, Images::Board, 0);
 
@@ -108,7 +108,7 @@ void PlayGameState::render(StateMachine & machine) {
                      (this->viewState == ViewState::DisplayScore_Dealer && gameStats.playerDealer == WhichPlayer::Player2) ||
                      (this->viewState == ViewState::DisplayScore_Crib && gameStats.playerDealer == WhichPlayer::Player2);
 
-        drawDealer(machine, 0, 22, happy ? (gameStats.getNumberOfScores() != 0 ? DealerFace::Happy : DealerFace::Sad) : DealerFace::Sad, this->message);
+        drawDealer(machine, -1, 22, happy ? (gameStats.getNumberOfScores() != 0 ? DealerFace::Happy : DealerFace::Sad) : DealerFace::Sad, this->message);
         SpritesB::drawSelfMasked(43, 0, Images::Divider, 0);
 
 
@@ -222,14 +222,19 @@ void PlayGameState::render(StateMachine & machine) {
 // 
 void PlayGameState::drawHandScores(StateMachine & machine) {
 
+#define SCORE_LINE_HEIGHT 8
+#define SCORE_ROW_TOP 27
+#define SCORE_CARD_TOP 1
+
 	auto & arduboy = machine.getContext().arduboy;
   auto & gameStats = machine.getContext().gameStats;
-
+	auto & player1 = gameStats.player1;
+	auto & player2 = gameStats.player2;
 
   // Render hand details ..
 
-  font3x5.setCursor(50, 0);
-  font3x5.setTextColor(WHITE);
+  font3x5.setCursor(4, 8);
+  arduboy.fillRect(1, 8, 39, 7, WHITE);
 
   switch (this->viewState) {
 
@@ -238,10 +243,10 @@ void PlayGameState::drawHandScores(StateMachine & machine) {
 
       if ((gameStats.playerDealer == WhichPlayer::Player1 && this->viewState == ViewState::DisplayScore_Other) ||
           (gameStats.playerDealer == WhichPlayer::Player2 && this->viewState == ViewState::DisplayScore_Dealer)) {
-        font3x5.print(F("My Hand@"));
+        font3x5.print(F(" My Hand"));
       }
       else {
-        font3x5.print(F("Your Hand@"));
+        font3x5.print(F("Your Hand"));
       }
 
       break;
@@ -249,10 +254,10 @@ void PlayGameState::drawHandScores(StateMachine & machine) {
     case ViewState::DisplayScore_Crib: 
 
       if (gameStats.playerDealer == WhichPlayer::Player1) {
-        font3x5.print(F("Your Crib@"));
+        font3x5.print(F("Your Crib"));
       }
       else {
-        font3x5.print(F("My Crib@"));
+        font3x5.print(F(" My Crib"));
       }
 
       break;
@@ -261,6 +266,7 @@ void PlayGameState::drawHandScores(StateMachine & machine) {
 
   }
 
+  font3x5.setTextColor(WHITE);
 
   if (gameStats.getNumberOfScores() == 0) {
 
@@ -273,37 +279,85 @@ void PlayGameState::drawHandScores(StateMachine & machine) {
     uint8_t numberOfScores = gameStats.getNumberOfScores();
     uint8_t renderLine = 0;
 
+
+    // Render hand ..
+
+    this->drawSmallCard(49, SCORE_CARD_TOP, this->turnUp, false);
+
+    for (uint8_t x = 0; x < 4; x++) {
+          
+      switch (this->viewState) {
+
+        case ViewState::DisplayScore_Other:
+        case ViewState::DisplayScore_Dealer:
+          {
+            uint8_t card = 0;
+            if ((gameStats.playerDealer == WhichPlayer::Player1 && this->viewState == ViewState::DisplayScore_Other) ||
+                (gameStats.playerDealer == WhichPlayer::Player2 && this->viewState == ViewState::DisplayScore_Dealer)) {
+              card = player2.getOrigCard(x);
+            }
+            else {
+              card = player1.getOrigCard(x);
+            }
+          
+            this->drawSmallCard(68 + (x * 10), SCORE_CARD_TOP, card, x != 3);
+
+          }
+
+          break;
+
+        case ViewState::DisplayScore_Crib: 
+          {
+            uint8_t card = 0;
+            if (gameStats.playerDealer == WhichPlayer::Player1) {
+              card = player1.getCribCard(x);
+            }
+            else {
+              card = player2.getCribCard(x);
+            }
+            this->drawSmallCard(68 + (x * 10), SCORE_CARD_TOP, card, x != 3);
+          }
+
+          break;
+
+        default: break;
+
+      }
+
+    }
+
+
     // Render upper arrow if needed ..
 
     if (numberOfScores > 5) {
-      SpritesB::drawSelfMasked(120, 1, Images::Arrow_Up, !this->scoreUpperRow);
+      SpritesB::drawSelfMasked(120, 19, Images::Arrow_Up, !this->scoreUpperRow);
     }
 
     for (uint8_t i = 0; i < numberOfScores; i++) {
 
-      if (i >= this->scoreUpperRow && i <= this->scoreUpperRow + 5) {
+      if (i >= this->scoreUpperRow && i <= this->scoreUpperRow + 3) {
 
         uint8_t handWidth = 0;
 
-        for (uint8_t j = 0; j < 5; j++) {
+        for (uint8_t j = 0; j < 3; j++) {
 
           if (gameStats.scores[i].getCard(j) != Constants::NoCard) {
 
             handWidth++;
             uint8_t cardVal = CardUtils::getCardValue(gameStats.scores[i].getCard(j), false);
-            SpritesB::drawSelfMasked(50 + (j * 14) - (cardVal == 10 ? 1 : 0), 10 + (renderLine * 8), Images::Pips[cardVal - 1], 0);
-            SpritesB::drawSelfMasked(55 + (j * 14), 10 + (renderLine * 8), Images::Suits, static_cast<uint8_t>(CardUtils::getCardSuit(gameStats.scores[i].getCard(j))));
+            SpritesB::drawSelfMasked(50 + (j * 14) - (cardVal == 10 ? 1 : 0), SCORE_ROW_TOP + (renderLine * SCORE_LINE_HEIGHT), Images::Pips[cardVal - 1], 0);
+            SpritesB::drawSelfMasked(55 + (j * 14), SCORE_ROW_TOP + (renderLine * SCORE_LINE_HEIGHT), Images::Suits, static_cast<uint8_t>(CardUtils::getCardSuit(gameStats.scores[i].getCard(j))));
 
           }
 
         } 
 
         if (handWidth < 5) {
-          arduboy.drawHorizontalDottedLine(50 + (handWidth * 14), 114, 15 + (renderLine * 8));
+          arduboy.drawHorizontalDottedLine(50 + (handWidth * 14), 114, SCORE_ROW_TOP + 5 + (renderLine * SCORE_LINE_HEIGHT));
         }
 
         uint8_t score = gameStats.scores[i].getScore();
-        font3x5.setCursor(120, 10 + (renderLine * 8) - 1);
+        font3x5.setCursor(120, SCORE_ROW_TOP + (renderLine * SCORE_LINE_HEIGHT) - 1);
         if (score < 10) font3x5.print("  ");
         font3x5.print(score);
         renderLine++;
@@ -315,14 +369,14 @@ void PlayGameState::drawHandScores(StateMachine & machine) {
 
     // Render lower arrow ..
 
-    if (numberOfScores > 5) {
-      SpritesB::drawSelfMasked(120, 60, Images::Arrow_Down, !(this->scoreUpperRow + 5 < numberOfScores));
+    if (numberOfScores > 3) {
+      SpritesB::drawSelfMasked(120, 60, Images::Arrow_Down, !(this->scoreUpperRow + 3 < numberOfScores));
     }
 
-    if (this->scoreUpperRow + 5 >= numberOfScores) {
-      font3x5.setCursor(93, 10 + (renderLine * 8));
+    if (this->scoreUpperRow + 3 >= numberOfScores) {
+      font3x5.setCursor(93, SCORE_ROW_TOP + (renderLine * SCORE_LINE_HEIGHT));
       font3x5.print(F("Total:"));
-      font3x5.setCursor(120, 10 + (renderLine * 8));
+      font3x5.setCursor(120, SCORE_ROW_TOP + (renderLine * SCORE_LINE_HEIGHT));
       if (gameStats.getScoresTotal() < 10) font3x5.print("  ");
       font3x5.print(gameStats.getScoresTotal());
     }
