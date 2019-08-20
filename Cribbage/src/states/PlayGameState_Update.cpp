@@ -256,6 +256,13 @@ void PlayGameState::update(StateMachine & machine) {
 
 			this->counter++;
 
+			if (pressed & B_BUTTON) {
+				this->showTotal = true;
+			}
+			else {
+				this->showTotal = false;
+			}
+
 			switch (this->counter) {
 
 				case 0 ... 5:
@@ -310,7 +317,14 @@ void PlayGameState::update(StateMachine & machine) {
 			break;
 			
 		case ViewState::PlayersTurn_Normal:
-				
+
+			if (pressed & B_BUTTON) {
+				this->showTotal = true;
+			}
+			else {
+				this->showTotal = false;
+			}
+	
 			switch (this->counter) {
 
 				case 0:
@@ -319,12 +333,6 @@ void PlayGameState::update(StateMachine & machine) {
 
 					// if (justPressed & B_BUTTON) {
 					// 	player1.addScore(118);
-					// }
-					// if (pressed & B_BUTTON) {
-					//  	this->showTotal = true;
-					// }
-					// else {
-					// 	this->showTotal = false;
 					// }
 
 					if (justPressed & A_BUTTON) {
@@ -423,6 +431,13 @@ void PlayGameState::update(StateMachine & machine) {
 
 			this->counter++;
 
+			if (pressed & B_BUTTON) {
+				this->showTotal = true;
+			}
+			else {
+				this->showTotal = false;
+			}
+			
 			switch (this->counter) {
 
 				case 0 ... 15:
@@ -552,24 +567,7 @@ void PlayGameState::update(StateMachine & machine) {
 				switch (this->counter) {
 
 					case 0:
-						{
-							uint8_t player1PrevScore = player1.getPrevScore();
-							uint8_t player2PrevScore = player2.getPrevScore();
-						if (this->player1Counter < player1PrevScore) this->player1Counter = player1PrevScore;
-						if (this->player2Counter < player2PrevScore) this->player2Counter = player2PrevScore;
-
-						if (this->player1Counter < player1.getScore() || this->player2Counter < player2.getScore()) {
-							if (this->player1Counter < player1.getScore()) {
-								this->player1Counter++;
-							}
-							if (this->player2Counter < player2.getScore()) {
-								this->player2Counter++;
-							}
-						}
-						else {
-							this->counter++;
-						}
-						}
+	 					movePegs(machine);
 						break;
 
 					case 1:
@@ -682,25 +680,7 @@ void PlayGameState::update(StateMachine & machine) {
 						break;
 
 					case 79:
-
-						if (this->player1Counter < player1.getPrevScore()) this->player1Counter = player1.getPrevScore();
-						if (this->player2Counter < player2.getPrevScore()) this->player2Counter = player2.getPrevScore();
-
-						if (arduboy.everyXFrames(16)) {
-
-							if (this->player1Counter < player1.getScore() || this->player2Counter < player2.getScore()) {
-								if (this->player1Counter < player1.getScore()) {
-									this->player1Counter++;
-								}
-								if (this->player2Counter < player2.getScore()) {
-									this->player2Counter++;
-								}
-							}
-							else {
-								this->counter = 95;
-							}
-
-						}
+	 					movePegs(machine);
 						break;
 
 
@@ -784,21 +764,7 @@ void PlayGameState::update(StateMachine & machine) {
 					switch (this->counter) {
 
 						case 76:
-
-							if (this->player1Counter < player1.getPrevScore()) this->player1Counter = player1.getPrevScore();
-							if (this->player2Counter < player2.getPrevScore()) this->player2Counter = player2.getPrevScore();
-
-							if (this->player1Counter < player1.getScore() || this->player2Counter < player2.getScore()) {
-								if (this->player1Counter < player1.getScore()) {
-									this->player1Counter++;
-								}
-								if (this->player2Counter < player2.getScore()) {
-									this->player2Counter++;
-								}
-							}
-							else {
-								this->counter++;
-							}
+		 					movePegs(machine);
 							break;
 
 						case 77:
@@ -845,5 +811,28 @@ void PlayGameState::update(StateMachine & machine) {
 // 		viewState = ViewState::DisplayScore_Board;
 
 // 	}
+
+}
+
+void PlayGameState::movePegs(StateMachine & machine) {
+
+  auto & gameStats = machine.getContext().gameStats;
+	auto & player1 = gameStats.player1;
+	auto & player2 = gameStats.player2;
+
+if (this->player1Counter < player1.getPrevScore()) this->player1Counter = player1.getPrevScore();
+							if (this->player2Counter < player2.getPrevScore()) this->player2Counter = player2.getPrevScore();
+
+							if (this->player1Counter < player1.getScore() || this->player2Counter < player2.getScore()) {
+								if (this->player1Counter < player1.getScore()) {
+									this->player1Counter++;
+								}
+								if (this->player2Counter < player2.getScore()) {
+									this->player2Counter++;
+								}
+							}
+							else {
+								this->counter++;
+							}
 
 }

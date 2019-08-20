@@ -79,6 +79,7 @@ class PlayGameState : public BaseState {
     void skipSequence(StateMachine & machine, uint8_t counter);
     void moveToEOG(StateMachine & machine);
     void computerDiscard(StateMachine & machine, uint8_t card);
+    void movePegs(StateMachine & machine);
 
     uint8_t player1Counter = 0;
     uint8_t player2Counter = 0;
