@@ -368,12 +368,8 @@ void PlayGameState::drawHandScores(StateMachine & machine) {
 
     }
 
-  }
 
-
-  // Render lower arrow ..
-
-  if (gameStats.getNumberOfScores() != 0) {
+    // Render lower arrow ..
 
     if (numberOfScores > 3) {
       SpritesB::drawSelfMasked(120, 60, Images::Arrow_Down, !(this->scoreUpperRow + 3 < numberOfScores));
