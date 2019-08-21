@@ -228,7 +228,11 @@ void PlayGameState::update(StateMachine & machine) {
 // player1.printCrib(1);
 // player2.printHand(2);
 // player2.printCrib(2);
-
+player1.setHandCard(0,12);
+player1.setHandCard(1,10);
+player1.setHandCard(2,8);
+player1.setHandCard(3,6);
+this->turnUp = 15;
 					if (gameStats.playerDealer == WhichPlayer::Player2) {
 						this->viewState = ViewState::PlayersTurn;
 					}

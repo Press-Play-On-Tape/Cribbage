@@ -268,71 +268,73 @@ void PlayGameState::drawHandScores(StateMachine & machine) {
 
   font3x5.setTextColor(WHITE);
 
+
+
+  uint8_t numberOfScores = gameStats.getNumberOfScores();
+  uint8_t renderLine = 0;
+
+
+  // Render hand ..
+
+  this->drawSmallCard(49, SCORE_CARD_TOP, this->turnUp, false);
+
+  for (uint8_t x = 0; x < 4; x++) {
+        
+    switch (this->viewState) {
+
+      case ViewState::DisplayScore_Other:
+      case ViewState::DisplayScore_Dealer:
+        {
+          uint8_t card = 0;
+          if ((gameStats.playerDealer == WhichPlayer::Player1 && this->viewState == ViewState::DisplayScore_Other) ||
+              (gameStats.playerDealer == WhichPlayer::Player2 && this->viewState == ViewState::DisplayScore_Dealer)) {
+            card = player2.getOrigCard(x);
+          }
+          else {
+            card = player1.getOrigCard(x);
+          }
+        
+          this->drawSmallCard(68 + (x * 10), SCORE_CARD_TOP, card, x != 3);
+
+        }
+
+        break;
+
+      case ViewState::DisplayScore_Crib: 
+        {
+          uint8_t card = 0;
+          if (gameStats.playerDealer == WhichPlayer::Player1) {
+            card = player1.getCribCard(x);
+          }
+          else {
+            card = player2.getCribCard(x);
+          }
+          this->drawSmallCard(68 + (x * 10), SCORE_CARD_TOP, card, x != 3);
+        }
+
+        break;
+
+      default: break;
+
+    }
+
+  }
+
+
+  // Render upper arrow if needed ..
+
+  if (numberOfScores > 5) {
+    SpritesB::drawSelfMasked(120, 19, Images::Arrow_Up, !this->scoreUpperRow);
+  }
+
   if (gameStats.getNumberOfScores() == 0) {
 
-    font3x5.setCursor(72, 28);
+    font3x5.setCursor(72, 38);
     font3x5.print(F("Nothing !"));
 
   }
   else {
-
-    uint8_t numberOfScores = gameStats.getNumberOfScores();
-    uint8_t renderLine = 0;
-
-
-    // Render hand ..
-
-    this->drawSmallCard(49, SCORE_CARD_TOP, this->turnUp, false);
-
-    for (uint8_t x = 0; x < 4; x++) {
-          
-      switch (this->viewState) {
-
-        case ViewState::DisplayScore_Other:
-        case ViewState::DisplayScore_Dealer:
-          {
-            uint8_t card = 0;
-            if ((gameStats.playerDealer == WhichPlayer::Player1 && this->viewState == ViewState::DisplayScore_Other) ||
-                (gameStats.playerDealer == WhichPlayer::Player2 && this->viewState == ViewState::DisplayScore_Dealer)) {
-              card = player2.getOrigCard(x);
-            }
-            else {
-              card = player1.getOrigCard(x);
-            }
-          
-            this->drawSmallCard(68 + (x * 10), SCORE_CARD_TOP, card, x != 3);
-
-          }
-
-          break;
-
-        case ViewState::DisplayScore_Crib: 
-          {
-            uint8_t card = 0;
-            if (gameStats.playerDealer == WhichPlayer::Player1) {
-              card = player1.getCribCard(x);
-            }
-            else {
-              card = player2.getCribCard(x);
-            }
-            this->drawSmallCard(68 + (x * 10), SCORE_CARD_TOP, card, x != 3);
-          }
-
-          break;
-
-        default: break;
-
-      }
-
-    }
-
-
-    // Render upper arrow if needed ..
-
-    if (numberOfScores > 5) {
-      SpritesB::drawSelfMasked(120, 19, Images::Arrow_Up, !this->scoreUpperRow);
-    }
-
+    
     for (uint8_t i = 0; i < numberOfScores; i++) {
 
       if (i >= this->scoreUpperRow && i <= this->scoreUpperRow + 3) {
@@ -366,8 +368,12 @@ void PlayGameState::drawHandScores(StateMachine & machine) {
 
     }
 
+  }
 
-    // Render lower arrow ..
+
+  // Render lower arrow ..
+
+  if (gameStats.getNumberOfScores() != 0) {
 
     if (numberOfScores > 3) {
       SpritesB::drawSelfMasked(120, 60, Images::Arrow_Down, !(this->scoreUpperRow + 3 < numberOfScores));
