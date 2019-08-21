@@ -32,11 +32,11 @@ void Game::setup(void) {
 	arduboy.audio.begin();
 	arduboy.setFrameRate(60);
 
-#ifdef DEBUG  
-    randomSeed(3);          // Seed with a constant to enable debugging with a repeatable bone set. 
-#else
+//#ifdef DEBUG  
+//    randomSeed(3);          // Seed with a constant to enable debugging with a repeatable bone set. 
+//#else
     arduboy.initRandomSeed();
-#endif
+//#endif
 
   EEPROM_Utils::initEEPROM(false);
 

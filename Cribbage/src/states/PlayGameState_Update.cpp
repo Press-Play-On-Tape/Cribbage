@@ -44,7 +44,10 @@ void PlayGameState::update(StateMachine & machine) {
 
 			}
 			else {
-
+// player1.printHand(1);
+// player1.printCrib(1);
+// player2.printHand(2);
+// player2.printCrib(2);
 				this->viewState = ViewState::DiscardCribPlayer;
 	
 			}
@@ -58,7 +61,7 @@ void PlayGameState::update(StateMachine & machine) {
 			if (player1.getHandCardCount() > 4) {
 
 				if (this->counter < 70) {
-					saveMessage(F("Throw two cards\nout to the crib."), 2, 70, DealerFace::Normal, BubbleAlignment::Normal_Computer);
+					saveMessage(F("Throw two cards\nout to the crib."), 2, 70, 30, DealerFace::Normal, BubbleAlignment::Normal_Computer);
 				}
 
 				if ((justPressed & LEFT_BUTTON) && (this->highlightCard > 0))															this->highlightCard--;
@@ -106,7 +109,7 @@ void PlayGameState::update(StateMachine & machine) {
 			if (this->counter < 70) {
 
 				skipSequence(machine, 70);
-				saveMessage(F("   I will throw\nthese two cards."), 2, DealerFace::Normal, BubbleAlignment::Normal_Computer);
+				saveMessage(F("   I will throw\nthese two cards."), 2, 72, 28, DealerFace::Normal, BubbleAlignment::Normal_Computer);
 	
 				if (this->counter == 25) {
 					this->computerDiscard(machine, this->computerDiscard1);
@@ -171,11 +174,11 @@ void PlayGameState::update(StateMachine & machine) {
 				case 26:
 					if (gameStats.playerDealer == WhichPlayer::Player1) {
 						player1.addScore(2);
-						saveMessage(F("Two for his heels!"), 1, 78, DealerFace::Sad, BubbleAlignment::Normal_Player);
+						saveMessage(F("Two for his heels!"), 1, 78, 22, DealerFace::Sad, BubbleAlignment::Normal_Player);
 					}
 					else {
 						player2.addScore(2);
-						saveMessage(F("Two for his heels!"), 1, 78, DealerFace::Happy, BubbleAlignment::Normal_Computer);
+						saveMessage(F("Two for his heels!"), 1, 78, 22, DealerFace::Happy, BubbleAlignment::Normal_Computer);
 					}
 					break;
 
@@ -192,29 +195,29 @@ void PlayGameState::update(StateMachine & machine) {
 					moveToEOG(machine);
 					skipSequence(machine, 235);
 					if (gameStats.playerDealer == WhichPlayer::Player2) {
-						saveMessage(F("Your turn to start@"), 1, 81, DealerFace::Normal, BubbleAlignment::Normal_Computer);
+						saveMessage(F("Your turn to start@"), 1, 81, 19, DealerFace::Normal, BubbleAlignment::Normal_Computer);
 					}
 					else {
-						saveMessage(F("My turn to start@"), 1, 71, DealerFace::Normal, BubbleAlignment::Normal_Computer);
+						saveMessage(F("My turn to start@"), 1, 71, 29, DealerFace::Normal, BubbleAlignment::Normal_Computer);
 					}
 					break;
 
 				case 236:				
 					this->counter = 0;
 
-					// player1.setHandCard(0, 39);
-					// player1.setHandCard(1, 30);
-					// player1.setHandCard(2, 9);
-					// player1.setHandCard(3, 12);
-					// player2.setHandCard(0, 5);
-					// player2.setHandCard(1, 44);
-					// player2.setHandCard(2, 23);
-					// player2.setHandCard(3, 36);
-					// // player2.setCribCard(0, 19);
-					// // player2.setCribCard(1, );
-					// // player2.setCribCard(2, 9);
-					// // player2.setCribCard(3, 37);
-					// this->turnUp = 18;
+					// player1.setHandCard(0, 14);
+					// player1.setHandCard(1, 4);
+					// player1.setHandCard(2, 17);
+					// player1.setHandCard(3, 50);
+					// player2.setHandCard(0, 3);
+					// player2.setHandCard(1, 42);
+					// player2.setHandCard(2, 21);
+					// player2.setHandCard(3, 48);
+					// player2.setCribCard(0, 26);
+					// player2.setCribCard(1, 31);
+					// player2.setCribCard(2, 46);
+					// player2.setCribCard(3, 8);
+					// this->turnUp = 24;
 					// gameStats.playerDealer = WhichPlayer::Player1;
 					// gameStats.playersTurn = WhichPlayer::Player2;
 
@@ -684,9 +687,8 @@ this->turnUp = 15;
 						break;
 
 					case 79:
-	 					movePegs(machine);
+						if (arduboy.everyXFrames(16)) movePegs(machine);
 						break;
-
 
 					case 80 ... 94:
 					case 110 ... 124:
@@ -714,33 +716,37 @@ this->turnUp = 15;
 				if (justPressed & A_BUTTON) {
 
 					if (this->counter <= 77) {
-						this->scoresTotal = addHandScoreToPlayerTotal(machine);
+						this->counter = 77;
 					}
+					else {
 
-					player1.setPrevScore(player1.getScore());
-					player2.setPrevScore(player2.getScore());
+						player1.setPrevScore(player1.getScore());
+						player2.setPrevScore(player2.getScore());
+						this->scoreUpperRow = 0;
 
-					switch (this->viewState){
+						switch (this->viewState){
 
-						case ViewState::DisplayScore_Other:
-							this->viewState = ViewState::DisplayScore_Dealer;
-							break;
+							case ViewState::DisplayScore_Other:
+								this->viewState = ViewState::DisplayScore_Dealer;
+								break;
 
-						case ViewState::DisplayScore_Dealer:
-							this->viewState = ViewState::DisplayScore_Crib;
-							break;
+							case ViewState::DisplayScore_Dealer:
+								this->viewState = ViewState::DisplayScore_Crib;
+								break;
 
-						case ViewState::DisplayScore_Crib:
-							this->viewState = ViewState::DealCards;
-							break;
+							case ViewState::DisplayScore_Crib:
+								this->viewState = ViewState::DealCards;
+								break;
 
-						default: break;
+							default: break;
+
+						}
+
+						player1.setPrevScore(player1.getScore());
+						player2.setPrevScore(player2.getScore());
+						this->counter = 0;
 
 					}
-
-					player1.setPrevScore(player1.getScore());
-					player2.setPrevScore(player2.getScore());
-					this->counter = 0;
 
 				}
 
@@ -803,19 +809,6 @@ this->turnUp = 15;
 
 	}
 
-// 	if (justPressed & A_BUTTON) {
-// //			machine.changeState(GameStateType_Board); 
-
-// 		this->player1Counter = 0;
-// 		this->player2Counter = 0;
-
-// 		this->counter = 0;
-// 		this->highlight = true;
-// 		prevViewState = viewState;
-// 		viewState = ViewState::DisplayScore_Board;
-
-// 	}
-
 }
 
 void PlayGameState::movePegs(StateMachine & machine) {
@@ -824,19 +817,19 @@ void PlayGameState::movePegs(StateMachine & machine) {
 	auto & player1 = gameStats.player1;
 	auto & player2 = gameStats.player2;
 
-if (this->player1Counter < player1.getPrevScore()) this->player1Counter = player1.getPrevScore();
-							if (this->player2Counter < player2.getPrevScore()) this->player2Counter = player2.getPrevScore();
+	if (this->player1Counter < player1.getPrevScore()) this->player1Counter = player1.getPrevScore();
+	if (this->player2Counter < player2.getPrevScore()) this->player2Counter = player2.getPrevScore();
 
-							if (this->player1Counter < player1.getScore() || this->player2Counter < player2.getScore()) {
-								if (this->player1Counter < player1.getScore()) {
-									this->player1Counter++;
-								}
-								if (this->player2Counter < player2.getScore()) {
-									this->player2Counter++;
-								}
-							}
-							else {
-								this->counter++;
-							}
+	if (this->player1Counter < player1.getScore() || this->player2Counter < player2.getScore()) {
+		if (this->player1Counter < player1.getScore()) {
+			this->player1Counter++;
+		}
+		if (this->player2Counter < player2.getScore()) {
+			this->player2Counter++;
+		}
+	}
+	else {
+		this->counter++;
+	}
 
 }
