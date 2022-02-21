@@ -26,19 +26,19 @@ void TitleScreenState::update(StateMachine & machine) {
 
 	// Restart ?
 
-	if (pressed & DOWN_BUTTON) {
+	// if (pressed & DOWN_BUTTON) {
 
-		if (restart < UPLOAD_DELAY) {
-			restart++;
-		}
-		else {
-			arduboy.exitToBootloader();
-		}
+	// 	if (restart < UPLOAD_DELAY) {
+	// 		restart++;
+	// 	}
+	// 	else {
+	// 		arduboy.exitToBootloader();
+	// 	}
 
-	}
-	else {
-		restart = 0;
-	}
+	// }
+	// else {
+	// 	restart = 0;
+	// }
 
 
 	// Update ticker ..
