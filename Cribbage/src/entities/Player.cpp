@@ -192,87 +192,52 @@ void Player::calculateScores(Score scores[], uint8_t calcScore[], uint8_t turnUp
     }
 
 
-    // Check for pairs ..
+	// Check for pairs, three of a kind, four of a kind ..
 
-    if (possIdx == 2) {
+	if (possIdx == 2) {
 
-      uint8_t card1 = CardUtils::getCardValue(possibility[0], false);
-      uint8_t card2 = CardUtils::getCardValue(possibility[1], false);
-      
-      if (card1 == card2) {
+		uint8_t card1Value = CardUtils::getCardValue(possibility[0], false);
+		uint8_t card2Value = CardUtils::getCardValue(possibility[1], false);
 
-        bool pairsFound = false;
+		if (card1Value == card2Value) {
+			// Count how many cards of this value exist in the full hand
+			uint8_t matchCount = 0;
+			for (uint8_t k = 0; k < 5; k++) {
+				if (CardUtils::getCardValue(calcScore[k], false) == card1Value) {
+					matchCount++;
+				}
+			}
 
-        for (uint8_t i = 0; i < Constants::PlayerHandScores; i++) {
+			// Only record this score once - when we first encounter this value
+			bool alreadyScored = false;
+			for (uint8_t k = 0; k < scoreIdx; k++) {
+				if ((scores[k].getType() == ScoreType::Pair) &&
+					CardUtils::getCardValue(scores[k].getCard(0), false) == card1Value) {
+					alreadyScored = true;
+					break;
+				}
+			}
 
-          if (scores[i].getType() == ScoreType::Pair && card1 == CardUtils::getCardValue(scores[i].getCard(0), false)) {
+			if (!alreadyScored) {
+				// Collect all cards of this value
+				uint8_t cardIdx = 0;
+				for (uint8_t k = 0; k < 5; k++) {
+					if (CardUtils::getCardValue(calcScore[k], false) == card1Value) {
+						scores[scoreIdx].setHand(cardIdx, calcScore[k]);
+						cardIdx++;
+					}
+				}
 
-            pairsFound = true;
+				// Set score and type based on count
+				const uint8_t pairScores[] = { 0, 0, 2, 6, 12 };
+				scores[scoreIdx].setScore(pairScores[matchCount]);
 
+				if (matchCount == 2 || matchCount == 3 || matchCount == 4) scores[scoreIdx].setType(ScoreType::Pair);
 
-            // Add card 1 if it isn't in the set ..
-
-            bool found = false;
-            uint8_t nextIdx = 0;
-
-            for (uint8_t k = 0; k < 5; k++) {
-
-              if (scores[i].getCard(k) == possibility[0])                       { found = true; }
-              if ((scores[i].getCard(k) == Constants::NoCard) && nextIdx == 0)  { nextIdx = k; }
-
-            }
-
-            if (!found) scores[i].setHand(nextIdx, possibility[0]);
-
-
-            // Add card 2 if it isn't in the set ..
-
-            found = false;
-            nextIdx = 0;
-
-            for (uint8_t k = 0; k < 5; k++) {
-
-              if (scores[i].getCard(k) == possibility[1])                       { found = true; }
-              if ((scores[i].getCard(k) == Constants::NoCard) && nextIdx == 0)  { nextIdx = k; }
-
-            }
-
-            if (!found) scores[i].setHand(nextIdx + 1, possibility[1]);
-
-
-            // Calculate score
-
-            nextIdx = 0;
-            for (uint8_t k = 0; k < 5; k++) {
-
-              if (scores[i].getCard(k) != Constants::NoCard) nextIdx = k;
-
-            }
-
-            const uint8_t pairScores[] = { 2, 6, 12 };
-            scores[i].setScore(pairScores[nextIdx - 1]);
-
-            break;
-
-          }
-
-        }
-          
-        if (!pairsFound) {
-
-          for (uint8_t k = 0; k < 5; k++) {
-            scores[scoreIdx].setHand(k, possibility[k]);
-          }
-
-          scores[scoreIdx].setScore(2);
-          scores[scoreIdx].setType(ScoreType::Pair);
-          scoreIdx++;
-
-        }
-
-      }
-
-    }
+				scoreIdx++;
+			}
+		}
+	}
 
 
     // Check for 15 ..

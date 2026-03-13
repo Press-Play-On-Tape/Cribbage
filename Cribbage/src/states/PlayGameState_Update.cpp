@@ -14,8 +14,8 @@ void PlayGameState::update(StateMachine & machine) {
 	auto & player2 = gameStats.player2;
 	auto & deck = gameStats.deck;
 
-  auto justPressed = arduboy.justPressedButtons();
-  auto pressed = arduboy.pressedButtons();
+  	auto justPressed = arduboy.justPressedButtons();
+  	auto pressed = arduboy.pressedButtons();
 
 
 	// Has the EOG flag been set?
@@ -37,7 +37,26 @@ void PlayGameState::update(StateMachine & machine) {
 
 				if (arduboy.everyXFrames(16)) {
 
-					player1.addToHand(deck.getCard());
+				// 	if (player1.getHandCardCount() == 0) {
+				// 		player1.addToHand(8);
+				// 	}
+
+				// 	else if (player1.getHandCardCount() == 1) {
+				// 		player1.addToHand(8 + 13);
+				// 	}
+
+				// 	else if (player1.getHandCardCount() == 2) {
+				// 		player1.addToHand(8 + 13 + 13 + 13);
+				// 	}
+
+				// 	// else if (player1.getHandCardCount() == 3) {
+				// 	// 	player1.addToHand(8 + 13 + 13);
+				// 	// }
+
+				// 	else {
+						player1.addToHand(deck.getCard());
+					// }
+
 					player2.addToHand(deck.getCard());
 
 				}
