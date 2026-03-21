@@ -23,8 +23,18 @@ void PlayGameState::activate(StateMachine & machine) {
 	this->player1Counter = 0;
 	this->player2Counter = 0;
 
-	gameStats.playerDealer = WhichPlayer::Player1;
-	gameStats.playersTurn = WhichPlayer::Player1;
+	if (random(2) == 0) {
+
+		gameStats.playerDealer = WhichPlayer::Player1;
+		gameStats.playersTurn = WhichPlayer::Player1;
+
+	}
+	else {
+
+		gameStats.playerDealer = WhichPlayer::Player2;
+		gameStats.playersTurn = WhichPlayer::Player2;
+
+	}
 
 									
 // ---------------------------------------------------------------------------------------------------------------------------

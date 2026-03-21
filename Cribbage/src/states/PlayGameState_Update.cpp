@@ -37,28 +37,61 @@ void PlayGameState::update(StateMachine & machine) {
 
 				if (arduboy.everyXFrames(16)) {
 
-				// 	if (player1.getHandCardCount() == 0) {
-				// 		player1.addToHand(8);
-				// 	}
-
-				// 	else if (player1.getHandCardCount() == 1) {
-				// 		player1.addToHand(8 + 13);
-				// 	}
-
-				// 	else if (player1.getHandCardCount() == 2) {
-				// 		player1.addToHand(8 + 13 + 13 + 13);
-				// 	}
-
-				// 	// else if (player1.getHandCardCount() == 3) {
-				// 	// 	player1.addToHand(8 + 13 + 13);
-				// 	// }
-
-				// 	else {
-						player1.addToHand(deck.getCard());
+					// if (player1.getHandCardCount() == 0) {
+					// 	player1.addToHand(1);
 					// }
 
-					player2.addToHand(deck.getCard());
+					// // else if (player1.getHandCardCount() == 1) {
+					// // 	player1.addToHand(8 + 13);
+					// // }
 
+					// // else if (player1.getHandCardCount() == 2) {
+					// // 	player1.addToHand(8 + 13 + 13 + 13);
+					// // }
+
+					// else {
+					// 	player1.addToHand(deck.getCard());
+					// }
+
+					// if (player2.getHandCardCount() == 0) {
+					// 	player2.addToHand(3);
+					// }
+
+					// else if (player2.getHandCardCount() == 1) {
+					// 	player2.addToHand(4 + 13);
+					// }
+
+					// else if (player2.getHandCardCount() == 2) {
+					// 	player2.addToHand(2 + 13);
+					// }
+
+					// else if (player2.getHandCardCount() == 3) {
+					// 	player2.addToHand(8 + 26);
+					// }
+
+					// else if (player2.getHandCardCount() == 4) {
+					// 	player2.addToHand(4 + 26);
+					// }
+
+					// else if (player2.getHandCardCount() == 5) {
+					// 	player2.addToHand(3 + 39);
+					// }
+
+					// // else if (player1.getHandCardCount() == 2) {
+					// // 	player1.addToHand(8 + 13 + 13 + 13);
+					// // }
+
+					// // else if (player1.getHandCardCount() == 3) {
+					// // 	player1.addToHand(8 + 13 + 13);
+					// // }
+
+					// else {
+					// 	player2.addToHand(deck.getCard());
+					// }
+
+					player1.addToHand(deck.getCard());
+					player2.addToHand(deck.getCard());
+					
 				}
 
 			}
@@ -110,10 +143,6 @@ void PlayGameState::update(StateMachine & machine) {
 			else {
 
 				player2.discardToCrib(this->computerDiscard1, this->computerDiscard2);
-// Serial.print("Discards :");
-// Serial.print(this->computerDiscard1);				
-// Serial.print(",");
-// Serial.println(this->computerDiscard2);				
 				this->viewState = ViewState::DiscardCribComputer;
 				this->counter = 0;
 
@@ -173,17 +202,6 @@ void PlayGameState::update(StateMachine & machine) {
 
 				case 16 ... 25:
 					//this->turnUp = 10; // Uncomment for 'Two for his heels' ..
-					#ifdef DEBUG_PRINT_HANDS
-					// player1.printHand(1);
-					// player1.printCrib(1);
-					// player2.printHand(2);
-					// player2.printCrib(2);
-					// Serial.print("Turn Up: (");
-					// Serial.print(this->turnUp);
-					// Serial.print(") ");
-					// CardUtils::printCard(this->turnUp);
-					// Serial.println("");
-					#endif
 
 					if (CardUtils::getCardValue(this->turnUp, false) != 11) {
 						this->counter = 167;
@@ -312,28 +330,24 @@ void PlayGameState::update(StateMachine & machine) {
 				case 73:
 					moveToEOG(machine);
 					this->counter = 0;
-//Serial.println("a1");
+
 					if (player2.getGo() || player2.getHandCardCount() == 0) {
-//Serial.println("a2");
+
 						resetPlay(machine);
 
 						if (player2.getHandCardCount() > 0) { //SJH ??? Was player2
-//Serial.println("a3");
 							this->viewState = ViewState::ComputersTurn;
 						}
 						else {
 							if (player1.getHandCardCount() > 0) {
-//Serial.println("a4");
 								this->viewState = ViewState::PlayersTurn;
 							}
 							else {
-//Serial.println("a5");
 								this->viewState = ViewState::DisplayScore_Board;
 							}
 						}
 					}
 					else {
-//Serial.println("a6");
 						this->viewState = ViewState::ComputersTurn;
 					}
 
@@ -381,6 +395,7 @@ void PlayGameState::update(StateMachine & machine) {
 							uint8_t playedValue = getBoardValue();
 							uint8_t score = getScore(player1, (player2.getGo() || player2.getHandCardCount() == 0));
 							player1.addScore(score);
+
 							saveMessageWithScore(playedValue, score,  DealerFace::Sad, BubbleAlignment::Normal_Player);
 							this->counter++;
 				

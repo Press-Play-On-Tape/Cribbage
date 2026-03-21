@@ -152,7 +152,7 @@ uint8_t PlayGameState::getScore(Player &player, bool player2Go) {
 		uint8_t card2 = CardUtils::getCardValue(playedCards[playIdx - 1], false);
 
 		if (card1 == card2) {
-//Serial.println("pair");	
+
 			score += 2;
 
 		}
@@ -170,7 +170,6 @@ uint8_t PlayGameState::getScore(Player &player, bool player2Go) {
 
 		if (card1 == card2 && card2== card3) {
 
-//Serial.println("royal");	
 			score += 4;
 
 		}
@@ -189,7 +188,6 @@ uint8_t PlayGameState::getScore(Player &player, bool player2Go) {
 
 		if (card1 == card2 && card1 == card3 && card3 == card4) {
 	
-//Serial.println("double royal");	
 			score += 6;
 
 		}
@@ -203,7 +201,6 @@ uint8_t PlayGameState::getScore(Player &player, bool player2Go) {
 
 	if (playValue == 15 || playValue == 31) {
 
-//Serial.println("15 or 31");	
 		score += 2;
 
 	}
@@ -221,7 +218,7 @@ uint8_t PlayGameState::getScore(Player &player, bool player2Go) {
 		     card2 != card3) &&
 			diffT(card1, card2) <= 2 && diffT(card1, card3) <=2 && 
 			diffT(card2, card3) <= 2 ) {
-//Serial.println("run of 3");	
+
 			score += 3;
 			found3InRow = true;
 
@@ -246,7 +243,6 @@ uint8_t PlayGameState::getScore(Player &player, bool player2Go) {
 			diffT(card2, card3) <=3 && diffT(card2, card4) <=3 && 
 			diffT(card3, card4) <=3) {
 
-//Serial.println("run of 4");	
 			score += (found3InRow ? 0 : 3) + 1;
 			found3InRow = true;
 			found4InRow = true;
@@ -275,7 +271,6 @@ uint8_t PlayGameState::getScore(Player &player, bool player2Go) {
 			diffT(card3, card4) <=4 && diffT(card3, card5) <=4 &&
 			diffT(card4, card5) <=4) {
 
-//Serial.println("run of 5");	
 			if (found3InRow && found4InRow) {
 				score += 1;
 			}
@@ -290,12 +285,12 @@ uint8_t PlayGameState::getScore(Player &player, bool player2Go) {
 
 	}
 
+
 	// Check last card for dominated player ..
 
 	if (playValue != 31 && player2Go && (player.getHandCardCount() == 0 || !player.canPlay(this->playedCards))) {
 
 		score += 1;
-//Serial.println("last card");	
 
 	}
 	

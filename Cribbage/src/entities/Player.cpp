@@ -595,7 +595,7 @@ void Player::printHand(uint8_t playerNo) {
 
 void Player::printCrib(uint8_t playerNo) {
 
-  #ifndef DEBUG_PRINT_HAND
+  #ifdef DEBUG_PRINT_HAND
 
   Serial.print("Player ");
   Serial.print(playerNo);
@@ -651,7 +651,7 @@ void Player::playCard(uint8_t playedCards[], bool canOpponentPlay, uint8_t &card
       for (uint8_t y = 0; y < this->handIdx; y++) {
 
         if (card1 == CardUtils::getCardValue(this->hand[y], false)) {
-//Serial.println("Double Royal Pair");
+
           card = removeFromHand(y);
           points = 12 + (total == 15 ? 2 : 0) + (total == 31 ? 2 : 0);
           return;
@@ -679,7 +679,7 @@ void Player::playCard(uint8_t playedCards[], bool canOpponentPlay, uint8_t &card
       for (uint8_t y = 0; y < this->handIdx; y++) {
 
         if (card1 == CardUtils::getCardValue(this->hand[y], false)) {
-//Serial.println("Royal Pair");
+
           card = removeFromHand(y);
           points = 6 + (total == 15 ? 2 : 0) + (total == 31 ? 2 : 0);
           return;
@@ -712,7 +712,7 @@ void Player::playCard(uint8_t playedCards[], bool canOpponentPlay, uint8_t &card
         diffT(card1, card2) <= 3 && diffT(card1, card3) <=3 && diffT(card1, card4) <=3 && 
         diffT(card2, card3) <=3 && diffT(card2, card4) <=3 && 
         diffT(card3, card4) <=3) {
-//Serial.println("Run of four");
+
         card = removeFromHand(y);
         points = 4 + (total == 15 ? 2 : 0) + (total == 31 ? 2 : 0);
         return;
@@ -739,9 +739,10 @@ void Player::playCard(uint8_t playedCards[], bool canOpponentPlay, uint8_t &card
 
       if (total <= 31 &&
           (card1 != card2 && card1 != card3 && card2 != card3) &&
-          diffT(card1, card2) <= 2 && diffT(card1, card3) <=2) {
-//Serial.println("Run of three");
+          diffT(card1, card2) <= 2 && diffT(card1, card3) <=2 && diffT(card2, card3) <=2) {
+
         card = removeFromHand(y);
+
         points = 3 + (total == 15 ? 2 : 0) + (total == 31 ? 2 : 0);
         return;
 
@@ -765,8 +766,9 @@ void Player::playCard(uint8_t playedCards[], bool canOpponentPlay, uint8_t &card
       uint8_t total = pointsToDate + cardVal;
 
       if (total <= 31 && (card1 == card2)) {
-//Serial.println("Pair when other player cannot play");
+
         card = removeFromHand(y);
+
         points = 2 + (total == 15 ? 2 : 0) + (total == 31 ? 2 : 0);
         return;
 
@@ -784,7 +786,7 @@ void Player::playCard(uint8_t playedCards[], bool canOpponentPlay, uint8_t &card
     uint8_t total = pointsToDate + CardUtils::getCardValue(this->hand[y], true);
 
     if (total == 15 || total == 31) {
-//Serial.println("15 or 31");
+
       card = removeFromHand(y);
       points = 2;
       return;
@@ -897,7 +899,7 @@ void Player::playCard(uint8_t playedCards[], bool canOpponentPlay, uint8_t &card
       if (discards[i] == j && (pointsToDate + CardUtils::getCardValue(this->hand[i], true) <= 31)) {
 
         card = removeFromHand(i);
-        
+
         points = (cardsPlayed >= 1 && (CardUtils::getCardValue(playedCards[cardsPlayed - 1], false) == CardUtils::getCardValue(card, false) ? 2 : 0));
         return;
 
